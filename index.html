@@ -3,577 +3,483 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AstroChemistry — Астрологическая Алхимия 🌌</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>Астрологическая Алхимия</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #050714;
-            --card-bg: rgba(20, 24, 48, 0.75);
-            --card-border: rgba(99, 110, 180, 0.3);
-            --gold: #ffd700;
-            --gold-glow: rgba(255, 215, 0, 0.4);
-            --purple-glow: rgba(168, 85, 247, 0.35);
-            --cyan-glow: rgba(56, 189, 248, 0.35);
+            --bg-dark: #0f111a;
+            --panel-bg: rgba(22, 25, 43, 0.85);
+            --border-color: rgba(99, 102, 241, 0.4);
+            --text-main: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #818cf8;
+            --item-bg: #1e2238;
+            --item-border: #3b4261;
         }
+
+        * { box-sizing: border-box; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at 50% 15%, #131738 0%, var(--bg-color) 85%);
-            color: #f1f5f9;
             margin: 0;
-            padding: 30px 15px;
-            min-height: 100vh;
-            box-sizing: border-box;
+            padding: 0;
+            font-family: 'Montserrat', sans-serif;
+            background: radial-gradient(circle at center, #1a1d36 0%, var(--bg-dark) 100%);
+            color: var(--text-main);
+            height: 100vh;
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            overflow: hidden; /* Запрещаем скролл всей страницы */
+            user-select: none; /* Запрещаем выделение текста при перетаскивании */
         }
 
-        header {
+        /* ЛЕВАЯ ПАНЕЛЬ С ЭЛЕМЕНТАМИ */
+        #sidebar {
+            width: 450px;
+            background: var(--panel-bg);
+            border-right: 1px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            z-index: 10;
+        }
+
+        .sidebar-header {
+            padding: 20px;
             text-align: center;
-            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: var(--accent);
         }
 
-        h1 {
-            font-family: 'Cinzel', serif;
-            letter-spacing: 4px;
-            color: var(--gold);
-            text-shadow: 0 0 20px var(--gold-glow);
-            margin: 0 0 8px 0;
-            font-size: 2.2em;
+        .columns-container {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
         }
 
-        .subtitle {
-            color: #94a3b8;
-            font-size: 0.95em;
-        }
-
-        .progress-bar {
-            margin-top: 12px;
-            font-size: 0.85em;
-            color: #cbd5e1;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 6px 16px;
-            border-radius: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            display: inline-block;
-        }
-
-        .main-layout {
-            max-width: 900px;
-            width: 100%;
+        .column {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            gap: 25px;
+            border-right: 1px solid rgba(255,255,255,0.05);
+        }
+        .column:last-child { border-right: none; }
+
+        .column-title {
+            text-align: center;
+            font-size: 0.8rem;
+            padding: 10px 5px;
+            background: rgba(0,0,0,0.2);
+            color: var(--text-muted);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
 
-        .panel {
-            background: rgba(13, 17, 38, 0.7);
-            border: 1px solid var(--card-border);
-            backdrop-filter: blur(12px);
-            border-radius: 18px;
-            padding: 22px;
-            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
-        }
-
-        .panel-title {
-            font-family: 'Cinzel', serif;
-            font-size: 1.15em;
-            color: var(--gold);
-            margin: 0 0 15px 0;
-            border-bottom: 1px solid var(--card-border);
-            padding-bottom: 8px;
+        .column-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        /* Tabs */
-        .tabs {
-            display: flex;
+            flex-direction: column;
             gap: 8px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
         }
 
-        .tab-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--card-border);
-            color: #94a3b8;
-            padding: 6px 14px;
+        /* Кнопка спавна элемента в меню */
+        .spawn-btn {
+            background: var(--item-bg);
+            border: 1px solid var(--item-border);
+            color: var(--text-main);
+            padding: 12px 8px;
             border-radius: 8px;
+            font-size: 0.85rem;
+            text-align: center;
             cursor: pointer;
-            font-size: 0.85em;
             transition: all 0.2s;
         }
-
-        .tab-btn.active, .tab-btn:hover {
-            background: rgba(168, 85, 247, 0.2);
-            border-color: #a855f7;
-            color: #fff;
-        }
-
-        .grid {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            max-height: 220px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            padding: 10px 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            user-select: none;
-            transition: all 0.25s ease;
-            font-size: 0.9em;
-        }
-
-        .card:hover {
-            border-color: #818cf8;
+        .spawn-btn:hover {
+            background: #2a2f4c;
+            border-color: var(--accent);
             transform: translateY(-2px);
-            box-shadow: 0 0 12px var(--purple-glow);
         }
 
-        .card.selected {
-            border-color: var(--gold);
-            background: rgba(50, 45, 80, 0.9);
-            box-shadow: 0 0 15px var(--gold-glow);
-            transform: scale(1.04);
+        /* ИГРОВОЕ ПОЛЕ */
+        #board {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
         }
 
-        /* Fusion Zone */
-        .fusion-zone {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .slots {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .slot {
-            width: 170px;
-            height: 55px;
-            border: 2px dashed var(--card-border);
+        /* ПАНЕЛЬ ОПИСАНИЯ ВНИЗУ */
+        #description-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 800px;
+            background: rgba(15, 17, 26, 0.95);
+            border: 1px solid var(--accent);
             border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(8, 10, 22, 0.8);
-            font-size: 0.88em;
-            color: #64748b;
-            transition: all 0.3s;
-            text-align: center;
-            padding: 0 8px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: none; /* Скрыто по умолчанию */
+            z-index: 20;
+            pointer-events: none; /* Чтобы не мешало перетаскивать под ним */
         }
 
-        .slot.filled {
-            border-style: solid;
-            border-color: var(--gold);
-            color: #fff;
-            box-shadow: inset 0 0 12px var(--gold-glow);
+        #desc-title {
+            color: var(--accent);
+            margin: 0 0 10px 0;
+            font-size: 1.2rem;
         }
-
-        .actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn {
-            border: none;
-            padding: 12px 28px;
-            font-size: 0.95em;
-            font-weight: 600;
-            border-radius: 30px;
-            cursor: pointer;
-            transition: all 0.25s;
-        }
-
-        .btn-combine {
-            background: linear-gradient(135deg, #ffd700, #f59e0b);
-            color: #000;
-            box-shadow: 0 4px 15px var(--gold-glow);
-        }
-
-        .btn-combine:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
-        }
-
-        .btn-clear {
-            background: rgba(255, 255, 255, 0.08);
-            color: #cbd5e1;
-            border: 1px solid var(--card-border);
-        }
-
-        .btn-clear:hover {
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        #result-area {
-            min-height: 70px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-        }
-
-        .result-card {
-            background: linear-gradient(135deg, rgba(30, 27, 75, 0.95), rgba(15, 23, 42, 0.95));
-            border: 1px solid var(--gold);
-            border-radius: 14px;
-            padding: 16px 24px;
-            box-shadow: 0 0 25px var(--gold-glow);
-            text-align: center;
-            max-width: 500px;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .result-card h4 {
-            margin: 0 0 6px 0;
-            color: var(--gold);
-            font-size: 1.2em;
-        }
-
-        .result-card p {
-            margin: 0;
-            font-size: 0.9em;
-            color: #cbd5e1;
-            line-height: 1.4;
-        }
-
-        /* Person Creator Section */
-        .person-slots {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
-        }
-
-        .person-slot {
-            background: rgba(8, 10, 22, 0.8);
-            border: 1px dashed var(--card-border);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-        }
-
-        .person-slot h5 {
-            margin: 0 0 8px 0;
-            color: #94a3b8;
-            font-size: 0.85em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .person-slot .val {
-            font-size: 0.95em;
-            color: var(--gold);
-            font-weight: 600;
-        }
-
-        #person-summary {
-            background: rgba(168, 85, 247, 0.1);
-            border: 1px solid rgba(168, 85, 247, 0.4);
-            border-radius: 12px;
-            padding: 15px;
-            color: #e2e8f0;
-            font-size: 0.92em;
+        #desc-text {
+            color: var(--text-main);
+            font-size: 0.95rem;
             line-height: 1.5;
-            display: none;
+            margin: 0;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+        /* САМИ ИГРОВЫЕ ЯЧЕЙКИ НА ДОСКЕ */
+        .board-item {
+            position: absolute;
+            background: linear-gradient(135deg, var(--item-bg), #121422);
+            border: 2px solid var(--item-border);
+            padding: 15px 25px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: grab;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            touch-action: none; /* Важно для работы тачей на телефонах */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
         }
+        
+        .board-item:active {
+            cursor: grabbing;
+        }
+
+        .board-item:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(129, 140, 248, 0.4);
+        }
+
+        .board-item.highlight {
+            border-color: #ffd700;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            transform: scale(1.05);
+        }
+        
+        /* Кастомный скроллбар */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #3b4261; border-radius: 10px; }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>ASTROCHEMISTRY</h1>
-        <div class="subtitle">Алхимия Звезд: объединяйте элементы и создавайте уникальную личность</div>
-        <div class="progress-bar" id="progress-text">Открыто элементов: 0 / 0</div>
-    </header>
-
-    <div class="main-layout">
-
-        <div class="panel">
-            <div class="panel-title">Ваша Коллекция Элементов</div>
-            <div class="tabs">
-                <button class="tab-btn active" onclick="filterCategory('all')">Все</button>
-                <button class="tab-btn" onclick="filterCategory('planet')">🪐 Планеты</button>
-                <button class="tab-btn" onclick="filterCategory('sign')">♈ Знаки</button>
-                <button class="tab-btn" onclick="filterCategory('house')">🏠 Дома</button>
-                <button class="tab-btn" onclick="filterCategory('crafted')">✨ Созданные</button>
+    <div id="sidebar">
+        <div class="sidebar-header">ЭЛЕМЕНТЫ</div>
+        <div class="columns-container">
+            <div class="column">
+                <div class="column-title">ЗНАКИ</div>
+                <div class="column-list" id="list-signs"></div>
             </div>
-            <div id="inventory" class="grid"></div>
-        </div>
-
-        <div class="panel">
-            <div class="panel-title">Алхимический Алтарь</div>
-            <div class="fusion-zone">
-                <div class="slots">
-                    <div id="slot1" class="slot">Выберите 1-й элемент</div>
-                    <span style="color:var(--gold); font-size:1.4em;">+</span>
-                    <div id="slot2" class="slot">Выберите 2-й элемент</div>
-                </div>
-                <div class="actions">
-                    <button class="btn btn-combine" onclick="combine()">Соединить</button>
-                    <button class="btn btn-clear" onclick="clearSlots()">Сброс</button>
-                </div>
-                <div id="result-area"></div>
+            <div class="column">
+                <div class="column-title">ПЛАНЕТЫ & УЗЛЫ</div>
+                <div class="column-list" id="list-planets"></div>
+            </div>
+            <div class="column">
+                <div class="column-title">ДОМА</div>
+                <div class="column-list" id="list-houses"></div>
             </div>
         </div>
+    </div>
 
-        <div class="panel">
-            <div class="panel-title">
-                <span>Создание Личности (Натальная Карта)</span>
-                <button class="tab-btn" onclick="resetPerson()">Очистить карту</button>
-            </div>
-            <div class="person-slots">
-                <div class="person-slot">
-                    <h5>☀️ Солнечный Знак (Ядро)</h5>
-                    <div id="p-sun" class="val">Не выбрано</div>
-                </div>
-                <div class="person-slot">
-                    <h5>🌙 Лунный Знак (Душа)</h5>
-                    <div id="p-moon" class="val">Не выбрано</div>
-                </div>
-                <div class="person-slot">
-                    <h5>🌅 Асцендент (Маска)</h5>
-                    <div id="p-asc" class="val">Не выбрано</div>
-                </div>
-            </div>
-            <button class="btn btn-combine" style="width:100%; margin-bottom:12px;" onclick="generatePerson()">Сформировать Портрет Человека</button>
-            <div id="person-summary"></div>
+    <div id="board">
+        <div style="position: absolute; top: 20px; left: 20px; color: rgba(255,255,255,0.2); pointer-events: none;">
+            Кликай на элементы слева.<br>Перетаскивай их друг на друга на этой доске.
         </div>
+    </div>
 
+    <div id="description-panel">
+        <h3 id="desc-title">Название</h3>
+        <p id="desc-text">Описание...</p>
     </div>
 
     <script>
-        // Data Base
-        const starterElements = [
-            // Planets
-            { id: 'sun', name: '☀️ Солнце', cat: 'planet' },
-            { id: 'moon', name: '🌙 Луна', cat: 'planet' },
-            { id: 'mercury', name: '☿ Меркурий', cat: 'planet' },
-            { id: 'venus', name: '♀ Венера', cat: 'planet' },
-            { id: 'mars', name: '♂ Марс', cat: 'planet' },
-            { id: 'jupiter', name: '♃ Юпитер', cat: 'planet' },
-            { id: 'saturn', name: '♄ Сатурн', cat: 'planet' },
+        // =====================================================================
+        // БЛОК 1: БАЗА ДАННЫХ ДЛЯ НАСТРОЙКИ (ТВОЯ ЗОНА ОТВЕТСТВЕННОСТИ)
+        // =====================================================================
 
-            // Signs
-            { id: 'aries', name: '♈ Овен', cat: 'sign' },
-            { id: 'taurus', name: '♉ Телец', cat: 'sign' },
-            { id: 'gemini', name: '♊ Близнецы', cat: 'sign' },
-            { id: 'cancer', name: '♋ Рак', cat: 'sign' },
-            { id: 'leo', name: '♌ Лев', cat: 'sign' },
-            { id: 'virgo', name: '♍ Дева', cat: 'sign' },
-            { id: 'libra', name: '♎ Весы', cat: 'sign' },
-            { id: 'scorpio', name: '🦂 Скорпион', cat: 'sign' },
-            { id: 'sagittarius', name: '♐ Стрелец', cat: 'sign' },
-            { id: 'capricorn', name: '♑ Козерог', cat: 'sign' },
-            { id: 'aquarius', name: '♒ Водолей', cat: 'sign' },
-            { id: 'pisces', name: '♓ Рыбы', cat: 'sign' },
-
-            // Houses
-            { id: 'h1', name: '🏠 1 Дом (Внешность)', cat: 'house' },
-            { id: 'h4', name: '🏠 4 Дом (Семья/Корни)', cat: 'house' },
-            { id: 'h7', name: '🏠 7 Дом (Партнерство)', cat: 'house' },
-            { id: 'h10', name: '🏠 10 Дом (Карьера)', cat: 'house' }
+        // 1. СПИСКИ СТАРТОВЫХ ЭЛЕМЕНТОВ (Для левого меню)
+        // Ты можешь менять 'name' (как выглядит) и добавлять новые. 
+        // 'id' - это уникальный код элемента для рецептов.
+        
+        const baseSigns = [
+            { id: 'aries', name: 'Овен' }, { id: 'taurus', name: 'Телец' }, { id: 'gemini', name: 'Близнецы' },
+            { id: 'cancer', name: 'Рак' }, { id: 'leo', name: 'Лев' }, { id: 'virgo', name: 'Дева' },
+            { id: 'libra', name: 'Весы' }, { id: 'scorpio', name: 'Скорпион' }, { id: 'sagittarius', name: 'Стрелец' },
+            { id: 'capricorn', name: 'Козерог' }, { id: 'aquarius', name: 'Водолей' }, { id: 'pisces', name: 'Рыбы' }
         ];
 
-        const recipes = [
-            // Sun + Signs
-            { in: ['sun', 'aries'], out: { id: 'sun_aries', name: '☀️♈ Солнце в Овне', cat: 'crafted', role: 'sun' }, desc: 'Яркий, импульсивный лидер и первопроходец.' },
-            { in: ['sun', 'leo'], out: { id: 'sun_leo', name: '☀️♌ Солнце во Льве', cat: 'crafted', role: 'sun' }, desc: 'Харизматичный, щедрый и творческий творец.' },
-            { in: ['sun', 'scorpio'], out: { id: 'sun_scorpio', name: '☀️🦂 Солнце в Скорпионе', cat: 'crafted', role: 'sun' }, desc: 'Проницательный, стойкий и магнетический стратег.' },
-            { in: ['sun', 'capricorn'], out: { id: 'sun_capricorn', name: '☀️♑ Солнце в Козероге', cat: 'crafted', role: 'sun' }, desc: 'Целеустремленный, дисциплинированный строитель судьбы.' },
-
-            // Moon + Signs
-            { in: ['moon', 'cancer'], out: { id: 'moon_cancer', name: '🌙♋ Луна в Раке', cat: 'crafted', role: 'moon' }, desc: 'Глубоко чувствительный, заботливый эмпат.' },
-            { in: ['moon', 'pisces'], out: { id: 'moon_pisces', name: '🌙♓ Луна в Рыбах', cat: 'crafted', role: 'moon' }, desc: 'Мечтательный, интуитивный и духовно богатый.' },
-            { in: ['moon', 'scorpio'], out: { id: 'moon_scorpio', name: '🌙🦂 Луна в Скорпионе', cat: 'crafted', role: 'moon' }, desc: 'Невероятная эмоциональная сила и скрытая страсть.' },
-
-            // Planet + Houses (Ascendant)
-            { in: ['sun', 'h1'], out: { id: 'asc_sun', name: '🌅☀️ Солнце на Асценденте', cat: 'crafted', role: 'asc' }, desc: 'Врожденное обаяние, неотразимая уверенность.' },
-            { in: ['aries', 'h1'], out: { id: 'asc_aries', name: '🌅♈ Овен на Асценденте', cat: 'crafted', role: 'asc' }, desc: 'Энергичная подача, прямой и смелый взгляд.' },
-            { in: ['aquarius', 'h1'], out: { id: 'asc_aquarius', name: '🌅♒ Водолей на Асценденте', cat: 'crafted', role: 'asc' }, desc: 'Оригинальный стиль, свободолюбие и эксцентричность.' },
-
-            // Other Planet Combinations
-            { in: ['venus', 'taurus'], out: { id: 'venus_taurus', name: '♀♉ Венера в Тельце', cat: 'crafted' }, desc: 'Глубокий тонкий вкус, ценитель уюта и гармонии.' },
-            { in: ['mars', 'aries'], out: { id: 'mars_aries', name: '♂♈ Марс в Овне', cat: 'crafted' }, desc: 'Неукротимая энергия действия и смелость.' },
-            { in: ['mercury', 'gemini'], out: { id: 'mercury_gemini', name: '☿♊ Меркурий в Близнецах', cat: 'crafted' }, desc: 'Молниеносный ум, ораторский талант.' },
-            { in: ['jupiter', 'h10'], out: { id: 'jupiter_h10', name: '♃🏠 Юпитер в 10 Доме', cat: 'crafted' }, desc: 'Большой успех, авторитет и общественное признание.' },
-            { in: ['sun', 'moon'], out: { id: 'sun_moon', name: '☯️ Гармония Разума и Души', cat: 'crafted' }, desc: 'Высший баланс между сознанием и подсознанием.' }
+        const basePlanets = [
+            { id: 'sun', name: 'Солнце' }, { id: 'moon', name: 'Луна' }, { id: 'mercury', name: 'Меркурий' },
+            { id: 'venus', name: 'Венера' }, { id: 'mars', name: 'Марс' }, { id: 'jupiter', name: 'Юпитер' },
+            { id: 'saturn', name: 'Сатурн' }, { id: 'uranus', name: 'Уран' }, { id: 'neptune', name: 'Нептун' },
+            { id: 'pluto', name: 'Плутон' }, { id: 'node_n', name: 'Сев. Узел' }, { id: 'node_s', name: 'Юж. Узел' },
+            { id: 'asc', name: 'Асцендент' }
         ];
 
-        // State
-        let inventory = [...starterElements];
-        let selected = [];
-        let currentFilter = 'all';
+        const baseHouses = [
+            { id: 'h1', name: '1 Дом' }, { id: 'h2', name: '2 Дом' }, { id: 'h3', name: '3 Дом' },
+            { id: 'h4', name: '4 Дом' }, { id: 'h5', name: '5 Дом' }, { id: 'h6', name: '6 Дом' },
+            { id: 'h7', name: '7 Дом' }, { id: 'h8', name: '8 Дом' }, { id: 'h9', name: '9 Дом' },
+            { id: 'h10', name: '10 Дом' }, { id: 'h11', name: '11 Дом' }, { id: 'h12', name: '12 Дом' }
+        ];
 
-        let personState = {
-            sun: null,
-            moon: null,
-            asc: null
+        // 2. СЛОВАРЬ ВСЕХ ЭЛЕМЕНТОВ И ИХ ОПИСАНИЙ (Включая результаты слияний)
+        // Сюда нужно будет добавлять всё: и базовые, и сложные элементы.
+        const elementsData = {
+            // Базовые описания (показываются, если просто кликнуть на планету/знак на доске)
+            'sun': { name: 'Солнце', desc: 'Центр личности, эго, сознание, жизненные силы.' },
+            'aries': { name: 'Овен', desc: 'Импульс, инициатива, борьба, первооткрыватель.' },
+            'h1': { name: '1 Дом', desc: 'Дом личности, внешности, масок и первого впечатления.' },
+            'moon': { name: 'Луна', desc: 'Подсознание, эмоции, привычки, инстинкты.' },
+            'scorpio': { name: 'Скорпион', desc: 'Глубина, трансформация, кризис, магнетизм.' },
+
+            // Описания твоих сложных соединений
+            'sun_in_aries': { 
+                name: 'Солнце в Овне', 
+                desc: 'Яркая индивидуальность. Человек действует быстро, прямолинейно. Лидер, который зажигает других, но может быстро перегорать.' 
+            },
+            'moon_in_scorpio': {
+                name: 'Луна в Скорпионе',
+                desc: 'Невероятно глубокие и интенсивные эмоции. Человек скрытен, но чувствует мир на уровне рентгена.'
+            },
+            'sun_aries_h1': {
+                name: 'Солнце в Овне в 1 Доме',
+                desc: 'Двойной заряд марсианской энергии! Этот человек сразу бросается в глаза. Внешность и характер полностью синхронизированы в мощном порыве к лидерству.'
+            },
+            'mega_combo': {
+                name: 'Комплекс: Огненное Ядро + Водная Душа',
+                desc: 'Этот человек внешне действует как пробивной воин (Солнце в Овне в 1 доме), но внутри руководствуется глубочайшими страстями и интуицией (Луна в Скорпионе). Сложный, но невероятно сильный характер!'
+            }
+            // Добавляй сюда тысячи своих описаний...
         };
 
-        function init() {
-            renderInventory();
-            updateProgress();
-        }
+        // 3. РЕЦЕПТЫ АЛХИМИИ (Что + Что = Результат)
+        // Формат: "id1,id2": "id_результата"
+        // ПРАВИЛО: Идентификаторы слева пиши в алфавитном порядке! 
+        // (Например: aries и sun -> 'aries,sun'. Так движку будет легче их сравнивать).
+        const recipes = {
+            'aries,sun': 'sun_in_aries', // Овен + Солнце = Солнце в Овне
+            'moon,scorpio': 'moon_in_scorpio', // Луна + Скорпион = Луна в Скорпионе
+            
+            // Многоуровневые соединения:
+            'h1,sun_in_aries': 'sun_aries_h1', // Солнце в Овне + 1 Дом = Солнце в Овне в 1 Доме
+            
+            // Финальное слияние:
+            'moon_in_scorpio,sun_aries_h1': 'mega_combo'
+        };
 
-        function updateProgress() {
-            const totalCraftedPossible = recipes.length;
-            const currentCrafted = inventory.filter(i => i.cat === 'crafted').length;
-            document.getElementById('progress-text').innerText = `Открыто комбинаций: ${currentCrafted} / ${totalCraftedPossible}`;
-        }
 
-        function filterCategory(cat) {
-            currentFilter = cat;
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-            renderInventory();
-        }
+        // =====================================================================
+        // БЛОК 2: ИГРОВОЙ ДВИЖОК (НЕ МЕНЯЙ, ЕСЛИ НЕ ЗНАЕШЬ JS)
+        // =====================================================================
 
-        function renderInventory() {
-            const invContainer = document.getElementById('inventory');
-            invContainer.innerHTML = '';
+        const board = document.getElementById('board');
+        const descPanel = document.getElementById('description-panel');
+        const descTitle = document.getElementById('desc-title');
+        const descText = document.getElementById('desc-text');
+        
+        let zIndexCounter = 100;
+        let activeDragElement = null;
+        let offsetX = 0, offsetY = 0;
+        let boardItems = []; // Хранит DOM-элементы на доске
 
-            const filtered = inventory.filter(item => {
-                if (currentFilter === 'all') return true;
-                return item.cat === currentFilter;
-            });
-
-            filtered.forEach(item => {
+        // 1. Отрисовка левого меню
+        function populateMenu(listArray, containerId) {
+            const container = document.getElementById(containerId);
+            listArray.forEach(item => {
                 const btn = document.createElement('div');
-                btn.className = 'card' + (selected.includes(item) ? ' selected' : '');
+                btn.className = 'spawn-btn';
                 btn.innerText = item.name;
-                btn.onclick = () => selectItem(item);
-                invContainer.appendChild(btn);
+                // При клике создаем элемент на доске
+                btn.onclick = () => spawnElementOnBoard(item.id, item.name);
+                container.appendChild(btn);
             });
         }
+        
+        populateMenu(baseSigns, 'list-signs');
+        populateMenu(basePlanets, 'list-planets');
+        populateMenu(baseHouses, 'list-houses');
 
-        function selectItem(item) {
-            if (selected.includes(item)) {
-                selected = selected.filter(i => i !== item);
-            } else if (selected.length < 2) {
-                selected.push(item);
-            }
-            updateSlots();
-            renderInventory();
-        }
-
-        function updateSlots() {
-            const s1 = document.getElementById('slot1');
-            const s2 = document.getElementById('slot2');
-
-            s1.innerText = selected[0] ? selected[0].name : 'Выберите 1-й элемент';
-            s1.className = 'slot' + (selected[0] ? ' filled' : '');
-
-            s2.innerText = selected[1] ? selected[1].name : 'Выберите 2-й элемент';
-            s2.className = 'slot' + (selected[1] ? ' filled' : '');
-        }
-
-        function clearSlots() {
-            selected = [];
-            updateSlots();
-            renderInventory();
-            document.getElementById('result-area').innerHTML = '';
-        }
-
-        function combine() {
-            const resArea = document.getElementById('result-area');
-            if (selected.length < 2) {
-                resArea.innerHTML = '<span style="color:#f87171; font-size:0.9em;">Выберите 2 элемента для алхимической реакции!</span>';
-                return;
+        // 2. Создание элемента на доске
+        function spawnElementOnBoard(id, name, x = null, y = null) {
+            const el = document.createElement('div');
+            el.className = 'board-item';
+            el.dataset.id = id;
+            el.innerText = name;
+            
+            // Если координаты не переданы, бросаем в центр с небольшим случайным разбросом
+            if (x === null || y === null) {
+                const boardRect = board.getBoundingClientRect();
+                x = (boardRect.width / 2) - 50 + (Math.random() * 60 - 30);
+                y = (boardRect.height / 2) - 25 + (Math.random() * 60 - 30);
             }
 
-            const ids = selected.map(i => i.id).sort();
-            const recipe = recipes.find(r => {
-                const req = [...r.in].sort();
-                return req[0] === ids[0] && req[1] === ids[1];
-            });
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            el.style.zIndex = zIndexCounter++;
 
-            if (recipe) {
-                // Add to inventory if new
-                if (!inventory.some(i => i.id === recipe.out.id)) {
-                    inventory.push(recipe.out);
-                    updateProgress();
-                }
+            // События мыши и тачскрина для перетаскивания
+            el.addEventListener('pointerdown', handleDragStart);
+            
+            // Клик для показа описания
+            el.addEventListener('click', () => showDescription(id));
 
-                let assignBtn = '';
-                if (recipe.out.role) {
-                    assignBtn = `<br><button class="tab-btn" style="margin-top:10px; border-color:var(--gold); color:var(--gold);" onclick="assignToPerson('${recipe.out.role}', '${recipe.out.name}')">➕ Назначить в Карту Человека</button>`;
-                }
+            board.appendChild(el);
+            boardItems.push(el);
+        }
 
-                resArea.innerHTML = `
-                    <div class="result-card">
-                        <h4>✨ ${recipe.out.name}</h4>
-                        <p>${recipe.desc}</p>
-                        ${assignBtn}
-                    </div>
-                `;
+        // 3. Логика показа описания
+        function showDescription(id) {
+            const data = elementsData[id];
+            if (data) {
+                descTitle.innerText = data.name;
+                descText.innerText = data.desc;
             } else {
-                resArea.innerHTML = '<span style="color:#f87171; font-size:0.9em;">❌ Элементы не вступают в реакцию... Попробуйте другое сочетание!</span>';
+                // Заглушка, если ты забыл добавить описание в elementsData
+                descTitle.innerText = "Неизвестная комбинация";
+                descText.innerText = "Описание для этого элемента еще не добавлено.";
             }
-
-            selected = [];
-            updateSlots();
-            renderInventory();
+            descPanel.style.display = 'block';
         }
 
-        function assignToPerson(role, name) {
-            if (role === 'sun') {
-                personState.sun = name;
-                document.getElementById('p-sun').innerText = name;
-            } else if (role === 'moon') {
-                personState.moon = name;
-                document.getElementById('p-moon').innerText = name;
-            } else if (role === 'asc') {
-                personState.asc = name;
-                document.getElementById('p-asc').innerText = name;
+        // 4. Логика перетаскивания (Drag & Drop)
+        function handleDragStart(e) {
+            activeDragElement = e.target;
+            activeDragElement.style.zIndex = zIndexCounter++; // Поднимаем наверх
+            
+            const rect = activeDragElement.getBoundingClientRect();
+            const boardRect = board.getBoundingClientRect();
+            
+            // Вычисляем смещение мыши относительно левого верхнего угла элемента
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+
+            // Захватываем события движения на всем документе, чтобы не терять элемент при быстром движении
+            document.addEventListener('pointermove', handleDragMove);
+            document.addEventListener('pointerup', handleDragEnd);
+        }
+
+        function handleDragMove(e) {
+            if (!activeDragElement) return;
+
+            const boardRect = board.getBoundingClientRect();
+            
+            // Вычисляем новые координаты относительно доски
+            let newX = e.clientX - boardRect.left - offsetX;
+            let newY = e.clientY - boardRect.top - offsetY;
+
+            activeDragElement.style.left = newX + 'px';
+            activeDragElement.style.top = newY + 'px';
+
+            // Проверка коллизий во время движения для подсветки
+            checkHoverCollision();
+        }
+
+        function handleDragEnd(e) {
+            if (!activeDragElement) return;
+
+            document.removeEventListener('pointermove', handleDragMove);
+            document.removeEventListener('pointerup', handleDragEnd);
+
+            // Проверяем, отпустили ли мы элемент поверх другого
+            attemptCombine();
+
+            // Убираем подсветки
+            boardItems.forEach(item => item.classList.remove('highlight'));
+            
+            activeDragElement = null;
+        }
+
+        // 5. Поиск пересечений
+        function getCollidingElement(sourceEl) {
+            const rect1 = sourceEl.getBoundingClientRect();
+            
+            for (let targetEl of boardItems) {
+                if (targetEl === sourceEl) continue; // Не сравниваем с самим собой
+
+                const rect2 = targetEl.getBoundingClientRect();
+                
+                // Простая проверка пересечения прямоугольников
+                if (!(rect1.right < rect2.left || 
+                      rect1.left > rect2.right || 
+                      rect1.bottom < rect2.top || 
+                      rect1.top > rect2.bottom)) {
+                    return targetEl;
+                }
+            }
+            return null;
+        }
+
+        function checkHoverCollision() {
+            boardItems.forEach(item => item.classList.remove('highlight'));
+            const colliding = getCollidingElement(activeDragElement);
+            if (colliding) {
+                colliding.classList.add('highlight');
             }
         }
 
-        function resetPerson() {
-            personState = { sun: null, moon: null, asc: null };
-            document.getElementById('p-sun').innerText = 'Не выбрано';
-            document.getElementById('p-moon').innerText = 'Не выбрано';
-            document.getElementById('p-asc').innerText = 'Не выбрано';
-            document.getElementById('person-summary').style.display = 'none';
-        }
+        // 6. Алхимия: попытка соединения
+        function attemptCombine() {
+            const targetEl = getCollidingElement(activeDragElement);
+            if (!targetEl) return;
 
-        function generatePerson() {
-            const summaryDiv = document.getElementById('person-summary');
-            if (!personState.sun || !personState.moon || !personState.asc) {
-                summaryDiv.style.display = 'block';
-                summaryDiv.innerHTML = '⚠️ <strong>Заполните все 3 аспекта:</strong> добавьте Солнечный знак, Лунный знак и Асцендент из открытых комбинаций!';
-                return;
+            const id1 = activeDragElement.dataset.id;
+            const id2 = targetEl.dataset.id;
+
+            // Сортируем ID по алфавиту для правильного ключа
+            const sortedIds = [id1, id2].sort().join(',');
+            
+            const resultId = recipes[sortedIds];
+
+            if (resultId) {
+                // РЕЦЕПТ НАЙДЕН!
+                // 1. Получаем координаты места соединения
+                const spawnX = parseFloat(targetEl.style.left);
+                const spawnY = parseFloat(targetEl.style.top);
+
+                // 2. Удаляем старые элементы
+                activeDragElement.remove();
+                targetEl.remove();
+                boardItems = boardItems.filter(el => el !== activeDragElement && el !== targetEl);
+
+                // 3. Спавним новый результат
+                const resultData = elementsData[resultId];
+                const resultName = resultData ? resultData.name : resultId;
+                
+                spawnElementOnBoard(resultId, resultName, spawnX, spawnY);
+                
+                // 4. Сразу показываем описание нового элемента
+                showDescription(resultId);
+            } else {
+                // Отскакивание, если рецепта нет (необязательно, но приятно)
+                const currentLeft = parseFloat(activeDragElement.style.left);
+                activeDragElement.style.left = (currentLeft + 20) + 'px';
             }
-
-            summaryDiv.style.display = 'block';
-            summaryDiv.innerHTML = `
-                🌟 <strong>ПОРТРЕТ СОЗДАННОЙ ЛИЧНОСТИ</strong><br><br>
-                Перед нами человек с ядром <strong>${personState.sun}</strong>. Он проявляет мир через призму высокой целеустремленности и индивидуальности.<br>
-                Его внутренний эмоциональный мир ведом <strong>${personState.moon}</strong>, что дает ему глубокое чутье, тонкое восприятие и скрытые внутренние ресурсы.<br>
-                Первое впечатление на окружающих производит <strong>${personState.asc}</strong>, наделяя его неповторимым шармом и выразительной харизмой при первой встрече!
-            `;
         }
 
-        init();
+        // Скрываем описание при клике на пустую доску
+        board.addEventListener('click', (e) => {
+            if (e.target === board) {
+                descPanel.style.display = 'none';
+            }
+        });
     </script>
 </body>
 </html>
