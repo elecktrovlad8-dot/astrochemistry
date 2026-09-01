@@ -3,85 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AstroChemistry 🌌</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <title>AstroChemistry — Астрологическая Алхимия 🌌</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #060814;
-            --card-bg: rgba(22, 27, 51, 0.7);
-            --card-border: rgba(100, 115, 175, 0.3);
-            --accent-gold: #ffd700;
-            --accent-glow: rgba(255, 215, 0, 0.35);
-            --purple-glow: rgba(147, 51, 234, 0.3);
+            --bg-color: #050714;
+            --card-bg: rgba(20, 24, 48, 0.75);
+            --card-border: rgba(99, 110, 180, 0.3);
+            --gold: #ffd700;
+            --gold-glow: rgba(255, 215, 0, 0.4);
+            --purple-glow: rgba(168, 85, 247, 0.35);
+            --cyan-glow: rgba(56, 189, 248, 0.35);
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at 50% 20%, #151936 0%, var(--bg-color) 80%);
-            color: #e2e8f0;
+            background: radial-gradient(circle at 50% 15%, #131738 0%, var(--bg-color) 85%);
+            color: #f1f5f9;
             margin: 0;
             padding: 30px 15px;
             min-height: 100vh;
+            box-sizing: border-box;
             display: flex;
             flex-direction: column;
             align-items: center;
-            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
         }
 
         h1 {
             font-family: 'Cinzel', serif;
-            letter-spacing: 3px;
-            color: var(--accent-gold);
-            text-shadow: 0 0 15px var(--accent-glow);
-            margin-bottom: 5px;
+            letter-spacing: 4px;
+            color: var(--gold);
+            text-shadow: 0 0 20px var(--gold-glow);
+            margin: 0 0 8px 0;
+            font-size: 2.2em;
         }
 
         .subtitle {
             color: #94a3b8;
             font-size: 0.95em;
-            margin-bottom: 30px;
         }
 
-        .container {
-            max-width: 750px;
-            width: 100%;
-            background: rgba(13, 16, 33, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        section {
-            margin-bottom: 30px;
-        }
-
-        h3 {
-            font-family: 'Cinzel', serif;
-            font-size: 1.1em;
+        .progress-bar {
+            margin-top: 12px;
+            font-size: 0.85em;
             color: #cbd5e1;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: inline-block;
+        }
+
+        .main-layout {
+            max-width: 900px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        .panel {
+            background: rgba(13, 17, 38, 0.7);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            border-radius: 18px;
+            padding: 22px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.5);
+        }
+
+        .panel-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.15em;
+            color: var(--gold);
+            margin: 0 0 15px 0;
             border-bottom: 1px solid var(--card-border);
             padding-bottom: 8px;
-            margin-top: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--card-border);
+            color: #94a3b8;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active, .tab-btn:hover {
+            background: rgba(168, 85, 247, 0.2);
+            border-color: #a855f7;
+            color: #fff;
         }
 
         .grid {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             flex-wrap: wrap;
-            justify-content: center;
+            max-height: 220px;
+            overflow-y: auto;
+            padding-right: 5px;
         }
 
         .card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            padding: 12px 20px;
+            padding: 10px 16px;
             border-radius: 10px;
             cursor: pointer;
             user-select: none;
             transition: all 0.25s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            font-size: 0.9em;
         }
 
         .card:hover {
@@ -90,60 +139,69 @@
             box-shadow: 0 0 12px var(--purple-glow);
         }
 
-        .card.active {
-            border-color: var(--accent-gold);
-            background: rgba(45, 42, 74, 0.9);
-            box-shadow: 0 0 15px var(--accent-glow);
-            transform: scale(1.03);
+        .card.selected {
+            border-color: var(--gold);
+            background: rgba(50, 45, 80, 0.9);
+            box-shadow: 0 0 15px var(--gold-glow);
+            transform: scale(1.04);
         }
 
-        .slot-container {
+        /* Fusion Zone */
+        .fusion-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .slots {
             display: flex;
             gap: 15px;
-            justify-content: center;
             align-items: center;
-            margin: 20px 0;
         }
 
         .slot {
-            width: 160px;
-            height: 60px;
+            width: 170px;
+            height: 55px;
             border: 2px dashed var(--card-border);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(10, 12, 24, 0.8);
-            font-size: 0.95em;
+            background: rgba(8, 10, 22, 0.8);
+            font-size: 0.88em;
             color: #64748b;
             transition: all 0.3s;
+            text-align: center;
+            padding: 0 8px;
         }
 
         .slot.filled {
             border-style: solid;
-            border-color: var(--accent-gold);
+            border-color: var(--gold);
             color: #fff;
-            box-shadow: inset 0 0 10px var(--accent-glow);
+            box-shadow: inset 0 0 12px var(--gold-glow);
         }
 
-        .plus {
-            font-size: 1.5em;
-            color: var(--accent-gold);
+        .actions {
+            display: flex;
+            gap: 12px;
         }
 
-        .btn-combine {
-            background: linear-gradient(135deg, #ffd700, #ffa500);
-            color: #000;
+        .btn {
             border: none;
-            padding: 14px 32px;
-            font-size: 1em;
+            padding: 12px 28px;
+            font-size: 0.95em;
             font-weight: 600;
             border-radius: 30px;
             cursor: pointer;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 15px var(--accent-glow);
-            display: block;
-            margin: 0 auto;
+            transition: all 0.25s;
+        }
+
+        .btn-combine {
+            background: linear-gradient(135deg, #ffd700, #f59e0b);
+            color: #000;
+            box-shadow: 0 4px 15px var(--gold-glow);
         }
 
         .btn-combine:hover {
@@ -151,27 +209,38 @@
             box-shadow: 0 6px 20px rgba(255, 215, 0, 0.6);
         }
 
-        #result {
-            margin-top: 25px;
-            min-height: 80px;
+        .btn-clear {
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-clear:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        #result-area {
+            min-height: 70px;
             display: flex;
             justify-content: center;
             align-items: center;
+            width: 100%;
         }
 
         .result-card {
-            background: linear-gradient(135deg, rgba(30, 27, 75, 0.9), rgba(15, 23, 42, 0.9));
-            border: 1px solid var(--accent-gold);
-            border-radius: 12px;
-            padding: 15px 25px;
-            box-shadow: 0 0 20px var(--accent-glow);
+            background: linear-gradient(135deg, rgba(30, 27, 75, 0.95), rgba(15, 23, 42, 0.95));
+            border: 1px solid var(--gold);
+            border-radius: 14px;
+            padding: 16px 24px;
+            box-shadow: 0 0 25px var(--gold-glow);
             text-align: center;
+            max-width: 500px;
             animation: fadeIn 0.4s ease;
         }
 
         .result-card h4 {
-            margin: 0 0 5px 0;
-            color: var(--accent-gold);
+            margin: 0 0 6px 0;
+            color: var(--gold);
             font-size: 1.2em;
         }
 
@@ -179,11 +248,48 @@
             margin: 0;
             font-size: 0.9em;
             color: #cbd5e1;
+            line-height: 1.4;
         }
 
-        .error-msg {
-            color: #f87171;
-            font-size: 0.9em;
+        /* Person Creator Section */
+        .person-slots {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .person-slot {
+            background: rgba(8, 10, 22, 0.8);
+            border: 1px dashed var(--card-border);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .person-slot h5 {
+            margin: 0 0 8px 0;
+            color: #94a3b8;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .person-slot .val {
+            font-size: 0.95em;
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        #person-summary {
+            background: rgba(168, 85, 247, 0.1);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            border-radius: 12px;
+            padding: 15px;
+            color: #e2e8f0;
+            font-size: 0.92em;
+            line-height: 1.5;
+            display: none;
         }
 
         @keyframes fadeIn {
@@ -194,62 +300,166 @@
 </head>
 <body>
 
-    <h1>ASTROCHEMISTRY</h1>
-    <div class="subtitle">Соединяйте знаки и планеты, чтобы раскрыть тайны личности</div>
+    <header>
+        <h1>ASTROCHEMISTRY</h1>
+        <div class="subtitle">Алхимия Звезд: объединяйте элементы и создавайте уникальную личность</div>
+        <div class="progress-bar" id="progress-text">Открыто элементов: 0 / 0</div>
+    </header>
 
-    <div class="container">
-        <section>
-            <h3>Открытые элементы</h3>
-            <div id="inventory" class="grid"></div>
-        </section>
+    <div class="main-layout">
 
-        <section>
-            <h3>Зона объединения</h3>
-            <div class="slot-container">
-                <div id="slot1" class="slot">Выбрать элемент</div>
-                <span class="plus">+</span>
-                <div id="slot2" class="slot">Выбрать элемент</div>
+        <div class="panel">
+            <div class="panel-title">Ваша Коллекция Элементов</div>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="filterCategory('all')">Все</button>
+                <button class="tab-btn" onclick="filterCategory('planet')">🪐 Планеты</button>
+                <button class="tab-btn" onclick="filterCategory('sign')">♈ Знаки</button>
+                <button class="tab-btn" onclick="filterCategory('house')">🏠 Дома</button>
+                <button class="tab-btn" onclick="filterCategory('crafted')">✨ Созданные</button>
             </div>
-            <button class="btn-combine" onclick="combine()">Объединить</button>
-        </section>
+            <div id="inventory" class="grid"></div>
+        </div>
 
-        <div id="result"></div>
+        <div class="panel">
+            <div class="panel-title">Алхимический Алтарь</div>
+            <div class="fusion-zone">
+                <div class="slots">
+                    <div id="slot1" class="slot">Выберите 1-й элемент</div>
+                    <span style="color:var(--gold); font-size:1.4em;">+</span>
+                    <div id="slot2" class="slot">Выберите 2-й элемент</div>
+                </div>
+                <div class="actions">
+                    <button class="btn btn-combine" onclick="combine()">Соединить</button>
+                    <button class="btn btn-clear" onclick="clearSlots()">Сброс</button>
+                </div>
+                <div id="result-area"></div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-title">
+                <span>Создание Личности (Натальная Карта)</span>
+                <button class="tab-btn" onclick="resetPerson()">Очистить карту</button>
+            </div>
+            <div class="person-slots">
+                <div class="person-slot">
+                    <h5>☀️ Солнечный Знак (Ядро)</h5>
+                    <div id="p-sun" class="val">Не выбрано</div>
+                </div>
+                <div class="person-slot">
+                    <h5>🌙 Лунный Знак (Душа)</h5>
+                    <div id="p-moon" class="val">Не выбрано</div>
+                </div>
+                <div class="person-slot">
+                    <h5>🌅 Асцендент (Маска)</h5>
+                    <div id="p-asc" class="val">Не выбрано</div>
+                </div>
+            </div>
+            <button class="btn btn-combine" style="width:100%; margin-bottom:12px;" onclick="generatePerson()">Сформировать Портрет Человека</button>
+            <div id="person-summary"></div>
+        </div>
+
     </div>
 
     <script>
-        let inventory = [
-            { id: 'sun', name: '☀️ Солнце' },
-            { id: 'moon', name: '🌙 Луна' },
-            { id: 'leo', name: '🦁 Лев' },
-            { id: 'scorpio', name: '🦂 Скорпион' }
+        // Data Base
+        const starterElements = [
+            // Planets
+            { id: 'sun', name: '☀️ Солнце', cat: 'planet' },
+            { id: 'moon', name: '🌙 Луна', cat: 'planet' },
+            { id: 'mercury', name: '☿ Меркурий', cat: 'planet' },
+            { id: 'venus', name: '♀ Венера', cat: 'planet' },
+            { id: 'mars', name: '♂ Марс', cat: 'planet' },
+            { id: 'jupiter', name: '♃ Юпитер', cat: 'planet' },
+            { id: 'saturn', name: '♄ Сатурн', cat: 'planet' },
+
+            // Signs
+            { id: 'aries', name: '♈ Овен', cat: 'sign' },
+            { id: 'taurus', name: '♉ Телец', cat: 'sign' },
+            { id: 'gemini', name: '♊ Близнецы', cat: 'sign' },
+            { id: 'cancer', name: '♋ Рак', cat: 'sign' },
+            { id: 'leo', name: '♌ Лев', cat: 'sign' },
+            { id: 'virgo', name: '♍ Дева', cat: 'sign' },
+            { id: 'libra', name: '♎ Весы', cat: 'sign' },
+            { id: 'scorpio', name: '🦂 Скорпион', cat: 'sign' },
+            { id: 'sagittarius', name: '♐ Стрелец', cat: 'sign' },
+            { id: 'capricorn', name: '♑ Козерог', cat: 'sign' },
+            { id: 'aquarius', name: '♒ Водолей', cat: 'sign' },
+            { id: 'pisces', name: '♓ Рыбы', cat: 'sign' },
+
+            // Houses
+            { id: 'h1', name: '🏠 1 Дом (Внешность)', cat: 'house' },
+            { id: 'h4', name: '🏠 4 Дом (Семья/Корни)', cat: 'house' },
+            { id: 'h7', name: '🏠 7 Дом (Партнерство)', cat: 'house' },
+            { id: 'h10', name: '🏠 10 Дом (Карьера)', cat: 'house' }
         ];
 
         const recipes = [
-            {
-                inputs: ['sun', 'leo'],
-                result: { id: 'sun_leo', name: '♌ Солнце во Льве' },
-                desc: 'Характеристика: Смелый, творческий и харизматичный лидер.'
-            },
-            {
-                inputs: ['moon', 'scorpio'],
-                result: { id: 'moon_scorpio', name: '♏ Луна в Скорпионе' },
-                desc: 'Характеристика: Глубокая интуиция, страстность и огромная внутренняя сила.'
-            },
-            {
-                inputs: ['sun', 'moon'],
-                result: { id: 'sun_moon', name: '☯️ Гармония Души и Разума' },
-                desc: 'Характеристика: Полный внутренний баланс и цельная личность.'
-            }
+            // Sun + Signs
+            { in: ['sun', 'aries'], out: { id: 'sun_aries', name: '☀️♈ Солнце в Овне', cat: 'crafted', role: 'sun' }, desc: 'Яркий, импульсивный лидер и первопроходец.' },
+            { in: ['sun', 'leo'], out: { id: 'sun_leo', name: '☀️♌ Солнце во Льве', cat: 'crafted', role: 'sun' }, desc: 'Харизматичный, щедрый и творческий творец.' },
+            { in: ['sun', 'scorpio'], out: { id: 'sun_scorpio', name: '☀️🦂 Солнце в Скорпионе', cat: 'crafted', role: 'sun' }, desc: 'Проницательный, стойкий и магнетический стратег.' },
+            { in: ['sun', 'capricorn'], out: { id: 'sun_capricorn', name: '☀️♑ Солнце в Козероге', cat: 'crafted', role: 'sun' }, desc: 'Целеустремленный, дисциплинированный строитель судьбы.' },
+
+            // Moon + Signs
+            { in: ['moon', 'cancer'], out: { id: 'moon_cancer', name: '🌙♋ Луна в Раке', cat: 'crafted', role: 'moon' }, desc: 'Глубоко чувствительный, заботливый эмпат.' },
+            { in: ['moon', 'pisces'], out: { id: 'moon_pisces', name: '🌙♓ Луна в Рыбах', cat: 'crafted', role: 'moon' }, desc: 'Мечтательный, интуитивный и духовно богатый.' },
+            { in: ['moon', 'scorpio'], out: { id: 'moon_scorpio', name: '🌙🦂 Луна в Скорпионе', cat: 'crafted', role: 'moon' }, desc: 'Невероятная эмоциональная сила и скрытая страсть.' },
+
+            // Planet + Houses (Ascendant)
+            { in: ['sun', 'h1'], out: { id: 'asc_sun', name: '🌅☀️ Солнце на Асценденте', cat: 'crafted', role: 'asc' }, desc: 'Врожденное обаяние, неотразимая уверенность.' },
+            { in: ['aries', 'h1'], out: { id: 'asc_aries', name: '🌅♈ Овен на Асценденте', cat: 'crafted', role: 'asc' }, desc: 'Энергичная подача, прямой и смелый взгляд.' },
+            { in: ['aquarius', 'h1'], out: { id: 'asc_aquarius', name: '🌅♒ Водолей на Асценденте', cat: 'crafted', role: 'asc' }, desc: 'Оригинальный стиль, свободолюбие и эксцентричность.' },
+
+            // Other Planet Combinations
+            { in: ['venus', 'taurus'], out: { id: 'venus_taurus', name: '♀♉ Венера в Тельце', cat: 'crafted' }, desc: 'Глубокий тонкий вкус, ценитель уюта и гармонии.' },
+            { in: ['mars', 'aries'], out: { id: 'mars_aries', name: '♂♈ Марс в Овне', cat: 'crafted' }, desc: 'Неукротимая энергия действия и смелость.' },
+            { in: ['mercury', 'gemini'], out: { id: 'mercury_gemini', name: '☿♊ Меркурий в Близнецах', cat: 'crafted' }, desc: 'Молниеносный ум, ораторский талант.' },
+            { in: ['jupiter', 'h10'], out: { id: 'jupiter_h10', name: '♃🏠 Юпитер в 10 Доме', cat: 'crafted' }, desc: 'Большой успех, авторитет и общественное признание.' },
+            { in: ['sun', 'moon'], out: { id: 'sun_moon', name: '☯️ Гармония Разума и Души', cat: 'crafted' }, desc: 'Высший баланс между сознанием и подсознанием.' }
         ];
 
+        // State
+        let inventory = [...starterElements];
         let selected = [];
+        let currentFilter = 'all';
+
+        let personState = {
+            sun: null,
+            moon: null,
+            asc: null
+        };
+
+        function init() {
+            renderInventory();
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const totalCraftedPossible = recipes.length;
+            const currentCrafted = inventory.filter(i => i.cat === 'crafted').length;
+            document.getElementById('progress-text').innerText = `Открыто комбинаций: ${currentCrafted} / ${totalCraftedPossible}`;
+        }
+
+        function filterCategory(cat) {
+            currentFilter = cat;
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            renderInventory();
+        }
 
         function renderInventory() {
             const invContainer = document.getElementById('inventory');
             invContainer.innerHTML = '';
-            inventory.forEach(item => {
+
+            const filtered = inventory.filter(item => {
+                if (currentFilter === 'all') return true;
+                return item.cat === currentFilter;
+            });
+
+            filtered.forEach(item => {
                 const btn = document.createElement('div');
-                btn.className = 'card' + (selected.includes(item) ? ' active' : '');
+                btn.className = 'card' + (selected.includes(item) ? ' selected' : '');
                 btn.innerText = item.name;
                 btn.onclick = () => selectItem(item);
                 invContainer.appendChild(btn);
@@ -269,39 +479,55 @@
         function updateSlots() {
             const s1 = document.getElementById('slot1');
             const s2 = document.getElementById('slot2');
-            
-            s1.innerText = selected[0] ? selected[0].name : 'Выбрать элемент';
+
+            s1.innerText = selected[0] ? selected[0].name : 'Выберите 1-й элемент';
             s1.className = 'slot' + (selected[0] ? ' filled' : '');
 
-            s2.innerText = selected[1] ? selected[1].name : 'Выбрать элемент';
+            s2.innerText = selected[1] ? selected[1].name : 'Выберите 2-й элемент';
             s2.className = 'slot' + (selected[1] ? ' filled' : '');
         }
 
+        function clearSlots() {
+            selected = [];
+            updateSlots();
+            renderInventory();
+            document.getElementById('result-area').innerHTML = '';
+        }
+
         function combine() {
-            const resDiv = document.getElementById('result');
+            const resArea = document.getElementById('result-area');
             if (selected.length < 2) {
-                resDiv.innerHTML = '<span class="error-msg">Выберите 2 элемента для соединения!</span>';
+                resArea.innerHTML = '<span style="color:#f87171; font-size:0.9em;">Выберите 2 элемента для алхимической реакции!</span>';
                 return;
             }
 
             const ids = selected.map(i => i.id).sort();
             const recipe = recipes.find(r => {
-                const req = [...r.inputs].sort();
+                const req = [...r.in].sort();
                 return req[0] === ids[0] && req[1] === ids[1];
             });
 
             if (recipe) {
-                resDiv.innerHTML = `
+                // Add to inventory if new
+                if (!inventory.some(i => i.id === recipe.out.id)) {
+                    inventory.push(recipe.out);
+                    updateProgress();
+                }
+
+                let assignBtn = '';
+                if (recipe.out.role) {
+                    assignBtn = `<br><button class="tab-btn" style="margin-top:10px; border-color:var(--gold); color:var(--gold);" onclick="assignToPerson('${recipe.out.role}', '${recipe.out.name}')">➕ Назначить в Карту Человека</button>`;
+                }
+
+                resArea.innerHTML = `
                     <div class="result-card">
-                        <h4>✨ ${recipe.result.name}</h4>
+                        <h4>✨ ${recipe.out.name}</h4>
                         <p>${recipe.desc}</p>
+                        ${assignBtn}
                     </div>
                 `;
-                if (!inventory.some(i => i.id === recipe.result.id)) {
-                    inventory.push(recipe.result);
-                }
             } else {
-                resDiv.innerHTML = '<span class="error-msg">❌ Эти элементы не создают нового соединения...</span>';
+                resArea.innerHTML = '<span style="color:#f87171; font-size:0.9em;">❌ Элементы не вступают в реакцию... Попробуйте другое сочетание!</span>';
             }
 
             selected = [];
@@ -309,7 +535,45 @@
             renderInventory();
         }
 
-        renderInventory();
+        function assignToPerson(role, name) {
+            if (role === 'sun') {
+                personState.sun = name;
+                document.getElementById('p-sun').innerText = name;
+            } else if (role === 'moon') {
+                personState.moon = name;
+                document.getElementById('p-moon').innerText = name;
+            } else if (role === 'asc') {
+                personState.asc = name;
+                document.getElementById('p-asc').innerText = name;
+            }
+        }
+
+        function resetPerson() {
+            personState = { sun: null, moon: null, asc: null };
+            document.getElementById('p-sun').innerText = 'Не выбрано';
+            document.getElementById('p-moon').innerText = 'Не выбрано';
+            document.getElementById('p-asc').innerText = 'Не выбрано';
+            document.getElementById('person-summary').style.display = 'none';
+        }
+
+        function generatePerson() {
+            const summaryDiv = document.getElementById('person-summary');
+            if (!personState.sun || !personState.moon || !personState.asc) {
+                summaryDiv.style.display = 'block';
+                summaryDiv.innerHTML = '⚠️ <strong>Заполните все 3 аспекта:</strong> добавьте Солнечный знак, Лунный знак и Асцендент из открытых комбинаций!';
+                return;
+            }
+
+            summaryDiv.style.display = 'block';
+            summaryDiv.innerHTML = `
+                🌟 <strong>ПОРТРЕТ СОЗДАННОЙ ЛИЧНОСТИ</strong><br><br>
+                Перед нами человек с ядром <strong>${personState.sun}</strong>. Он проявляет мир через призму высокой целеустремленности и индивидуальности.<br>
+                Его внутренний эмоциональный мир ведом <strong>${personState.moon}</strong>, что дает ему глубокое чутье, тонкое восприятие и скрытые внутренние ресурсы.<br>
+                Первое впечатление на окружающих производит <strong>${personState.asc}</strong>, наделяя его неповторимым шармом и выразительной харизмой при первой встрече!
+            `;
+        }
+
+        init();
     </script>
 </body>
 </html>
