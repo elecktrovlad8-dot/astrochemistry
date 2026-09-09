@@ -35,6 +35,23 @@
             background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(2px); z-index: 1400;
         }
         #overlay.active { display: block; }
+        
+        /* Стили для модального окна создания человека */
+        .modal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: var(--panel-bg); border: 1px solid var(--accent); border-radius: 12px;
+            padding: 20px; z-index: 2500; width: 90%; max-width: 320px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            backdrop-filter: blur(10px);
+        }
+        .modal.active { display: block; }
+        .modal input[type="text"] {
+            width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color);
+            color: var(--text-main); border-radius: 6px; font-family: inherit; font-size: 1rem; margin-bottom: 15px;
+        }
+        .modal input[type="text"]:focus { outline: none; border-color: var(--accent); }
+        .radio-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .radio-label { flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.9rem; }
+
         #sidebar {
             width: 360px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
             backdrop-filter: blur(10px); display: flex; flex-direction: column; z-index: 1500;
@@ -95,8 +112,8 @@
         .board-item:active { cursor: grabbing; }
         .board-item:hover { transform: scale(1.1); color: #ffffff; filter: drop-shadow(0 0 12px var(--accent)); }
         .board-item.highlight { color: #ffd700; transform: scale(1.2); filter: drop-shadow(0 0 15px #ffd700); }
-        .board-item.person { color: #93c5fd; font-size: 2.2rem; text-shadow: 0 0 10px rgba(59, 130, 246, 0.8); }
-        .board-item.couple { color: #f9a8d4; font-size: 2.2rem; text-shadow: 0 0 10px rgba(236, 72, 153, 0.8); }
+        .board-item.person { color: #93c5fd; font-size: 1.8rem; text-shadow: 0 0 10px rgba(59, 130, 246, 0.8); }
+        .board-item.couple { color: #f9a8d4; font-size: 1.8rem; text-shadow: 0 0 10px rgba(236, 72, 153, 0.8); }
         .board-item.bounce { transition: left 0.3s ease, top 0.3s ease, color 0.3s ease; color: #ef4444 !important; filter: drop-shadow(0 0 15px #ef4444); }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -119,6 +136,21 @@
 <body>
 
     <div id="overlay"></div>
+    
+    <!-- Модальное окно для создания человека -->
+    <div id="person-modal" class="modal">
+        <h3 style="margin-top:0; color:var(--accent);">Новый человек</h3>
+        <input type="text" id="person-name" placeholder="Имя (например, Иван)" autocomplete="off">
+        <div class="radio-group">
+            <label class="radio-label"><input type="radio" name="person-gender" value="male" checked> 👨 Муж</label>
+            <label class="radio-label"><input type="radio" name="person-gender" value="female"> 👩 Жен</label>
+        </div>
+        <div style="display:flex; gap:10px;">
+            <button id="person-save" class="spawn-btn" style="flex:1; background:var(--accent); color:#fff; border:none; padding:8px;">Создать</button>
+            <button id="person-cancel" class="spawn-btn" style="flex:1; background:transparent; color:var(--text-muted); border: 1px solid var(--border-color); padding:8px;">Отмена</button>
+        </div>
+    </div>
+
     <div id="menu-toggle">☰</div>
     <div id="save-indicator">💾 Сохранено</div>
 
@@ -165,7 +197,6 @@
         <div id="desc-text">Описание...</div>
     </div>
 
-    <!-- Слой данных подключается отдельным модулем (разделение файлов согласно требованию) -->
     <script type="module">
     import {
         PLANET_ORDER, ElementsRepository, DescriptionsRepository
@@ -173,69 +204,30 @@
 
     'use strict';
 
-    /**
-     * ============================================================
-     * СЛОЙ ХРАНЕНИЯ (Persistence Layer)
-     * ============================================================
-     * Архитектурное решение:
-     * - Инкапсулирует localStorage за интерфейсом (можно заменить
-     *   на IndexedDB/сервер без изменения остального кода — DIP).
-     * - На чтении делает СТРОГУЮ ВАЛИДАЦИЮ схемы сохранённых данных.
-     *   Это защищает от сценария, когда localStorage был подменён
-     *   (например, через XSS в другом приложении на том же origin,
-     *   supply-chain атаку через расширение браузера и т.п.) —
-     *   мы никогда не доверяем данным из storage "как есть".
-     * - Если данные повреждены/не проходят валидацию — откатываемся
-     *   на пустое состояние вместо падения приложения (fail-safe).
-     * ============================================================
-     */
     class StorageService {
         static #KEY = 'astro-alchemy-state-v1';
-        static #MAX_ITEMS = 500; // защита от переполнения памяти/DoS через раздутый localStorage
+        static #MAX_ITEMS = 500;
 
-        /** @returns {object|null} валидированное состояние или null */
         load() {
             let raw;
-            try {
-                raw = localStorage.getItem(StorageService.#KEY);
-            } catch (e) {
-                // localStorage может быть недоступен (приватный режим, ограничения браузера)
-                console.warn('StorageService: localStorage недоступен', e);
-                return null;
-            }
+            try { raw = localStorage.getItem(StorageService.#KEY); } catch (e) { return null; }
             if (!raw) return null;
-
             let parsed;
-            try {
-                parsed = JSON.parse(raw);
-            } catch (e) {
-                console.warn('StorageService: битый JSON, сбрасываю состояние', e);
-                return null;
-            }
-
+            try { parsed = JSON.parse(raw); } catch (e) { return null; }
             return this.#validateSchema(parsed) ? parsed : null;
         }
 
         save(state) {
             try {
-                const json = JSON.stringify(state);
-                localStorage.setItem(StorageService.#KEY, json);
+                localStorage.setItem(StorageService.#KEY, JSON.stringify(state));
                 return true;
-            } catch (e) {
-                console.warn('StorageService: не удалось сохранить состояние', e);
-                return false;
-            }
+            } catch (e) { return false; }
         }
 
         clear() {
-            try { localStorage.removeItem(StorageService.#KEY); } catch (e) { /* noop */ }
+            try { localStorage.removeItem(StorageService.#KEY); } catch (e) {}
         }
 
-        /**
-         * Валидация схемы — ключевая защитная мера архитектуры.
-         * Мы никогда не подставляем в DOM/innerHTML данные, не прошедшие
-         * этот барьер типов и допустимых значений (allow-list подход).
-         */
         #validateSchema(data) {
             if (!data || typeof data !== 'object') return false;
             if (!Array.isArray(data.items)) return false;
@@ -260,9 +252,13 @@
                     return Array.isArray(item.formulas) && item.formulas.every(isValidFormula);
                 }
                 if (item.type === 'person') {
+                    if (item.name && typeof item.name !== 'string') return false;
+                    if (item.gender && typeof item.gender !== 'string') return false;
                     return Array.isArray(item.inventory) && item.inventory.every(isValidFormula);
                 }
                 if (item.type === 'couple') {
+                    if (item.person1Name && typeof item.person1Name !== 'string') return false;
+                    if (item.person2Name && typeof item.person2Name !== 'string') return false;
                     return Array.isArray(item.person1Inventory) && item.person1Inventory.every(isValidFormula)
                         && Array.isArray(item.person2Inventory) && item.person2Inventory.every(isValidFormula);
                 }
@@ -271,16 +267,6 @@
         }
     }
 
-    /**
-     * ============================================================
-     * БЕЗОПАСНЫЙ РЕНДЕРИНГ (SafeDOM)
-     * ============================================================
-     * Устраняет XSS: вместо innerHTML со строковой интерполяцией
-     * используем textContent и createElement. Единственные места
-     * с фиксированной HTML-разметкой не содержат пользовательских
-     * данных внутри тегов — данные всегда идут через textContent.
-     * ============================================================
-     */
     const SafeDOM = {
         el(tag, className, text) {
             const node = document.createElement(tag);
@@ -293,15 +279,6 @@
         }
     };
 
-    /**
-     * ============================================================
-     * БИЗНЕС-ЛОГИКА (Domain Layer) — AstroModel
-     * ============================================================
-     * Не знает о DOM. Полностью юнит-тестируема (см. блок тестов).
-     * Отвечает за: комбинирование формул, сортировку по порядку
-     * планет, проверку конфликтов (дубли планет), CRUD инвентаря.
-     * ============================================================
-     */
     class AstroModel {
         constructor(elementsRepo) {
             this.elementsRepo = elementsRepo;
@@ -325,7 +302,6 @@
             };
         }
 
-        /** @returns {object|null} null если несовместимы (два одного типа) */
         mergeTwoFormulas(f1, f2) {
             if (f1.planetId && f2.planetId) return null;
             if (f1.signId && f2.signId) return null;
@@ -356,7 +332,6 @@
             return list.length > 0 && list.every(f => f.isComplete);
         }
 
-        /** @returns {boolean} успех операции */
         addFormulasToInventory(inventory, formulasToAdd) {
             if (!this.allComplete(formulasToAdd)) return false;
             if (this.hasOverlapByPlanet(inventory, formulasToAdd)) return false;
@@ -366,11 +341,6 @@
         }
     }
 
-    /**
-     * ============================================================
-     * ГЕНЕРАЦИЯ ИНТЕРПРЕТАЦИЙ (Presentation helper, но без DOM API)
-     * ============================================================
-     */
     class InterpretationRenderer {
         constructor(elementsRepo, descriptionsRepo) {
             this.elementsRepo = elementsRepo;
@@ -380,7 +350,6 @@
         createInfoBlock(key, title) {
             const text = this.descriptionsRepo.find(key);
             const block = SafeDOM.el('div', text ? 'info-block' : 'info-block empty');
-
             const titleEl = SafeDOM.el('div', 'info-block-title', title);
             block.appendChild(titleEl);
 
@@ -408,33 +377,25 @@
 
             const keysToRender = [];
             const parts = [f.planetId, f.signId, f.houseId].filter(Boolean);
+            
+            // Если элементов больше 1 (связка), показываем ТОЛЬКО синтез. Иначе - одиночный элемент.
             if (parts.length > 1) {
                 keysToRender.push({ key: parts.join('_'), title: '✨ Синтез связки' });
+            } else {
+                if (f.planetId) keysToRender.push({ key: f.planetId, title: `🪐 ${this.elementsRepo.get(f.planetId).label} (Планета)` });
+                if (f.signId) keysToRender.push({ key: f.signId, title: `🌌 ${this.elementsRepo.get(f.signId).label} (Знак)` });
+                if (f.houseId) keysToRender.push({ key: f.houseId, title: `🏠 ${this.elementsRepo.get(f.houseId).label} (Дом)` });
             }
-            if (f.planetId) keysToRender.push({ key: f.planetId, title: `🪐 ${this.elementsRepo.get(f.planetId).label} (Планета)` });
-            if (f.signId) keysToRender.push({ key: f.signId, title: `🌌 ${this.elementsRepo.get(f.signId).label} (Знак)` });
-            if (f.houseId) keysToRender.push({ key: f.houseId, title: `🏠 ${this.elementsRepo.get(f.houseId).label} (Дом)` });
 
             keysToRender.forEach(k => wrapper.appendChild(this.createInfoBlock(k.key, k.title)));
             container.appendChild(wrapper);
         }
     }
 
-    /**
-     * ============================================================
-     * КОНТРОЛЛЕР ДОСКИ (Board Controller)
-     * ============================================================
-     * Инкапсулирует ранее глобальные переменные (activeDragElement,
-     * offsetX/Y, zIndexCounter) как приватные поля класса —
-     * устраняет implicit globals и потенциальные гонки состояния
-     * при параллельных pointer-событиях (используем единый источник
-     * истины this.#dragState вместо разрозненных глобалов).
-     * ============================================================
-     */
     class BoardController {
         #zIndexCounter = 100;
-        #dragState = null; // { el, uid, startMouseX, startMouseY, startX, startY, offsetX, offsetY }
-        #activeElements = new Map(); // uid -> data
+        #dragState = null; 
+        #activeElements = new Map();
         #boardItems = [];
 
         constructor({ boardEl, trashEl, model, elementsRepo, onShowDescription, onStateChanged }) {
@@ -443,15 +404,13 @@
             this.model = model;
             this.elementsRepo = elementsRepo;
             this.onShowDescription = onShowDescription;
-            this.onStateChanged = onStateChanged; // вызывается при любой мутации -> триггер автосохранения
+            this.onStateChanged = onStateChanged;
         }
 
         getActiveElements() { return this.#activeElements; }
         getBoardItems() { return this.#boardItems; }
 
         generateUid() {
-            // crypto.randomUUID даёт непредсказуемый, безопасный идентификатор
-            // (устраняет коллизии Date.now()+Math.random() из исходника)
             const rand = (crypto.randomUUID ? crypto.randomUUID() : String(Math.random()).slice(2));
             return 'uid_' + rand;
         }
@@ -496,22 +455,42 @@
             return { x, y: y < 20 ? 20 : y };
         }
 
-        // --- Безопасный рендер содержимого элемента (без innerHTML) ---
         renderItemContent(el, itemData) {
             SafeDOM.clear(el);
             if (itemData.type === 'person') {
                 const count = itemData.inventory.length;
-                el.appendChild(document.createTextNode('🧑'));
+                const icon = itemData.gender === 'female' ? '👩' : (itemData.gender === 'male' ? '👨' : '🧑');
+                const nameText = itemData.name || 'Человек';
+
+                const nameEl = SafeDOM.el('div');
+                nameEl.style.maxWidth = '100px';
+                nameEl.style.overflow = 'hidden';
+                nameEl.style.textOverflow = 'ellipsis';
+                nameEl.appendChild(document.createTextNode(`${icon} ${nameText}`));
+                el.appendChild(nameEl);
+
                 if (count > 0) {
                     const span = SafeDOM.el('span', '', `(${count})`);
-                    span.style.fontSize = '0.8rem';
+                    span.style.fontSize = '0.7rem';
                     span.style.marginTop = '4px';
                     el.appendChild(span);
                 }
                 return;
             }
             if (itemData.type === 'couple') {
-                el.appendChild(document.createTextNode('👫'));
+                const p1Name = itemData.person1.name || 'П1';
+                const p2Name = itemData.person2.name || 'П2';
+
+                const iconEl = SafeDOM.el('div', '', '💞');
+                el.appendChild(iconEl);
+
+                const textEl = SafeDOM.el('span', '', `${p1Name} + ${p2Name}`);
+                textEl.style.fontSize = '0.65rem';
+                textEl.style.marginTop = '4px';
+                textEl.style.maxWidth = '120px';
+                textEl.style.overflow = 'hidden';
+                textEl.style.textOverflow = 'ellipsis';
+                el.appendChild(textEl);
                 return;
             }
             itemData.formulas.forEach((f, i) => {
@@ -522,13 +501,13 @@
 
         spawnSingleItem(id) {
             const item = this.elementsRepo.get(id);
-            if (!item) return; // защита от подстановки несуществующего id
+            if (!item) return; 
             const formula = this.model.createFormulaFromElement(item);
             this.createNode('astro', [formula], null, null);
         }
 
-        spawnPerson() {
-            this.createNode('person', null, null, null, { inventory: [] });
+        spawnPerson(name = 'Человек', gender = 'male') {
+            this.createNode('person', null, null, null, { inventory: [], name, gender });
         }
 
         spawnCouple(p1, p2, targetNode) {
@@ -564,17 +543,11 @@
             el.style.zIndex = this.#zIndexCounter++;
             const rect = el.getBoundingClientRect();
 
-            // Всё состояние перетаскивания живёт в одном объекте —
-            // единый источник истины устраняет рассинхронизацию полей.
             this.#dragState = {
-                el,
-                uid: el.dataset.uid,
-                startMouseX: e.clientX,
-                startMouseY: e.clientY,
-                startX: parseFloat(el.style.left),
-                startY: parseFloat(el.style.top),
-                offsetX: e.clientX - rect.left,
-                offsetY: e.clientY - rect.top
+                el, uid: el.dataset.uid,
+                startMouseX: e.clientX, startMouseY: e.clientY,
+                startX: parseFloat(el.style.left), startY: parseFloat(el.style.top),
+                offsetX: e.clientX - rect.left, offsetY: e.clientY - rect.top
             };
 
             const move = (ev) => this.#handleDragMove(ev);
@@ -605,7 +578,6 @@
         #handleDragEnd(e) {
             const ds = this.#dragState;
             if (!ds) return;
-
             const dist = Math.hypot(e.clientX - ds.startMouseX, e.clientY - ds.startMouseY);
 
             if (this.#isPointerOverTrash(e.clientX, e.clientY)) {
@@ -737,7 +709,6 @@
             this.onShowDescription(personUid);
         }
 
-        // --- Сериализация состояния для сохранения (Persistence integration) ---
         serializeState() {
             const items = [];
             for (const el of this.#boardItems) {
@@ -750,30 +721,30 @@
                 if (data.type === 'astro') {
                     items.push({ uid, type: 'astro', x, y, formulas: data.formulas });
                 } else if (data.type === 'person') {
-                    items.push({ uid, type: 'person', x, y, inventory: data.inventory });
+                    items.push({ uid, type: 'person', x, y, inventory: data.inventory, name: data.name, gender: data.gender });
                 } else if (data.type === 'couple') {
                     items.push({
                         uid, type: 'couple', x, y,
-                        person1Inventory: data.person1.inventory || [],
-                        person2Inventory: data.person2.inventory || []
+                        person1Inventory: data.person1.inventory || [], person2Inventory: data.person2.inventory || [],
+                        person1Name: data.person1.name, person1Gender: data.person1.gender,
+                        person2Name: data.person2.name, person2Gender: data.person2.gender
                     });
                 }
             }
             return { items, savedAt: Date.now() };
         }
 
-        // --- Восстановление состояния из валидированных данных ---
         restoreState(state) {
             if (!state || !Array.isArray(state.items)) return;
             for (const item of state.items) {
                 if (item.type === 'astro') {
                     this.#restoreNode('astro', item.uid, item.x, item.y, { formulas: item.formulas });
                 } else if (item.type === 'person') {
-                    this.#restoreNode('person', item.uid, item.x, item.y, { inventory: item.inventory });
+                    this.#restoreNode('person', item.uid, item.x, item.y, { inventory: item.inventory, name: item.name, gender: item.gender });
                 } else if (item.type === 'couple') {
                     this.#restoreNode('couple', item.uid, item.x, item.y, {
-                        person1: { type: 'person', inventory: item.person1Inventory },
-                        person2: { type: 'person', inventory: item.person2Inventory }
+                        person1: { type: 'person', inventory: item.person1Inventory, name: item.person1Name, gender: item.person1Gender },
+                        person2: { type: 'person', inventory: item.person2Inventory, name: item.person2Name, gender: item.person2Gender }
                     });
                 }
             }
@@ -794,11 +765,6 @@
         }
     }
 
-    /**
-     * ============================================================
-     * UI-КОНТРОЛЛЕР (описание, меню) — Presentation Layer
-     * ============================================================
-     */
     class UIController {
         constructor({ boardController, interpretationRenderer, dom }) {
             this.boardController = boardController;
@@ -824,10 +790,12 @@
         }
 
         #renderPerson(uid, item, descTitle, descText) {
-            descTitle.textContent = '🧑 Карта человека';
+            const icon = item.gender === 'female' ? '👩' : (item.gender === 'male' ? '👨' : '🧑');
+            descTitle.textContent = `${icon} Карта: ${item.name || 'Человек'}`;
+            
             if (item.inventory.length === 0) {
                 const block = SafeDOM.el('div', 'info-block');
-                block.appendChild(SafeDOM.el('div', 'info-block-text', 'Человек пуст. Перетащите сюда готовые комбинации (Планета+Знак+Дом).'));
+                block.appendChild(SafeDOM.el('div', 'info-block-text', 'Карта пуста. Перетащите сюда готовые комбинации (Планета+Знак+Дом).'));
                 descText.appendChild(block);
                 return;
             }
@@ -838,8 +806,6 @@
                 const row = SafeDOM.el('div', 'inventory-item');
                 row.appendChild(SafeDOM.el('span', '', f.text));
                 const btn = SafeDOM.el('button', 'remove-btn', 'Извлечь');
-                // Обработчик через addEventListener, а не через инлайн-onclick со
-                // строковой интерполяцией — устраняет вектор XSS/инъекции кода.
                 btn.addEventListener('click', () => this.boardController.extractFromPerson(uid, index));
                 row.appendChild(btn);
                 editSection.appendChild(row);
@@ -857,9 +823,12 @@
         }
 
         #renderCouple(item, descTitle, descText) {
-            descTitle.textContent = '👫 Синастрия (Совместимость пар)';
             const p1 = item.person1, p2 = item.person2;
+            const n1 = p1.name || 'Партнер 1';
+            const n2 = p2.name || 'Партнер 2';
             const elementsRepo = this.interpretationRenderer.elementsRepo;
+
+            descTitle.textContent = `💞 Синастрия: ${n1} и ${n2}`;
 
             if ((!p1.inventory || p1.inventory.length === 0) && (!p2.inventory || p2.inventory.length === 0)) {
                 const block = SafeDOM.el('div', 'info-block');
@@ -908,11 +877,10 @@
             }
             descText.appendChild(synastrySection);
 
-            this.#renderPersonCard(p1, '🧑 Карта Партнера 1', '#93c5fd', descText);
-            this.#renderPersonCard(p2, '🧑 Карта Партнера 2', '#f9a8d4', descText);
+            this.#renderPersonCard(p1, `🧑 Карта: ${n1}`, '#93c5fd', descText);
+            this.#renderPersonCard(p2, `🧑 Карта: ${n2}`, '#f9a8d4', descText);
         }
 
-        // Устранено дублирование кода рендера карты партнёра (DRY)
         #renderPersonCard(person, title, color, container) {
             const section = SafeDOM.el('div');
             section.style.marginTop = '25px';
@@ -934,16 +902,6 @@
         }
     }
 
-    /**
-     * ============================================================
-     * СБОРКА ПРИЛОЖЕНИЯ (Composition Root / простой DI)
-     * ============================================================
-     * Единственное место, где создаются конкретные реализации
-     * и связываются друг с другом через конструкторы (constructor
-     * injection). Это заменяет неявные глобальные зависимости
-     * исходного кода на явный, тестируемый граф объектов.
-     * ============================================================
-     */
     class App {
         constructor() {
             this.elementsRepo = new ElementsRepository();
@@ -960,22 +918,21 @@
                 descText: document.getElementById('desc-text'),
                 sidebar: document.getElementById('sidebar'),
                 overlay: document.getElementById('overlay'),
-                saveIndicator: document.getElementById('save-indicator')
+                saveIndicator: document.getElementById('save-indicator'),
+                personModal: document.getElementById('person-modal'),
+                personNameInput: document.getElementById('person-name'),
+                personSaveBtn: document.getElementById('person-save'),
+                personCancelBtn: document.getElementById('person-cancel')
             };
 
             this.boardController = new BoardController({
-                boardEl: this.dom.board,
-                trashEl: this.dom.trashCan,
-                model: this.model,
-                elementsRepo: this.elementsRepo,
+                boardEl: this.dom.board, trashEl: this.dom.trashCan, model: this.model, elementsRepo: this.elementsRepo,
                 onShowDescription: (uid) => this.uiController.showDescription(uid),
                 onStateChanged: () => this.#scheduleAutosave()
             });
 
             this.uiController = new UIController({
-                boardController: this.boardController,
-                interpretationRenderer: this.interpretationRenderer,
-                dom: this.dom
+                boardController: this.boardController, interpretationRenderer: this.interpretationRenderer, dom: this.dom
             });
 
             this.#autosaveTimer = null;
@@ -983,8 +940,6 @@
 
         #autosaveTimer = null;
 
-        // Debounce автосохранения, чтобы не писать в localStorage
-        // на каждый pixel перемещения при drag (производительность).
         #scheduleAutosave() {
             clearTimeout(this.#autosaveTimer);
             this.#autosaveTimer = setTimeout(() => this.#persist(), 400);
@@ -992,8 +947,7 @@
 
         #persist() {
             const state = this.boardController.serializeState();
-            const ok = this.storage.save(state);
-            if (ok) this.#flashSaveIndicator();
+            if (this.storage.save(state)) this.#flashSaveIndicator();
         }
 
         #flashSaveIndicator() {
@@ -1031,11 +985,35 @@
                 this.dom.overlay.classList.add('active');
             });
             document.getElementById('close-menu').addEventListener('click', () => this.#closeMenu());
-            this.dom.overlay.addEventListener('click', () => this.#closeMenu());
+
+            const closePersonModal = () => {
+                this.dom.personModal.classList.remove('active');
+                if (!this.dom.sidebar.classList.contains('open')) {
+                    this.dom.overlay.classList.remove('active');
+                }
+            };
 
             document.getElementById('add-person-btn').addEventListener('click', () => {
-                this.boardController.spawnPerson();
+                this.dom.personModal.classList.add('active');
+                this.dom.overlay.classList.add('active');
+                this.dom.personNameInput.value = '';
+                this.dom.personNameInput.focus();
+            });
+
+            this.dom.personCancelBtn.addEventListener('click', closePersonModal);
+
+            this.dom.personSaveBtn.addEventListener('click', () => {
+                const name = this.dom.personNameInput.value.trim() || 'Неизвестный';
+                const genderNode = document.querySelector('input[name="person-gender"]:checked');
+                const gender = genderNode ? genderNode.value : 'male';
+                this.boardController.spawnPerson(name, gender);
+                closePersonModal();
                 if (window.innerWidth <= 768) this.#closeMenu();
+            });
+
+            this.dom.overlay.addEventListener('click', () => {
+                this.#closeMenu();
+                closePersonModal();
             });
 
             document.getElementById('reset-board-btn').addEventListener('click', () => {
@@ -1051,7 +1029,6 @@
                 }
             });
 
-            // Сохраняем состояние гарантированно перед закрытием вкладки
             window.addEventListener('beforeunload', () => this.#persist());
         }
 
@@ -1060,16 +1037,13 @@
             this.#populateMenu(this.elementsRepo.getPlanets(), 'list-planets');
             this.#populateMenu(this.elementsRepo.getHouses(), 'list-houses');
             this.#bindGlobalUI();
-            this.#restorePreviousSession(); // <-- восстановление позиций при повторном открытии
+            this.#restorePreviousSession(); 
         }
     }
 
-    // Composition root запускается после загрузки DOM
     document.addEventListener('DOMContentLoaded', () => {
         const app = new App();
         app.init();
-        // Экспортируем в window только для отладки в консоли —
-        // не используется внутренним кодом (без implicit globals).
         window.__astroApp = app;
     });
     </script>
