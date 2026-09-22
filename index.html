@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#09090e">
+  <meta name="theme-color" content="#050508">
   <title>Our Universe 🌌</title>
 
   <!-- Премиальный шрифт -->
@@ -16,24 +16,25 @@
        1. CORE & VARIABLES
        ========================================================================== */
     :root {
-      --bg-base: #050505;
-      --surface: rgba(255, 255, 255, 0.03);
-      --surface-hover: rgba(255, 255, 255, 0.08);
-      --surface-border: rgba(255, 255, 255, 0.05);
+      --bg-base: #050508;
+      --surface: rgba(25, 25, 35, 0.6);
+      --surface-border: rgba(255, 255, 255, 0.1);
       
       --brand-primary: #FF2E93;
       --brand-secondary: #00F0FF;
+      --brand-tertiary: #8A2BE2;
+      
       --text-100: #FFFFFF;
-      --text-200: rgba(255, 255, 255, 0.7);
+      --text-200: rgba(255, 255, 255, 0.75);
       --text-300: rgba(255, 255, 255, 0.4);
       
-      --success: #00E676;
       --danger: #FF3B30;
-
+      
       --safe-top: env(safe-area-inset-top, 20px);
       --safe-bottom: env(safe-area-inset-bottom, 20px);
+      
       --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-      --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+      --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -41,382 +42,383 @@
     body {
       background-color: var(--bg-base);
       color: var(--text-100);
-      min-height: 100dvh; /* Dynamic viewport for mobile */
-      overflow: hidden; /* Prevent body scroll, scroll inside main */
+      height: 100dvh;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
+      position: relative;
     }
 
     /* ==========================================================================
-       2. DYNAMIC AURORA BACKGROUND
+       2. INSANE ANIMATED BACKGROUND
        ========================================================================== */
+    /* Аврора (Северное сияние) */
     .aurora-bg {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1;
-      background: radial-gradient(circle at 15% 50%, rgba(255, 46, 147, 0.12), transparent 50%),
-                  radial-gradient(circle at 85% 30%, rgba(0, 240, 255, 0.12), transparent 50%);
-      filter: blur(60px);
-      animation: breathe 10s ease-in-out infinite alternate;
+      position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; z-index: -2;
+      background: 
+        radial-gradient(circle at 50% 50%, rgba(255, 46, 147, 0.15), transparent 60%),
+        radial-gradient(circle at 80% 20%, rgba(0, 240, 255, 0.15), transparent 50%),
+        radial-gradient(circle at 20% 80%, rgba(138, 43, 226, 0.15), transparent 50%);
+      filter: blur(80px);
+      animation: rotateAurora 20s linear infinite;
     }
-    @keyframes breathe {
-      0% { transform: scale(1); opacity: 0.8; }
-      100% { transform: scale(1.1); opacity: 1; }
+    @keyframes rotateAurora {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.2); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    /* Летающие светлячки (Particles) */
+    .particles-layer {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;
+    }
+    .particle {
+      position: absolute;
+      width: 3px; height: 3px; background: #fff; border-radius: 50%;
+      box-shadow: 0 0 10px #fff, 0 0 20px var(--brand-secondary);
+      animation: floatParticle linear infinite;
+      opacity: 0;
+    }
+    @keyframes floatParticle {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      20% { opacity: 1; transform: translateY(80vh) scale(1); }
+      80% { opacity: 1; transform: translateY(20vh) scale(1); }
+      100% { transform: translateY(0) scale(0); opacity: 0; }
     }
 
     /* ==========================================================================
        3. APP LAYOUT & HEADER
        ========================================================================== */
     .app-header {
-      padding: calc(var(--safe-top) + 20px) 24px 15px;
-      position: relative;
+      padding: calc(var(--safe-top) + 15px) 24px 15px;
       z-index: 10;
-      background: linear-gradient(180deg, rgba(5,5,5,0.9) 0%, rgba(5,5,5,0) 100%);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: linear-gradient(180deg, rgba(5,5,8,0.95) 0%, rgba(5,5,8,0) 100%);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
     }
-
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 20px;
-    }
-
+    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    
     .app-title {
-      font-size: 28px;
-      font-weight: 700;
-      letter-spacing: -0.5px;
-      background: linear-gradient(135deg, var(--text-100), var(--text-300));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      font-size: 32px; font-weight: 700;
+      background: linear-gradient(to right, #fff, #a5a5b5);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      animation: pulseText 3s ease-in-out infinite alternate;
     }
+    @keyframes pulseText { 0% { filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); } 100% { filter: drop-shadow(0 0 15px rgba(255,255,255,0.5)); } }
 
+    /* Анимированный бейдж суммы */
     .total-sum-badge {
-      background: rgba(255,255,255,0.05);
-      border: 1px solid var(--surface-border);
-      padding: 8px 16px;
-      border-radius: 30px;
-      font-weight: 600;
-      font-size: 15px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      padding: 8px 16px; border-radius: 30px; font-weight: 700; font-size: 16px;
       color: var(--brand-secondary);
-      box-shadow: 0 4px 12px rgba(0, 240, 255, 0.1);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+      display: flex; align-items: center; gap: 4px;
+      animation: popIn 0.5s var(--ease-spring);
     }
-    .total-sum-badge span { font-size: 12px; color: var(--text-300); }
+    .total-sum-badge span { font-size: 12px; opacity: 0.7; }
 
     /* ==========================================================================
-       4. HORIZONTAL TABS (GROUPS)
+       4. HORIZONTAL TABS
        ========================================================================== */
     .tabs-container {
-      display: flex;
-      gap: 12px;
-      overflow-x: auto;
-      padding-bottom: 10px;
+      display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px;
       scrollbar-width: none;
     }
     .tabs-container::-webkit-scrollbar { display: none; }
 
     .tab {
-      padding: 12px 20px;
-      border-radius: 20px;
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      color: var(--text-200);
-      font-size: 15px;
-      font-weight: 500;
-      white-space: nowrap;
-      transition: var(--ease-smooth);
-      cursor: pointer;
+      padding: 12px 24px; border-radius: 25px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--surface-border);
+      color: var(--text-200); font-weight: 500; white-space: nowrap;
+      transition: all 0.4s var(--ease-spring); cursor: pointer; position: relative;
+      overflow: hidden;
+    }
+    .tab::after {
+      content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: 0.5s;
     }
     .tab.active {
-      background: var(--text-100);
-      color: var(--bg-base);
-      border-color: var(--text-100);
-      box-shadow: 0 4px 15px rgba(255,255,255,0.15);
-      transform: scale(1.02);
+      background: var(--text-100); color: var(--bg-base); border-color: var(--text-100);
+      transform: scale(1.05); box-shadow: 0 5px 20px rgba(255,255,255,0.2);
     }
+    .tab.active::after { left: 150%; transition: 0.7s; }
+
     .add-tab-btn {
-      padding: 12px 20px;
-      border-radius: 20px;
-      background: transparent;
-      border: 1px dashed var(--text-300);
-      color: var(--text-200);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
+      padding: 12px 20px; border-radius: 25px; border: 1px dashed rgba(255,255,255,0.3);
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      transition: 0.3s;
     }
+    .add-tab-btn:active { transform: scale(0.9); }
 
     /* ==========================================================================
-       5. MAIN CONTENT & CARDS
+       5. MAIN CONTENT & MAGIC CARDS
        ========================================================================== */
     .main-scroll {
-      flex: 1;
-      overflow-y: auto;
-      padding: 10px 24px calc(var(--safe-bottom) + 100px);
-      scrollbar-width: none;
-      scroll-behavior: smooth;
+      flex: 1; overflow-y: auto; padding: 10px 24px calc(var(--safe-bottom) + 100px);
+      scrollbar-width: none; scroll-behavior: smooth;
     }
     .main-scroll::-webkit-scrollbar { display: none; }
+    .tasks-grid { display: flex; flex-direction: column; gap: 20px; }
 
-    .tasks-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    /* Универсальная карточка */
-    .card {
-      position: relative;
-      background: var(--surface);
-      border: 1px solid var(--surface-border);
-      border-radius: 24px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: var(--ease-smooth);
-      animation: slideUp 0.5s var(--ease-spring) forwards;
-      opacity: 0;
-      transform: translateY(20px);
+    /* Обертка для градиентной рамки */
+    .card-wrapper {
+      position: relative; border-radius: 24px;
+      animation: cardSlideUp 0.6s var(--ease-spring) backwards;
+      transition: transform 0.3s ease, opacity 0.3s ease;
     }
     
-    @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
-
-    .card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 100%);
-      pointer-events: none;
+    /* Удаление карточки */
+    .card-wrapper.removing {
+      transform: scale(0.8) translateY(30px); opacity: 0; pointer-events: none;
     }
 
-    /* Вариант с картинкой */
+    @keyframes cardSlideUp {
+      from { opacity: 0; transform: translateY(40px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* Анимированная светящаяся рамка */
+    .card-wrapper::before {
+      content: ''; position: absolute; inset: -2px; border-radius: 26px;
+      background: linear-gradient(45deg, var(--brand-primary), var(--brand-secondary), var(--brand-tertiary), var(--brand-primary));
+      background-size: 300% 300%;
+      animation: gradientBorder 4s linear infinite;
+      z-index: 0; opacity: 0.6; filter: blur(3px);
+      transition: 0.5s ease;
+    }
+    @keyframes gradientBorder { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+    /* Сама карточка */
+    .card {
+      position: relative; z-index: 1; background: var(--surface);
+      border-radius: 24px; padding: 20px; display: flex; flex-direction: column;
+      overflow: hidden; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+    }
+    
+    /* Фото-фон */
     .card.has-image { padding: 0; min-height: 280px; justify-content: flex-end; }
     .card-image-bg {
       position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background-size: cover; background-position: center;
-      transition: transform 0.5s ease;
-      z-index: 1;
+      background-size: cover; background-position: center; z-index: 1;
+      transition: transform 0.7s var(--ease-out);
     }
-    .card.has-image:hover .card-image-bg { transform: scale(1.05); }
+    .card.has-image:active .card-image-bg { transform: scale(1.05); }
     .card.has-image .card-content {
-      position: relative; z-index: 2;
-      background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.4) 60%, transparent 100%);
-      padding: 40px 20px 20px;
+      position: relative; z-index: 2; padding: 40px 20px 20px;
+      background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
     }
 
-    /* Внутренности карточки */
+    /* -------------------------------------------------------------
+       ФИКС БАГА С КНОПКАМИ: СТРОГАЯ FLEX-СЕТКА
+       ------------------------------------------------------------- */
     .card-header {
-      display: flex; justify-content: space-between; align-items: flex-start; gap: 12px;
-      position: relative; z-index: 2;
+      display: flex; align-items: flex-start; gap: 16px;
+      position: relative; z-index: 2; width: 100%;
     }
-    .card-info { flex: 1; }
-    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 6px; line-height: 1.3; }
-    .card-price {
-      display: inline-block;
-      font-size: 14px; font-weight: 500; color: var(--brand-secondary);
-      background: rgba(0, 240, 255, 0.1); padding: 4px 10px; border-radius: 8px;
-    }
-
-    /* Чекбокс - Магия */
-    .checkbox {
-      width: 28px; height: 28px; border-radius: 10px;
-      border: 2px solid var(--text-300);
+    
+    /* 1. Чекбокс всегда слева */
+    .checkbox-container {
+      flex-shrink: 0; /* Не сжимается */
+      width: 30px; height: 30px; border-radius: 12px;
+      border: 2px solid var(--text-200);
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      flex-shrink: 0; z-index: 3;
+      cursor: pointer; transition: 0.3s var(--ease-spring);
+      position: relative;
     }
-    .checkbox svg {
-      width: 16px; height: 16px; fill: none; stroke: var(--bg-base);
+    .checkbox-container svg {
+      width: 18px; height: 18px; fill: none; stroke: var(--bg-base);
       stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
-      stroke-dasharray: 20; stroke-dashoffset: 20; transition: stroke-dashoffset 0.4s ease;
+      stroke-dasharray: 24; stroke-dashoffset: 24; transition: 0.4s ease;
     }
 
-    /* Состояние "Выполнено" */
-    .card.completed {
-      opacity: 0.5; filter: grayscale(80%);
-      border-color: transparent; background: rgba(0,0,0,0.2);
+    /* 2. Текст в центре, занимает все свободное место */
+    .card-info { flex: 1; min-width: 0; /* min-width:0 нужен чтобы текст обрезался корректно */ }
+    .card-title {
+      font-size: 18px; font-weight: 600; margin-bottom: 8px; line-height: 1.3;
+      word-wrap: break-word; transition: 0.3s;
     }
-    .card.completed .checkbox {
-      background: var(--brand-secondary); border-color: var(--brand-secondary);
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    .card-price {
+      display: inline-block; font-size: 14px; font-weight: 600; color: var(--brand-secondary);
+      background: rgba(0, 240, 255, 0.15); padding: 4px 12px; border-radius: 8px;
     }
-    .card.completed .checkbox svg { stroke-dashoffset: 0; }
-    .card.completed .card-title { text-decoration: line-through; color: var(--text-300); }
 
-    /* Удаление */
+    /* 3. Кнопка удаления строго справа */
     .delete-btn {
-      position: absolute; top: 16px; right: 16px; z-index: 3;
-      background: rgba(255, 59, 48, 0.15); color: var(--danger);
-      border: none; width: 32px; height: 32px; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      backdrop-filter: blur(10px); cursor: pointer; opacity: 0; transition: 0.3s;
+      flex-shrink: 0; width: 36px; height: 36px; border-radius: 12px;
+      background: rgba(255, 59, 48, 0.1); border: 1px solid rgba(255, 59, 48, 0.2);
+      color: var(--danger); display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: 0.3s var(--ease-spring);
     }
-    .card:hover .delete-btn { opacity: 1; }
+    .delete-btn:active { transform: scale(0.8) rotate(10deg); background: var(--danger); color: #fff; }
+    .delete-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+    /* --- Состояние ВЫПОЛНЕНО --- */
+    .card-wrapper.completed { filter: grayscale(50%); opacity: 0.6; }
+    .card-wrapper.completed::before { opacity: 0; /* Отключаем свечение */ }
+    .card-wrapper.completed .card { background: rgba(255,255,255,0.02); }
+    
+    .card-wrapper.completed .checkbox-container {
+      background: var(--brand-secondary); border-color: var(--brand-secondary);
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.5); transform: scale(1.1);
+    }
+    .card-wrapper.completed .checkbox-container svg { stroke-dashoffset: 0; }
+    
+    .card-wrapper.completed .card-title {
+      text-decoration: line-through; color: var(--text-300);
+      text-shadow: 0 0 10px rgba(255,255,255,0.2);
+    }
+
+    /* Анимация при клике на чекбокс (Круг расходится) */
+    .ripple {
+      position: absolute; width: 100%; height: 100%; border-radius: 50%;
+      background: var(--brand-secondary); opacity: 0; pointer-events: none;
+    }
+    .checkbox-container.animating .ripple { animation: rippleEffect 0.6s ease-out; }
+    @keyframes rippleEffect { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(3); opacity: 0; } }
 
     /* ==========================================================================
-       6. FLOATING ACTION BUTTON (FAB)
+       6. ВЗРЫВ ЧАСТИЦ ПРИ ВЫПОЛНЕНИИ (CONFETTI JS-СЛОЙ)
+       ========================================================================== */
+    .confetti {
+      position: fixed; width: 8px; height: 8px; border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+    }
+
+    /* ==========================================================================
+       7. FLOATING ACTION BUTTON (Плюс)
        ========================================================================== */
     .fab {
       position: fixed; bottom: calc(var(--safe-bottom) + 24px); right: 24px;
-      width: 64px; height: 64px; border-radius: 20px;
-      background: linear-gradient(135deg, var(--brand-primary), #FF7B00);
-      box-shadow: 0 10px 30px rgba(255, 46, 147, 0.4);
-      border: none; display: flex; align-items: center; justify-content: center;
-      cursor: pointer; z-index: 100; transition: var(--ease-spring);
+      width: 64px; height: 64px; border-radius: 22px; border: none;
+      background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
+      box-shadow: 0 10px 30px rgba(255, 46, 147, 0.5);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 100; transition: 0.3s var(--ease-spring);
+      animation: fabBreathe 3s infinite alternate;
     }
-    .fab::before {
-      content: '+'; color: #fff; font-size: 32px; font-weight: 300; transition: 0.3s;
-    }
-    .fab:active { transform: scale(0.9); }
+    .fab::before { content: '+'; color: #fff; font-size: 34px; font-weight: 300; transition: 0.4s; }
+    .fab:active { transform: scale(0.85); }
+    @keyframes fabBreathe { 0% { box-shadow: 0 10px 20px rgba(255, 46, 147, 0.4); } 100% { box-shadow: 0 15px 40px rgba(0, 240, 255, 0.6); } }
 
     /* ==========================================================================
-       7. MODERN BOTTOM SHEET MODALS
+       8. MODERN MODALS
        ========================================================================== */
     .modal-backdrop {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      background: rgba(0,0,0,0.7); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
       z-index: 200; opacity: 0; pointer-events: none; transition: 0.4s;
-      display: flex; align-items: flex-end; /* Модалка снизу для телефонов */
+      display: flex; align-items: flex-end;
     }
     .modal-backdrop.active { opacity: 1; pointer-events: all; }
     
     .modal-sheet {
-      width: 100%; background: #121216;
-      border-radius: 32px 32px 0 0; padding: 32px 24px calc(var(--safe-bottom) + 24px);
-      transform: translateY(100%); transition: transform 0.5s var(--ease-spring);
-      border-top: 1px solid var(--surface-border);
+      width: 100%; background: rgba(20, 20, 25, 0.95);
+      border-radius: 36px 36px 0 0; padding: 32px 24px calc(var(--safe-bottom) + 24px);
+      transform: translateY(100%); transition: transform 0.6s var(--ease-spring);
+      border-top: 1px solid rgba(255,255,255,0.1); box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
     }
     .modal-backdrop.active .modal-sheet { transform: translateY(0); }
 
-    .modal-drag-pill {
-      width: 40px; height: 5px; background: var(--surface-border);
-      border-radius: 5px; margin: -16px auto 24px;
-    }
-
-    .modal-sheet h2 { font-size: 22px; margin-bottom: 24px; }
+    .modal-drag-pill { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 5px; margin: -16px auto 24px; }
+    .modal-sheet h2 { font-size: 24px; margin-bottom: 24px; background: linear-gradient(90deg, #fff, var(--brand-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     
-    .input-group { margin-bottom: 16px; position: relative; }
+    .input-group { margin-bottom: 16px; }
     .input-group input {
-      width: 100%; padding: 18px 20px; border-radius: 16px;
-      background: var(--surface); border: 1px solid var(--surface-border);
-      color: var(--text-100); font-size: 16px; outline: none; transition: 0.3s;
+      width: 100%; padding: 20px; border-radius: 20px;
+      background: rgba(255,255,255,0.05); border: 1px solid var(--surface-border);
+      color: #fff; font-size: 16px; outline: none; transition: 0.3s;
     }
-    .input-group input:focus { border-color: var(--brand-secondary); background: rgba(0, 240, 255, 0.05); }
+    .input-group input:focus { border-color: var(--brand-primary); background: rgba(255, 46, 147, 0.05); box-shadow: 0 0 15px rgba(255, 46, 147, 0.2); transform: scale(1.02); }
 
-    /* File Upload Styling */
     .file-upload-wrapper {
-      position: relative; width: 100%; height: 100px;
-      border: 2px dashed var(--surface-border); border-radius: 16px;
+      position: relative; width: 100%; height: 110px;
+      border: 2px dashed rgba(255,255,255,0.2); border-radius: 20px;
       display: flex; align-items: center; justify-content: center;
-      color: var(--text-300); overflow: hidden; margin-bottom: 16px; cursor: pointer;
+      color: var(--text-300); overflow: hidden; margin-bottom: 16px; transition: 0.3s;
     }
-    .file-upload-wrapper input[type="file"] {
-      position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer;
-    }
-    .image-preview {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background-size: cover; background-position: center; display: none;
-    }
+    .file-upload-wrapper:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
+    .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+    .image-preview { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; display: none; }
 
     .btn-submit {
-      width: 100%; padding: 18px; border-radius: 16px; border: none;
-      background: var(--text-100); color: var(--bg-base);
-      font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.3s; margin-top: 10px;
+      width: 100%; padding: 20px; border-radius: 20px; border: none;
+      background: var(--text-100); color: var(--bg-base); font-size: 18px; font-weight: 700;
+      cursor: pointer; transition: 0.3s var(--ease-spring); margin-top: 10px;
     }
-    .btn-submit:active { transform: scale(0.97); }
+    .btn-submit:active { transform: scale(0.95); background: var(--brand-secondary); }
 
-    /* Loader */
-    .loader { display: none; border: 3px solid rgba(0,0,0,0.1); border-top-color: var(--bg-base); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; margin: 0 auto; }
+    .loader { display: none; border: 3px solid rgba(0,0,0,0.1); border-top-color: var(--bg-base); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    .empty-state { text-align: center; color: var(--text-300); margin-top: 50px; font-size: 16px; }
+    .empty-state { text-align: center; color: var(--text-300); margin-top: 50vh; transform: translateY(-50%); font-size: 18px; animation: popIn 0.5s var(--ease-out); }
+    @keyframes popIn { from { opacity: 0; transform: translateY(-30%) scale(0.9); } to { opacity: 1; transform: translateY(-50%) scale(1); } }
   </style>
 </head>
 <body>
 
+  <!-- Фон (Аврора) -->
   <div class="aurora-bg"></div>
+  
+  <!-- Генерация летающих частиц через JS -->
+  <div class="particles-layer" id="particlesLayer"></div>
 
   <!-- Шапка -->
   <header class="app-header">
     <div class="header-top">
-      <div class="app-title">Our Space</div>
+      <div class="app-title">Our Space ✨</div>
       <div class="total-sum-badge" id="totalSumBadge" style="display: none;">
-        <span id="sumValue">0</span> ₽
+        <span id="sumValue">0</span> <span>₽</span>
       </div>
     </div>
     
-    <!-- Вкладки (Группы) -->
-    <div class="tabs-container" id="tabsContainer">
-      <!-- Сюда JS рендерит вкладки -->
-    </div>
+    <div class="tabs-container" id="tabsContainer"></div>
   </header>
 
-  <!-- Основной контент -->
+  <!-- Список -->
   <main class="main-scroll" id="mainScroll">
     <div class="tasks-grid" id="tasksList">
-      <div class="empty-state">Загрузка магии... ✨</div>
+      <div class="empty-state">Загрузка магии... 🌌</div>
     </div>
   </main>
 
-  <!-- Кнопка Добавления (FAB) -->
   <button class="fab" id="fabBtn"></button>
 
-  <!-- ================================================================= -->
-  <!-- МОДАЛЬНЫЕ ОКНА -->
-  <!-- ================================================================= -->
-
-  <!-- 1. Модалка: Новая задача / Фото -->
+  <!-- Модалки -->
   <div class="modal-backdrop" id="taskModal">
     <div class="modal-sheet">
       <div class="modal-drag-pill"></div>
-      <h2>Добавить в список</h2>
-      
-      <div class="input-group">
-        <input type="text" id="taskTitle" placeholder="Что это? (Например: Яндекс дропс)">
-      </div>
-      
-      <div class="input-group">
-        <input type="text" id="taskPrice" placeholder="Цена или описание (+- 6500₽)">
-      </div>
-
+      <h2>Добавить мечту</h2>
+      <div class="input-group"><input type="text" id="taskTitle" placeholder="Что это? (Например: Яндекс дропс)"></div>
+      <div class="input-group"><input type="text" id="taskPrice" placeholder="Цена или описание (+- 6500₽)"></div>
       <div class="file-upload-wrapper" id="uploadWrapper">
-        <span id="uploadText">📷 Прикрепить фото (образ, вещь)</span>
+        <span id="uploadText">📸 Прикрепить фото</span>
         <input type="file" id="taskImage" accept="image/*">
         <div class="image-preview" id="imagePreview"></div>
       </div>
-
-      <button class="btn-submit" id="saveTaskBtn">
-        <span class="btn-text">Создать</span>
-        <div class="loader"></div>
-      </button>
+      <button class="btn-submit" id="saveTaskBtn"><span class="btn-text">Создать</span><div class="loader"></div></button>
     </div>
   </div>
 
-  <!-- 2. Модалка: Новая Группа -->
   <div class="modal-backdrop" id="groupModal">
     <div class="modal-sheet">
       <div class="modal-drag-pill"></div>
-      <h2>Новая группа</h2>
-      <div class="input-group">
-        <input type="text" id="groupName" placeholder="Название (Куда сходить, Покупки...)">
-      </div>
-      <button class="btn-submit" id="saveGroupBtn">Добавить группу</button>
+      <h2>Новая вселенная</h2>
+      <div class="input-group"><input type="text" id="groupName" placeholder="Название (Куда сходить, Покупки...)"></div>
+      <button class="btn-submit" id="saveGroupBtn">Создать</button>
     </div>
   </div>
 
-
-  <!-- ================================================================= -->
-  <!-- JAVASCRIPT & FIREBASE LOGIC -->
-  <!-- ================================================================= -->
   <script type="module">
-    // ИМПОРТИРУЕМ И БАЗУ ДАННЫХ И ХРАНИЛИЩЕ ДЛЯ ФОТО (STORAGE)
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
     import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
-    // 🛑 ВАЖНО: ВСТАВЬ СЮДА СВОИ КЛЮЧИ! УБЕДИСЬ ЧТО storageBucket УКАЗАН!
+    // 🛑 ВАЖНО: ВСТАВЬ СЮДА СВОИ КЛЮЧИ!
     const firebaseConfig = {
-      apiKey: "AIzaSyDz5wPBB05uU0q1vlQlgyGWmnyVwt3APk0",
+      apiKey: "AIzaSyDz5wPBB05uU0q1vlQlgyGWmnyVwt3APk0",
       authDomain: "ourwishlist-b6bd7.firebaseapp.com",
       databaseURL: "https://ourwishlist-b6bd7-default-rtdb.firebaseio.com",
       projectId: "ourwishlist-b6bd7",
@@ -424,18 +426,16 @@
       messagingSenderId: "170914082679",
       appId: "1:170914082679:web:2bc01fc83713a230fe3b72",
       measurementId: "G-LTX7TDL8KP"
-
     };
 
-    // Инициализация
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const storage = getStorage(app);
 
-    // Состояние приложения
     let localData = { categories: {}, tasks: {} };
     let currentTabId = null;
     let selectedFile = null;
+    let currentSum = 0; // Для анимации счетчика
 
     // DOM Элементы
     const tabsContainer = document.getElementById('tabsContainer');
@@ -443,31 +443,94 @@
     const totalSumBadge = document.getElementById('totalSumBadge');
     const sumValue = document.getElementById('sumValue');
 
-    const fabBtn = document.getElementById('fabBtn');
-    
-    // Модалки
-    const taskModal = document.getElementById('taskModal');
-    const groupModal = document.getElementById('groupModal');
-    
-    // Инпуты
-    const taskTitle = document.getElementById('taskTitle');
-    const taskPrice = document.getElementById('taskPrice');
-    const taskImage = document.getElementById('taskImage');
-    const imagePreview = document.getElementById('imagePreview');
-    const groupName = document.getElementById('groupName');
-    
-    const saveTaskBtn = document.getElementById('saveTaskBtn');
-    const saveGroupBtn = document.getElementById('saveGroupBtn');
+    // =================================================================
+    // 🌌 ГЕНЕРАТОР ФОНОВЫХ ЧАСТИЦ
+    // =================================================================
+    function initBackgroundParticles() {
+      const layer = document.getElementById('particlesLayer');
+      for(let i = 0; i < 20; i++) {
+        let p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.animationDuration = (Math.random() * 5 + 5) + 's';
+        p.style.animationDelay = (Math.random() * 5) + 's';
+        layer.appendChild(p);
+      }
+    }
+    initBackgroundParticles();
 
     // =================================================================
-    // СИНХРОНИЗАЦИЯ FIREBASE REALTIME
+    // 🎉 ВЗРЫВ ЧАСТИЦ (CONFETTI) ПРИ ВЫПОЛНЕНИИ ЗАДАЧИ
+    // =================================================================
+    window.burstConfetti = (x, y) => {
+      const colors = ['#FF2E93', '#00F0FF', '#8A2BE2', '#FFFFFF'];
+      for (let i = 0; i < 25; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = x + 'px';
+        confetti.style.top = y + 'px';
+        document.body.appendChild(confetti);
+
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = 50 + Math.random() * 100;
+        const tx = Math.cos(angle) * velocity;
+        const ty = Math.sin(angle) * velocity - 50; // Гравитация вверх
+
+        confetti.animate([
+          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+          { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+        ], { duration: 600 + Math.random() * 400, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' });
+
+        setTimeout(() => confetti.remove(), 1000);
+      }
+    };
+
+    // =================================================================
+    // 🔢 АНИМАЦИЯ СЧЕТЧИКА СУММЫ (Бегущие цифры)
+    // =================================================================
+    function animateValue(start, end, duration) {
+      if (start === end) return;
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        // Эффект замедления к концу
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(start + easeOut * (end - start));
+        sumValue.innerText = current.toLocaleString('ru-RU');
+        if (progress < 1) {
+          window.requestAnimationFrame(step);
+        } else {
+          sumValue.innerText = end.toLocaleString('ru-RU');
+        }
+      };
+      window.requestAnimationFrame(step);
+    }
+
+    // Парсер суммы
+    function extractPrice(str) {
+      if (!str) return 0;
+      const clean = str.toLowerCase().replace(/\s+/g, '');
+      const matches = clean.match(/\d+(?:[.,]\d+)?(к|k)?/g);
+      if (!matches) return 0;
+      let maxNum = 0;
+      matches.forEach(m => {
+        let isK = m.includes('к') || m.includes('k');
+        let val = parseFloat(m.replace(/[кk]/g, '').replace(',', '.'));
+        if (isK) val *= 1000;
+        if (val > maxNum) maxNum = val;
+      });
+      return maxNum;
+    }
+
+    // =================================================================
+    // СИНХРОНИЗАЦИЯ FIREBASE
     // =================================================================
     const dbRef = ref(db, 'app_data');
-    
     onValue(dbRef, (snapshot) => {
       const data = snapshot.val();
       if (!data) { localData = { categories: {}, tasks: {} }; renderUI(); return; }
-      
       localData = data;
       const catIds = Object.keys(localData.categories || {});
       if (!currentTabId || !localData.categories[currentTabId]) {
@@ -475,27 +538,6 @@
       }
       renderUI();
     });
-
-    // =================================================================
-    // УМНЫЙ ПАРСЕР СУММЫ (Нейро-логика извлечения денег)
-    // =================================================================
-    function extractPrice(str) {
-      if (!str) return 0;
-      // Убираем пробелы, ищем цифры и букву 'к'/'k'
-      const clean = str.toLowerCase().replace(/\s+/g, '');
-      // Ищем паттерны типа "6500" или "5к"
-      const matches = clean.match(/\d+(?:[.,]\d+)?(к|k)?/g);
-      if (!matches) return 0;
-      
-      let maxNum = 0;
-      matches.forEach(m => {
-        let isK = m.includes('к') || m.includes('k');
-        let val = parseFloat(m.replace(/[кk]/g, '').replace(',', '.'));
-        if (isK) val *= 1000;
-        if (val > maxNum) maxNum = val; // Берем наибольшее число (если написано 5к-10к, берет 10к)
-      });
-      return maxNum;
-    }
 
     // =================================================================
     // РЕНДЕР ИНТЕРФЕЙСА
@@ -515,26 +557,18 @@
         btn.className = `tab ${catId === currentTabId ? 'active' : ''}`;
         btn.innerHTML = `${cat.name}`;
         
-        // Удаление вкладки при долгом нажатии
         let pressTimer;
-        btn.addEventListener('touchstart', () => {
-          pressTimer = setTimeout(() => confirmDeleteGroup(catId), 1000);
-        });
+        btn.addEventListener('touchstart', () => { pressTimer = setTimeout(() => confirmDeleteGroup(catId), 1000); });
         btn.addEventListener('touchend', () => clearTimeout(pressTimer));
-        // Для ПК
-        btn.addEventListener('contextmenu', (e) => {
-          e.preventDefault(); confirmDeleteGroup(catId);
-        });
+        btn.addEventListener('contextmenu', (e) => { e.preventDefault(); confirmDeleteGroup(catId); });
         
         btn.onclick = () => { currentTabId = catId; renderUI(); };
         tabsContainer.appendChild(btn);
       });
 
-      // Кнопка добавления вкладки
       const addBtn = document.createElement('div');
-      addBtn.className = 'add-tab-btn';
-      addBtn.innerText = '+';
-      addBtn.onclick = () => showModal(groupModal);
+      addBtn.className = 'add-tab-btn'; addBtn.innerText = '+';
+      addBtn.onclick = () => document.getElementById('groupModal').classList.add('active');
       tabsContainer.appendChild(addBtn);
     }
 
@@ -543,196 +577,116 @@
       const allTasks = localData.tasks || {};
 
       if (!currentTabId) {
-        tasksList.innerHTML = '<div class="empty-state">Добавьте первую группу 👆</div>';
-        totalSumBadge.style.display = 'none';
-        return;
+        tasksList.innerHTML = '<div class="empty-state">Создайте первую вселенную 👆</div>';
+        totalSumBadge.style.display = 'none'; return;
       }
 
-      let filteredTasks = Object.keys(allTasks)
-        .map(id => ({ id, ...allTasks[id] }))
-        .filter(task => task.catId === currentTabId);
+      let filteredTasks = Object.keys(allTasks).map(id => ({ id, ...allTasks[id] })).filter(task => task.catId === currentTabId);
 
       if (filteredTasks.length === 0) {
-        tasksList.innerHTML = '<div class="empty-state">Список пуст. Добавьте первую цель! ✨</div>';
-        totalSumBadge.style.display = 'none';
-        return;
+        tasksList.innerHTML = '<div class="empty-state">Тут пока пусто. Добавь мечту! ✨</div>';
+        totalSumBadge.style.display = 'none'; return;
       }
 
-      // СОРТИРОВКА: Невыполненные сверху, выполненные внизу
       filteredTasks.sort((a, b) => {
-        if (a.completed === b.completed) return b.createdAt - a.createdAt; // Новые сверху
+        if (a.completed === b.completed) return b.createdAt - a.createdAt;
         return a.completed ? 1 : -1;
       });
 
-      let totalSum = 0;
+      let newTargetSum = 0;
       let delay = 0;
 
       filteredTasks.forEach(task => {
-        // Подсчет суммы только для НЕВЫПОЛНЕННЫХ
-        if (!task.completed) {
-          totalSum += extractPrice(task.desc);
-        }
+        if (!task.completed) newTargetSum += extractPrice(task.desc);
 
-        const card = document.createElement('div');
-        card.className = `card ${task.completed ? 'completed' : ''} ${task.imageUrl ? 'has-image' : ''}`;
-        card.style.animationDelay = `${delay}s`;
+        // ОБЕРТКА КАРТОЧКИ С ГРАДИЕНТНОЙ РАМКОЙ
+        const wrapper = document.createElement('div');
+        wrapper.className = `card-wrapper ${task.completed ? 'completed' : ''}`;
+        wrapper.style.animationDelay = `${delay}s`;
+        wrapper.id = `wrapper-${task.id}`;
         delay += 0.05;
 
-        // Генерация HTML карточки
-        let innerHTML = '';
-        
-        // Кнопка удаления
-        innerHTML += `<button class="delete-btn" onclick="deleteTask('${task.id}')">✕</button>`;
-
+        let innerHTML = `<div class="card ${task.imageUrl ? 'has-image' : ''}">`;
         if (task.imageUrl) {
           innerHTML += `<div class="card-image-bg" style="background-image: url('${task.imageUrl}')"></div>`;
         }
 
+        // --- НОВАЯ СТРОГАЯ FLEX-СЕТКА ---
         innerHTML += `
           <div class="card-content">
             <div class="card-header">
+              
+              <!-- 1. Чекбокс слева -->
+              <div class="checkbox-container" id="check-${task.id}" onclick="handleCheck(event, '${task.id}', ${!task.completed})">
+                <div class="ripple"></div>
+                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+              
+              <!-- 2. Текст по центру -->
               <div class="card-info">
                 <div class="card-title">${escapeHtml(task.title)}</div>
                 ${task.desc ? `<div class="card-price">${escapeHtml(task.desc)}</div>` : ''}
               </div>
-              <div class="checkbox" onclick="toggleTask('${task.id}', ${!task.completed})">
-                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              
+              <!-- 3. Кнопка удаления справа -->
+              <div class="delete-btn" onclick="animateDelete('${task.id}')">
+                <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path></svg>
               </div>
+
             </div>
           </div>
-        `;
+        </div>`;
 
-        card.innerHTML = innerHTML;
-        tasksList.appendChild(card);
+        wrapper.innerHTML = innerHTML;
+        tasksList.appendChild(wrapper);
       });
 
-      // Отображение суммы
-      if (totalSum > 0) {
+      // Логика отображения и анимации суммы
+      if (newTargetSum > 0) {
         totalSumBadge.style.display = 'flex';
-        // Красивое форматирование числа (например 10 000)
-        sumValue.innerText = totalSum.toLocaleString('ru-RU');
+        if (newTargetSum !== currentSum) {
+          animateValue(currentSum, newTargetSum, 1000);
+          currentSum = newTargetSum;
+        }
       } else {
         totalSumBadge.style.display = 'none';
+        currentSum = 0;
       }
     }
 
     function escapeHtml(text) { return text.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])); }
 
     // =================================================================
-    // ВЗАИМОДЕЙСТВИЯ И МОДАЛКИ
+    // ВЗАИМОДЕЙСТВИЯ: АНИМАЦИИ ВЫПОЛНЕНИЯ И УДАЛЕНИЯ
     // =================================================================
-    
-    fabBtn.onclick = () => {
-      if(!currentTabId) return alert("Сначала создайте группу!");
-      showModal(taskModal);
-    };
-
-    function showModal(modal) {
-      modal.classList.add('active');
-    }
-    function hideModals() {
-      taskModal.classList.remove('active');
-      groupModal.classList.remove('active');
-      // Очистка
-      taskTitle.value = ''; taskPrice.value = ''; taskImage.value = '';
-      imagePreview.style.display = 'none'; selectedFile = null;
-      groupName.value = '';
-    }
-
-    // Закрытие по клику вне модалки
-    [taskModal, groupModal].forEach(modal => {
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) hideModals();
-      });
-    });
-
-    // =================================================================
-    // ФАЙЛОВЫЙ ЗАГРУЗЧИК (Превью)
-    // =================================================================
-    taskImage.addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        selectedFile = file;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          imagePreview.style.backgroundImage = `url(${e.target.result})`;
-          imagePreview.style.display = 'block';
-        }
-        reader.readAsDataURL(file);
-      }
-    });
-
-    // =================================================================
-    // FIREBASE ACTIONS
-    // =================================================================
-
-    // Сохранение задачи (с картинкой или без)
-    saveTaskBtn.onclick = async () => {
-      const title = taskTitle.value.trim();
-      const desc = taskPrice.value.trim();
-      if (!title) return;
-
-      // Показываем загрузку
-      const btnText = saveTaskBtn.querySelector('.btn-text');
-      const loader = saveTaskBtn.querySelector('.loader');
-      btnText.style.display = 'none'; loader.style.display = 'block';
-      saveTaskBtn.disabled = true;
-
-      let imageUrl = null;
-
-      // Если есть файл, грузим его в Firebase Storage
-      if (selectedFile) {
-        try {
-          const fileRef = storageRef(storage, `images/${Date.now()}_${selectedFile.name}`);
-          const snapshot = await uploadBytes(fileRef, selectedFile);
-          imageUrl = await getDownloadURL(snapshot.ref);
-        } catch (error) {
-          alert("Ошибка загрузки фото. Проверь правила Storage в Firebase!");
-          console.error(error);
-        }
+    window.handleCheck = (event, taskId, status) => {
+      // Запуск анимации Ripple
+      const checkBtn = document.getElementById(`check-${taskId}`);
+      checkBtn.classList.add('animating');
+      
+      if (status) { // Если выполнили
+        const rect = checkBtn.getBoundingClientRect();
+        window.burstConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
       }
 
-      // Пишем в Realtime Database
-      const newTaskRef = push(ref(db, 'app_data/tasks'));
-      await set(newTaskRef, {
-        catId: currentTabId,
-        title: title,
-        desc: desc,
-        imageUrl: imageUrl,
-        completed: false,
-        createdAt: Date.now()
-      });
-
-      // Возвращаем кнопку
-      btnText.style.display = 'block'; loader.style.display = 'none';
-      saveTaskBtn.disabled = false;
-      hideModals();
+      // Небольшая задержка перед отправкой в базу, чтобы увидеть анимацию
+      setTimeout(() => {
+        update(ref(db, `app_data/tasks/${taskId}`), { completed: status });
+      }, 300);
     };
 
-    // Сохранение Группы
-    saveGroupBtn.onclick = () => {
-      const name = groupName.value.trim();
-      if (!name) return;
-      const newCatRef = push(ref(db, 'app_data/categories'));
-      set(newCatRef, { name: name, createdAt: Date.now() }).then(() => {
-        currentTabId = newCatRef.key;
-        hideModals();
-      });
-    };
-
-    // Выполнение/Отмена задачи (ГЛОБАЛЬНЫЕ ФУНКЦИИ ДЛЯ HTML)
-    window.toggleTask = (taskId, status) => {
-      update(ref(db, `app_data/tasks/${taskId}`), { completed: status });
-    };
-
-    window.deleteTask = (taskId) => {
-      if(confirm('Точно удалить?')) {
-        remove(ref(db, `app_data/tasks/${taskId}`));
+    window.animateDelete = (taskId) => {
+      if(confirm('Точно удалить цель?')) {
+        const wrapper = document.getElementById(`wrapper-${taskId}`);
+        wrapper.classList.add('removing'); // Класс сжимает карточку
+        setTimeout(() => {
+          remove(ref(db, `app_data/tasks/${taskId}`));
+        }, 300); // Ждем конец анимации, затем удаляем из базы
       }
     };
 
     window.confirmDeleteGroup = (catId) => {
-      if(confirm('Удалить вкладку и ВСЕ карточки в ней?')) {
+      if(confirm('Удалить вселенную и ВСЕ карточки в ней?')) {
         const tasks = localData.tasks || {};
         Object.keys(tasks).forEach(id => {
           if (tasks[id].catId === catId) remove(ref(db, `app_data/tasks/${id}`));
@@ -740,6 +694,79 @@
         remove(ref(db, `app_data/categories/${catId}`));
         if (currentTabId === catId) currentTabId = null;
       }
+    };
+
+    // =================================================================
+    // МОДАЛКИ И ФАЙЛЫ
+    // =================================================================
+    const modals = document.querySelectorAll('.modal-backdrop');
+    document.getElementById('fabBtn').onclick = () => {
+      if(!currentTabId) return alert("Сначала создайте группу!");
+      document.getElementById('taskModal').classList.add('active');
+    };
+    
+    function hideModals() {
+      modals.forEach(m => m.classList.remove('active'));
+      document.getElementById('taskTitle').value = ''; 
+      document.getElementById('taskPrice').value = ''; 
+      document.getElementById('taskImage').value = '';
+      document.getElementById('imagePreview').style.display = 'none'; selectedFile = null;
+      document.getElementById('groupName').value = '';
+    }
+
+    modals.forEach(modal => modal.addEventListener('click', (e) => { if (e.target === modal) hideModals(); }));
+
+    document.getElementById('taskImage').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        selectedFile = file;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const preview = document.getElementById('imagePreview');
+          preview.style.backgroundImage = `url(${e.target.result})`;
+          preview.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+
+    document.getElementById('saveTaskBtn').onclick = async () => {
+      const title = document.getElementById('taskTitle').value.trim();
+      const desc = document.getElementById('taskPrice').value.trim();
+      if (!title) return;
+
+      const btn = document.getElementById('saveTaskBtn');
+      btn.querySelector('.btn-text').style.display = 'none'; 
+      btn.querySelector('.loader').style.display = 'block';
+      btn.disabled = true;
+
+      let imageUrl = null;
+      if (selectedFile) {
+        try {
+          const fileRef = storageRef(storage, `images/${Date.now()}_${selectedFile.name}`);
+          const snapshot = await uploadBytes(fileRef, selectedFile);
+          imageUrl = await getDownloadURL(snapshot.ref);
+        } catch (error) {
+          alert("Ошибка загрузки. Проверь Storage!");
+        }
+      }
+
+      await set(push(ref(db, 'app_data/tasks')), { catId: currentTabId, title, desc, imageUrl, completed: false, createdAt: Date.now() });
+
+      btn.querySelector('.btn-text').style.display = 'block'; 
+      btn.querySelector('.loader').style.display = 'none';
+      btn.disabled = false;
+      hideModals();
+    };
+
+    document.getElementById('saveGroupBtn').onclick = () => {
+      const name = document.getElementById('groupName').value.trim();
+      if (!name) return;
+      const newCatRef = push(ref(db, 'app_data/categories'));
+      set(newCatRef, { name: name, createdAt: Date.now() }).then(() => {
+        currentTabId = newCatRef.key;
+        hideModals();
+      });
     };
   </script>
 </body>
