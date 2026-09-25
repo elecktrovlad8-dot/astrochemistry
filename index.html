@@ -14,7 +14,7 @@
           colors: { 
             background: 'var(--bg-color)', 
             surface: 'var(--surface-color)', 
-            primary: '#9fc792', /* Светлый салатовый */
+            primary: '#9fc792', 
             primaryHover: '#8ab07d',
             accent: '#e9c46a',
             glass: 'var(--glass-bg)',
@@ -31,15 +31,17 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
     
+    /* Тотально салатовая светлая тема */
     :root {
-      --bg-color: #f7f9f7;
-      --surface-color: #ffffff;
-      --glass-bg: rgba(255, 255, 255, 0.7);
-      --glass-border: rgba(0, 0, 0, 0.05);
-      --text-main: #2d372d;
-      --text-muted: #7b8a7b;
+      --bg-color: #eaf2e8;          /* Очень мягкий салатовый фон */
+      --surface-color: #f2f7f0;     /* Чуть более светлые карточки */
+      --glass-bg: rgba(242, 247, 240, 0.7);
+      --glass-border: rgba(159, 199, 146, 0.4); /* Полупрозрачный зеленый для границ */
+      --text-main: #2b3a28;         /* Темно-зеленый текст (вместо черного) */
+      --text-muted: #698763;        /* Приглушенный зеленый текст */
     }
 
+    /* Темная тема осталась без изменений */
     .dark {
       --bg-color: #0f120f;
       --surface-color: #161a16;
@@ -58,7 +60,7 @@
     .glass-panel {
       background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--glass-border); border-radius: 1.25rem; 
-      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 30px -10px rgba(43, 58, 40, 0.1);
     }
     
     ::-webkit-scrollbar { width: 6px; }
@@ -122,7 +124,7 @@
     const TaskContext = createContext();
 
     const initialData = [
-      { id: '1', title: 'Оформить проект', subject: 'Учеба', description: 'Не забыть добавить титульный лист.', priority: 'high', color: '#9fc792', status: 'active', parentId: null, deadline: getTodayStr(), createdAt: getTodayStr() }
+      { id: '1', title: 'Создать проект', subject: 'Программирование', description: 'Завершить первую версию приложения.', priority: 'high', color: '#9fc792', status: 'active', parentId: null, deadline: getTodayStr(), createdAt: getTodayStr() }
     ];
 
     const AppProvider = ({ children }) => {
@@ -133,7 +135,7 @@
       const [toasts, setToasts] = useState([]);
       const [isDark, setIsDark] = useState(() => {
         const saved = localStorage.getItem('studyflow-theme-v3');
-        return saved ? saved === 'dark' : true;
+        return saved ? saved === 'dark' : true; // По умолчанию темная
       });
 
       useEffect(() => { localStorage.setItem('studyflow-tasks-v3', JSON.stringify(tasks)); }, [tasks]);
@@ -203,7 +205,7 @@
 
       return (
         <div className="w-full">
-          <div className={`group flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-black/5 dark:hover:border-white/5 ${isCompleted ? 'opacity-50 grayscale' : 'opacity-100'}`}>
+          <div className={`group flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-glassBorder ${isCompleted ? 'opacity-50 grayscale' : 'opacity-100'}`}>
             
             <div className="flex items-start gap-3 flex-1 min-w-0">
               <button onClick={() => setIsExpanded(!isExpanded)} className={`p-1 mt-0.5 rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors ${children.length === 0 ? 'invisible' : ''}`}>
@@ -224,9 +226,9 @@
                 {task.description && <p className="text-xs text-textMuted mt-1 line-clamp-2">{task.description}</p>}
                 
                 <div className="flex gap-2 mt-1.5 text-xs text-textMuted items-center flex-wrap">
-                  {task.subject && <span className="bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded-md border border-glassBorder">{task.subject}</span>}
+                  {task.subject && <span className="bg-surface px-2 py-0.5 rounded-md border border-glassBorder">{task.subject}</span>}
                   {task.deadline && (
-                    <span className={`flex items-center gap-1 bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded-md border border-glassBorder ${isOverdue ? 'text-red-500 border-red-500/30 bg-red-500/10' : ''}`}>
+                    <span className={`flex items-center gap-1 bg-surface px-2 py-0.5 rounded-md border border-glassBorder ${isOverdue ? 'text-red-500 border-red-500/30 bg-red-500/10' : ''}`}>
                       <IconClock /> {dateStatusStr}
                     </span>
                   )}
@@ -244,7 +246,7 @@
                <button onClick={() => deleteTask(task.id)} className="p-1.5 hover:bg-red-500/10 rounded-md text-textMuted hover:text-red-500 transition-colors" title="Удалить">
                  <IconTrash />
                </button>
-               <div className="w-2.5 h-2.5 rounded-full shadow-sm ml-1" style={{ backgroundColor: task.color || '#9fc792' }} />
+               <div className="w-2.5 h-2.5 rounded-full shadow-sm ml-1 border border-glassBorder" style={{ backgroundColor: task.color || '#9fc792' }} />
             </div>
           </div>
 
@@ -261,7 +263,7 @@
       );
     };
 
-    // --- Универсальное Модальное окно (Создание/Редактирование) ---
+    // --- Универсальное Модальное окно ---
     const TaskModal = ({ isOpen, onClose, config }) => {
       const { tasks, saveTask } = useContext(TaskContext);
       
@@ -294,7 +296,7 @@
 
       return (
         <div className="fixed inset-0 z-[150] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 dark:bg-black/60 backdrop-blur-sm transition-opacity">
-          <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} className="glass-panel w-full sm:max-w-lg p-6 bg-surface shadow-2xl rounded-t-3xl sm:rounded-2xl pb-10 sm:pb-6 max-h-screen overflow-y-auto no-scrollbar">
+          <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} className="glass-panel w-full sm:max-w-lg p-6 bg-surface shadow-2xl rounded-t-3xl sm:rounded-2xl pb-10 sm:pb-6 max-h-[90vh] overflow-y-auto no-scrollbar">
             <div className="w-12 h-1.5 bg-glassBorder rounded-full mx-auto mb-6 sm:hidden"></div>
             <h2 className="text-xl font-bold mb-5 text-textMain">{formData.id ? 'Редактировать' : 'Новое задание'}</h2>
             
@@ -320,14 +322,14 @@
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <div className="bg-black/5 dark:bg-black/20 border border-glassBorder rounded-xl px-4 py-2 flex flex-col">
+                <div className="bg-black/5 dark:bg-black/20 border border-glassBorder rounded-xl px-4 py-2 flex flex-col justify-center">
                    <label className="text-[10px] uppercase text-textMuted font-bold mb-1">Цвет метки</label>
                    <input type="color" value={formData.color} onChange={e=>setFormData({...formData, color: e.target.value})} className="h-6 w-full bg-transparent cursor-pointer rounded" />
                 </div>
                 <div className="bg-black/5 dark:bg-black/20 border border-glassBorder rounded-xl px-4 py-2 flex flex-col">
                   <label className="text-[10px] uppercase text-textMuted font-bold">Вложить в</label>
                   <select value={formData.parentId} onChange={e=>setFormData({...formData, parentId: e.target.value})} className="w-full bg-transparent text-textMain outline-none text-sm cursor-pointer mt-1 appearance-none">
-                    <option value="">(Без родителя)</option>
+                    <option value="">-</option>
                     {possibleParents.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
                   </select>
                 </div>
@@ -354,22 +356,22 @@
       return (
         <div className="fixed inset-0 z-[120] flex items-center justify-center p-4 bg-black/40 dark:bg-black/60 backdrop-blur-sm">
           <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="glass-panel w-full max-w-lg flex flex-col max-h-[80vh] bg-surface shadow-2xl">
-            <div className="flex justify-between items-center p-5 border-b border-glassBorder">
+            <div className="flex justify-between items-center p-5 border-b border-glassBorder bg-primary/5 rounded-t-2xl">
               <h2 className="text-xl font-bold text-textMain capitalize">{displayDate}</h2>
-              <button onClick={onClose} className="p-2 text-textMuted hover:text-textMain"><IconX /></button>
+              <button onClick={onClose} className="p-2 text-textMuted hover:text-textMain bg-black/5 dark:bg-white/5 rounded-xl"><IconX /></button>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-5">
+            <div className="flex-1 overflow-y-auto p-5 no-scrollbar">
               {dayTasks.length === 0 ? 
-                <p className="text-center text-textMuted py-10">На этот день ничего не запланировано.</p> :
+                <p className="text-center text-textMuted py-10 font-medium">День свободен. Можно отдохнуть! 🍃</p> :
                 <div className="flex flex-col gap-2">
                   {dayTasks.map(t => <TaskItem key={t.id} task={t} onOpenModal={onOpenModal} />)}
                 </div>
               }
             </div>
 
-            <div className="p-5 border-t border-glassBorder">
-               <button onClick={() => onOpenModal({ date })} className="w-full py-3 bg-primary/10 text-primary border border-primary/20 hover:bg-primary hover:text-white rounded-xl font-medium transition-colors">
+            <div className="p-5 border-t border-glassBorder bg-surface rounded-b-2xl">
+               <button onClick={() => onOpenModal({ date })} className="w-full py-3 bg-primary/10 text-primary border border-primary/20 hover:bg-primary hover:text-white rounded-xl font-medium transition-colors shadow-sm">
                  + Добавить задачу на этот день
                </button>
             </div>
@@ -385,12 +387,19 @@
       const todayStr = getTodayStr();
       const allRoot = tasks.filter(t => t.parentId === null);
       
-      // Логика прогресса за сегодня (если нет задач на сегодня = 100%)
-      const todayTasks = allRoot.filter(t => t.deadline === todayStr || t.createdAt === todayStr);
+      // Задачи только на СЕГОДНЯ (дедлайн)
+      const todayTasks = allRoot.filter(t => t.deadline === todayStr);
       const todayCompleted = todayTasks.filter(t => t.status === 'completed').length;
+      
+      // Логика 100% если пусто или всё выполнено
       let progressToday = 100;
+      let progressText = '100% (Можно играть в SIMS)';
+      let subtitleText = 'На сегодня задач нет.';
+
       if (todayTasks.length > 0) {
         progressToday = Math.round((todayCompleted / todayTasks.length) * 100);
+        subtitleText = `Выполнено ${todayCompleted} из ${todayTasks.length} задач`;
+        progressText = progressToday === 100 ? '100% (Можно играть в SIMS)' : `${progressToday}%`;
       }
 
       // Сортировка: приоритет -> дедлайн
@@ -409,25 +418,23 @@
         <div className="animate-fade-in pb-32 sm:pb-10">
           <header className="mb-8">
             <h1 className="text-2xl sm:text-3xl font-bold text-textMain mb-3 tracking-tight">Ваш план</h1>
-            <div className="glass-panel p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-primary/10 border-primary/20">
+            <div className="glass-panel p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 bg-primary/10 border-primary/20">
               <div>
-                <h3 className="font-semibold text-textMain">Прогресс за сегодня</h3>
-                <p className="text-sm text-textMuted">
-                  {todayTasks.length === 0 ? 'Задач на сегодня нет.' : `Выполнено ${todayCompleted} из ${todayTasks.length} задач`}
-                </p>
+                <h3 className="font-semibold text-textMain text-lg">Прогресс за сегодня</h3>
+                <p className="text-sm text-textMuted mt-1">{subtitleText}</p>
               </div>
-              <div className="w-full sm:w-1/2 flex items-center gap-3">
-                <div className="flex-1 h-3 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden shadow-inner">
-                  <motion.div initial={{ width: 0 }} animate={{ width: `${progressToday}%` }} className="h-full bg-primary rounded-full" />
+              <div className="w-full sm:w-1/2 flex items-center gap-4">
+                <div className="flex-1 h-4 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden shadow-inner border border-glassBorder">
+                  <motion.div initial={{ width: 0 }} animate={{ width: `${progressToday}%` }} className="h-full bg-primary rounded-full relative overflow-hidden">
+                    <div className="absolute inset-0 bg-white/20 w-full h-full skew-x-12 translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
+                  </motion.div>
                 </div>
-                <span className="text-sm font-bold text-primary whitespace-nowrap">
-                   {todayTasks.length === 0 ? '100% (Свобода!)' : `${progressToday}%`}
-                </span>
+                <span className="text-sm font-bold text-primary whitespace-nowrap">{progressText}</span>
               </div>
             </div>
           </header>
 
-          <div className="glass-panel p-2 mb-6">
+          <div className="glass-panel p-2 mb-6 border-glassBorder bg-surface/50">
             <div className="flex justify-between items-center p-4 mb-2 border-b border-glassBorder">
               <h2 className="text-lg font-semibold text-textMain">Активные задания</h2>
               <button onClick={() => onOpenModal({})} className="bg-primary hover:bg-primaryHover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-lg shadow-primary/20">
@@ -436,7 +443,7 @@
             </div>
             <div className="p-2">
               {activeRoot.length === 0 ? 
-                <div className="text-center text-textMuted py-10">Все актуальные задачи выполнены! 🍵</div> : 
+                <div className="text-center text-textMuted py-10 font-medium">Все актуальные задачи выполнены! 🍵</div> : 
                 activeRoot.map(task => <TaskItem key={task.id} task={task} onOpenModal={onOpenModal} />)
               }
             </div>
@@ -445,7 +452,7 @@
           {completedRoot.length > 0 && (
             <div className="p-2">
               <h3 className="text-sm font-bold text-textMuted uppercase tracking-wider mb-3 pl-2">Выполненные</h3>
-              <div className="flex flex-col gap-1 opacity-70">
+              <div className="flex flex-col gap-1 opacity-60 hover:opacity-100 transition-opacity">
                 {completedRoot.map(task => <TaskItem key={task.id} task={task} onOpenModal={onOpenModal} />)}
               </div>
             </div>
@@ -471,20 +478,20 @@
         <div className="animate-fade-in pb-32 sm:pb-10 h-full flex flex-col">
           <header className="mb-6 flex justify-between items-center">
             <h1 className="text-2xl font-bold text-textMain">Календарь</h1>
-            <div className="flex items-center gap-2 bg-surface p-1 rounded-xl border border-glassBorder">
-              <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5"><IconChevronRight className="rotate-180" /></button>
-              <span className="font-medium text-sm w-28 text-center">{monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}</span>
-              <button onClick={nextMonth} className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5"><IconChevronRight /></button>
+            <div className="flex items-center gap-2 bg-surface p-1.5 rounded-2xl border border-glassBorder shadow-sm">
+              <button onClick={prevMonth} className="p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors"><IconChevronRight className="rotate-180" /></button>
+              <span className="font-bold text-sm w-32 text-center text-textMain">{monthNames[currentMonth.getMonth()]} {currentMonth.getFullYear()}</span>
+              <button onClick={nextMonth} className="p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors"><IconChevronRight /></button>
             </div>
           </header>
 
-          <div className="glass-panel flex-1 p-4 sm:p-6 flex flex-col">
-            <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-2 text-center text-[10px] sm:text-xs font-bold text-textMuted uppercase">
-              <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div className="text-red-400/80">Сб</div><div className="text-red-400/80">Вс</div>
+          <div className="glass-panel flex-1 p-4 sm:p-6 flex flex-col bg-surface/50 border-glassBorder">
+            <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-3 text-center text-[10px] sm:text-xs font-bold text-textMuted uppercase">
+              <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div className="text-red-500/80">Сб</div><div className="text-red-500/80">Вс</div>
             </div>
             
             <div className="grid grid-cols-7 gap-1 sm:gap-2 flex-1 auto-rows-fr">
-              {Array.from({ length: firstDay }).map((_, i) => <div key={`empty-${i}`} className="rounded-xl bg-black/5 dark:bg-white/5 opacity-30"></div>)}
+              {Array.from({ length: firstDay }).map((_, i) => <div key={`empty-${i}`} className="rounded-2xl bg-black/5 dark:bg-white/5 opacity-30"></div>)}
               {Array.from({ length: daysInMonth }).map((_, i) => {
                 const day = i + 1;
                 const dateStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
@@ -492,14 +499,14 @@
                 const isToday = dateStr === getTodayStr();
 
                 return (
-                  <div key={day} onClick={() => setSelectedDayDate(dateStr)} className={`p-1 sm:p-2 rounded-xl border flex flex-col gap-1 cursor-pointer transition-colors ${isToday ? 'border-primary bg-primary/10' : 'border-glassBorder bg-surface hover:border-primary/50'}`}>
+                  <div key={day} onClick={() => setSelectedDayDate(dateStr)} className={`p-1 sm:p-2 rounded-2xl border flex flex-col gap-1 cursor-pointer transition-colors ${isToday ? 'border-primary bg-primary/10 shadow-sm' : 'border-glassBorder bg-surface hover:border-primary/50 hover:bg-primary/5'}`}>
                     <div className="flex justify-between items-center px-1">
                       <span className={`text-xs sm:text-sm font-bold ${isToday ? 'text-primary' : 'text-textMain'}`}>{day}</span>
                       {dayTasks.length > 0 && <span className="w-1.5 h-1.5 rounded-full bg-primary sm:hidden"></span>}
                     </div>
-                    <div className="hidden sm:flex flex-col gap-1 overflow-y-auto no-scrollbar max-h-20">
+                    <div className="hidden sm:flex flex-col gap-1 overflow-y-auto no-scrollbar max-h-20 mt-1">
                       {dayTasks.map(t => (
-                        <div key={t.id} className={`text-[10px] px-1.5 py-0.5 rounded flex items-center gap-1 truncate ${t.status === 'completed' ? 'opacity-50 line-through' : 'bg-primary/20 text-textMain'}`}>
+                        <div key={t.id} className={`text-[10px] px-1.5 py-0.5 rounded-md flex items-center gap-1 truncate font-medium ${t.status === 'completed' ? 'opacity-50 line-through bg-black/5' : 'bg-primary/20 text-textMain border border-primary/20'}`}>
                           {t.title}
                         </div>
                       ))}
@@ -515,12 +522,12 @@
     };
 
     const SettingsView = () => (
-      <div className="animate-fade-in pb-32 sm:pb-10 max-w-2xl"><h1 className="text-2xl font-bold text-textMain mb-6">Настройки</h1><div className="glass-panel p-6">
+      <div className="animate-fade-in pb-32 sm:pb-10 max-w-2xl"><h1 className="text-2xl font-bold text-textMain mb-6">Настройки</h1><div className="glass-panel p-6 bg-surface/50 border-glassBorder">
         <TaskContext.Consumer>
           {({ isDark, setIsDark }) => (
             <div className="flex items-center justify-between">
               <div><h3 className="font-semibold text-textMain">Оформление</h3><p className="text-textMuted text-sm">Светлая или темная тема.</p></div>
-              <button onClick={() => setIsDark(!isDark)} className="p-2 bg-surface rounded-xl border border-glassBorder shadow-sm"><IconSun /></button>
+              <button onClick={() => setIsDark(!isDark)} className="p-3 bg-surface rounded-xl border border-glassBorder shadow-sm hover:border-primary transition-colors text-textMain"><IconSun /></button>
             </div>
           )}
         </TaskContext.Consumer>
@@ -530,7 +537,7 @@
     // --- Скелет ---
     const App = () => {
       const [currentView, setCurrentView] = useState('dashboard');
-      const [modalConfig, setModalConfig] = useState(null); // null = закрыто, {} = конфиг
+      const [modalConfig, setModalConfig] = useState(null); 
       
       const navItems = [
         { id: 'dashboard', icon: IconHome, label: 'Главная' }, { id: 'calendar', icon: IconCalendar, label: 'Календарь' }, { id: 'settings', icon: IconSettings, label: 'Настройки' }
@@ -538,29 +545,29 @@
 
       return (
         <div className="flex h-screen w-full relative">
-          <aside className="hidden md:flex w-64 h-full border-r border-glassBorder bg-surface/50 backdrop-blur-xl flex-col p-6 z-10 shadow-2xl">
+          <aside className="hidden md:flex w-64 h-full border-r border-glassBorder bg-surface/80 backdrop-blur-2xl flex-col p-6 z-10 shadow-2xl">
             <div className="flex items-center gap-3 mb-10 text-textMain cursor-pointer" onClick={() => setCurrentView('dashboard')}>
-              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30"><span className="font-bold text-xl text-white">S</span></div>
+              <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30"><span className="font-bold text-xl text-white">S</span></div>
               <span className="text-xl font-bold tracking-wide">StudyFlow</span>
             </div>
             <nav className="flex flex-col gap-2">
               {navItems.map(item => (
-                 <button key={item.id} onClick={() => setCurrentView(item.id)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all w-full text-left ${currentView === item.id ? 'bg-primary/10 text-primary font-medium' : 'text-textMuted hover:bg-black/5 dark:hover:bg-white/5 hover:text-textMain'}`}>
+                 <button key={item.id} onClick={() => setCurrentView(item.id)} className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all w-full text-left font-medium ${currentView === item.id ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-textMuted hover:bg-black/5 dark:hover:bg-white/5 hover:text-textMain'}`}>
                   <item.icon /> <span>{item.label}</span>
                 </button>
               ))}
             </nav>
           </aside>
 
-          <nav className="md:hidden fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-xl border-t border-glassBorder flex justify-around items-center p-2 z-[90] pb-safe">
+          <nav className="md:hidden fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-xl border-t border-glassBorder flex justify-around items-center p-2 z-[90] pb-safe shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
             {navItems.map(item => (
               <button key={item.id} onClick={() => setCurrentView(item.id)} className={`flex flex-col items-center gap-1 p-2 w-20 rounded-xl transition-all ${currentView === item.id ? 'text-primary' : 'text-textMuted'}`}>
-                <item.icon /> <span className="text-[10px] font-medium">{item.label}</span>
+                <item.icon /> <span className="text-[10px] font-bold">{item.label}</span>
               </button>
             ))}
           </nav>
 
-          <main className="flex-1 h-full overflow-y-auto p-4 sm:p-8 relative no-scrollbar">
+          <main className="flex-1 h-full overflow-y-auto p-4 sm:p-8 relative no-scrollbar bg-background">
             {currentView === 'dashboard' && <Dashboard onOpenModal={setModalConfig} />}
             {currentView === 'calendar' && <CalendarView onOpenModal={setModalConfig} />}
             {currentView === 'settings' && <SettingsView />}
