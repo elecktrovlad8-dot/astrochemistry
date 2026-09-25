@@ -1,773 +1,674 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#050508">
-  <title>Our Universe 🌌</title>
-
-  <!-- Премиальный шрифт -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StudyFlow - Premium Planner</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: { 
+            background: 'var(--bg-color)', 
+            surface: 'var(--surface-color)', 
+            primary: '#6366F1', 
+            accent: '#EC4899',
+            glass: 'var(--glass-bg)',
+            glassBorder: 'var(--glass-border)',
+            textMain: 'var(--text-main)',
+            textMuted: 'var(--text-muted)'
+          },
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
 
   <style>
-    /* ==========================================================================
-       1. CORE & VARIABLES
-       ========================================================================== */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    
     :root {
-      --bg-base: #050508;
-      --surface: rgba(25, 25, 35, 0.6);
-      --surface-border: rgba(255, 255, 255, 0.1);
-      
-      --brand-primary: #FF2E93;
-      --brand-secondary: #00F0FF;
-      --brand-tertiary: #8A2BE2;
-      
-      --text-100: #FFFFFF;
-      --text-200: rgba(255, 255, 255, 0.75);
-      --text-300: rgba(255, 255, 255, 0.4);
-      
-      --danger: #FF3B30;
-      
-      --safe-top: env(safe-area-inset-top, 20px);
-      --safe-bottom: env(safe-area-inset-bottom, 20px);
-      
-      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-      --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
+      --bg-color: #f3f4f6;
+      --surface-color: #ffffff;
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(0, 0, 0, 0.05);
+      --text-main: #111827;
+      --text-muted: #6b7280;
+      --gradient-1: rgba(99, 102, 241, 0.15);
+      --gradient-2: rgba(236, 72, 153, 0.15);
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; -webkit-tap-highlight-color: transparent; }
+    .dark {
+      --bg-color: #0B0F19;
+      --surface-color: #1A1F2E;
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --gradient-1: rgba(99, 102, 241, 0.12);
+      --gradient-2: rgba(236, 72, 153, 0.12);
+    }
 
     body {
-      background-color: var(--bg-base);
-      color: var(--text-100);
-      height: 100dvh;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      position: relative;
-    }
-
-    /* ==========================================================================
-       2. INSANE ANIMATED BACKGROUND
-       ========================================================================== */
-    /* Аврора (Северное сияние) */
-    .aurora-bg {
-      position: fixed; top: -50%; left: -50%; width: 200%; height: 200%; z-index: -2;
-      background: 
-        radial-gradient(circle at 50% 50%, rgba(255, 46, 147, 0.15), transparent 60%),
-        radial-gradient(circle at 80% 20%, rgba(0, 240, 255, 0.15), transparent 50%),
-        radial-gradient(circle at 20% 80%, rgba(138, 43, 226, 0.15), transparent 50%);
-      filter: blur(80px);
-      animation: rotateAurora 20s linear infinite;
-    }
-    @keyframes rotateAurora {
-      0% { transform: rotate(0deg) scale(1); }
-      50% { transform: rotate(180deg) scale(1.2); }
-      100% { transform: rotate(360deg) scale(1); }
-    }
-
-    /* Летающие светлячки (Particles) */
-    .particles-layer {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;
-    }
-    .particle {
-      position: absolute;
-      width: 3px; height: 3px; background: #fff; border-radius: 50%;
-      box-shadow: 0 0 10px #fff, 0 0 20px var(--brand-secondary);
-      animation: floatParticle linear infinite;
-      opacity: 0;
-    }
-    @keyframes floatParticle {
-      0% { transform: translateY(100vh) scale(0); opacity: 0; }
-      20% { opacity: 1; transform: translateY(80vh) scale(1); }
-      80% { opacity: 1; transform: translateY(20vh) scale(1); }
-      100% { transform: translateY(0) scale(0); opacity: 0; }
-    }
-
-    /* ==========================================================================
-       3. APP LAYOUT & HEADER
-       ========================================================================== */
-    .app-header {
-      padding: calc(var(--safe-top) + 15px) 24px 15px;
-      z-index: 10;
-      background: linear-gradient(180deg, rgba(5,5,8,0.95) 0%, rgba(5,5,8,0) 100%);
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-    }
-    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    
-    .app-title {
-      font-size: 32px; font-weight: 700;
-      background: linear-gradient(to right, #fff, #a5a5b5);
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      animation: pulseText 3s ease-in-out infinite alternate;
-    }
-    @keyframes pulseText { 0% { filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); } 100% { filter: drop-shadow(0 0 15px rgba(255,255,255,0.5)); } }
-
-    /* Анимированный бейдж суммы */
-    .total-sum-badge {
-      background: rgba(0, 240, 255, 0.1);
-      border: 1px solid rgba(0, 240, 255, 0.3);
-      padding: 8px 16px; border-radius: 30px; font-weight: 700; font-size: 16px;
-      color: var(--brand-secondary);
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
-      display: flex; align-items: center; gap: 4px;
-      animation: popIn 0.5s var(--ease-spring);
-    }
-    .total-sum-badge span { font-size: 12px; opacity: 0.7; }
-
-    /* ==========================================================================
-       4. HORIZONTAL TABS
-       ========================================================================== */
-    .tabs-container {
-      display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px;
-      scrollbar-width: none;
-    }
-    .tabs-container::-webkit-scrollbar { display: none; }
-
-    .tab {
-      padding: 12px 24px; border-radius: 25px;
-      background: rgba(255,255,255,0.05); border: 1px solid var(--surface-border);
-      color: var(--text-200); font-weight: 500; white-space: nowrap;
-      transition: all 0.4s var(--ease-spring); cursor: pointer; position: relative;
-      overflow: hidden;
-    }
-    .tab::after {
-      content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: 0.5s;
-    }
-    .tab.active {
-      background: var(--text-100); color: var(--bg-base); border-color: var(--text-100);
-      transform: scale(1.05); box-shadow: 0 5px 20px rgba(255,255,255,0.2);
-    }
-    .tab.active::after { left: 150%; transition: 0.7s; }
-
-    .add-tab-btn {
-      padding: 12px 20px; border-radius: 25px; border: 1px dashed rgba(255,255,255,0.3);
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-      transition: 0.3s;
-    }
-    .add-tab-btn:active { transform: scale(0.9); }
-
-    /* ==========================================================================
-       5. MAIN CONTENT & MAGIC CARDS
-       ========================================================================== */
-    .main-scroll {
-      flex: 1; overflow-y: auto; padding: 10px 24px calc(var(--safe-bottom) + 100px);
-      scrollbar-width: none; scroll-behavior: smooth;
-    }
-    .main-scroll::-webkit-scrollbar { display: none; }
-    .tasks-grid { display: flex; flex-direction: column; gap: 20px; }
-
-    /* Обертка для градиентной рамки */
-    .card-wrapper {
-      position: relative; border-radius: 24px;
-      animation: cardSlideUp 0.6s var(--ease-spring) backwards;
-      transition: transform 0.3s ease, opacity 0.3s ease;
+      background-color: var(--bg-color); color: var(--text-main);
+      background-image: radial-gradient(circle at 15% 50%, var(--gradient-1), transparent 25%),
+                        radial-gradient(circle at 85% 30%, var(--gradient-2), transparent 25%);
+      background-attachment: fixed; margin: 0; overflow: hidden;
+      transition: background-color 0.3s ease, color 0.3s ease;
     }
     
-    /* Удаление карточки */
-    .card-wrapper.removing {
-      transform: scale(0.8) translateY(30px); opacity: 0; pointer-events: none;
-    }
-
-    @keyframes cardSlideUp {
-      from { opacity: 0; transform: translateY(40px) scale(0.95); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    /* Анимированная светящаяся рамка */
-    .card-wrapper::before {
-      content: ''; position: absolute; inset: -2px; border-radius: 26px;
-      background: linear-gradient(45deg, var(--brand-primary), var(--brand-secondary), var(--brand-tertiary), var(--brand-primary));
-      background-size: 300% 300%;
-      animation: gradientBorder 4s linear infinite;
-      z-index: 0; opacity: 0.6; filter: blur(3px);
-      transition: 0.5s ease;
-    }
-    @keyframes gradientBorder { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-    /* Сама карточка */
-    .card {
-      position: relative; z-index: 1; background: var(--surface);
-      border-radius: 24px; padding: 20px; display: flex; flex-direction: column;
-      overflow: hidden; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      box-shadow: inset 0 1px 1px rgba(255,255,255,0.1);
+    .glass-panel {
+      background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border); border-radius: 1.25rem; 
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      transition: background 0.3s, border-color 0.3s;
     }
     
-    /* Фото-фон */
-    .card.has-image { padding: 0; min-height: 280px; justify-content: flex-end; }
-    .card-image-bg {
-      position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-      background-size: cover; background-position: center; z-index: 1;
-      transition: transform 0.7s var(--ease-out);
-    }
-    .card.has-image:active .card-image-bg { transform: scale(1.05); }
-    .card.has-image .card-content {
-      position: relative; z-index: 2; padding: 40px 20px 20px;
-      background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
-    }
-
-    /* -------------------------------------------------------------
-       ФИКС БАГА С КНОПКАМИ: СТРОГАЯ FLEX-СЕТКА
-       ------------------------------------------------------------- */
-    .card-header {
-      display: flex; align-items: flex-start; gap: 16px;
-      position: relative; z-index: 2; width: 100%;
-    }
-    
-    /* 1. Чекбокс всегда слева */
-    .checkbox-container {
-      flex-shrink: 0; /* Не сжимается */
-      width: 30px; height: 30px; border-radius: 12px;
-      border: 2px solid var(--text-200);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: 0.3s var(--ease-spring);
-      position: relative;
-    }
-    .checkbox-container svg {
-      width: 18px; height: 18px; fill: none; stroke: var(--bg-base);
-      stroke-width: 3; stroke-linecap: round; stroke-linejoin: round;
-      stroke-dasharray: 24; stroke-dashoffset: 24; transition: 0.4s ease;
-    }
-
-    /* 2. Текст в центре, занимает все свободное место */
-    .card-info { flex: 1; min-width: 0; /* min-width:0 нужен чтобы текст обрезался корректно */ }
-    .card-title {
-      font-size: 18px; font-weight: 600; margin-bottom: 8px; line-height: 1.3;
-      word-wrap: break-word; transition: 0.3s;
-    }
-    .card-price {
-      display: inline-block; font-size: 14px; font-weight: 600; color: var(--brand-secondary);
-      background: rgba(0, 240, 255, 0.15); padding: 4px 12px; border-radius: 8px;
-    }
-
-    /* 3. Кнопка удаления строго справа */
-    .delete-btn {
-      flex-shrink: 0; width: 36px; height: 36px; border-radius: 12px;
-      background: rgba(255, 59, 48, 0.1); border: 1px solid rgba(255, 59, 48, 0.2);
-      color: var(--danger); display: flex; align-items: center; justify-content: center;
-      cursor: pointer; transition: 0.3s var(--ease-spring);
-    }
-    .delete-btn:active { transform: scale(0.8) rotate(10deg); background: var(--danger); color: #fff; }
-    .delete-btn svg { width: 18px; height: 18px; fill: currentColor; }
-
-    /* --- Состояние ВЫПОЛНЕНО --- */
-    .card-wrapper.completed { filter: grayscale(50%); opacity: 0.6; }
-    .card-wrapper.completed::before { opacity: 0; /* Отключаем свечение */ }
-    .card-wrapper.completed .card { background: rgba(255,255,255,0.02); }
-    
-    .card-wrapper.completed .checkbox-container {
-      background: var(--brand-secondary); border-color: var(--brand-secondary);
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.5); transform: scale(1.1);
-    }
-    .card-wrapper.completed .checkbox-container svg { stroke-dashoffset: 0; }
-    
-    .card-wrapper.completed .card-title {
-      text-decoration: line-through; color: var(--text-300);
-      text-shadow: 0 0 10px rgba(255,255,255,0.2);
-    }
-
-    /* Анимация при клике на чекбокс (Круг расходится) */
-    .ripple {
-      position: absolute; width: 100%; height: 100%; border-radius: 50%;
-      background: var(--brand-secondary); opacity: 0; pointer-events: none;
-    }
-    .checkbox-container.animating .ripple { animation: rippleEffect 0.6s ease-out; }
-    @keyframes rippleEffect { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(3); opacity: 0; } }
-
-    /* ==========================================================================
-       6. ВЗРЫВ ЧАСТИЦ ПРИ ВЫПОЛНЕНИИ (CONFETTI JS-СЛОЙ)
-       ========================================================================== */
-    .confetti {
-      position: fixed; width: 8px; height: 8px; border-radius: 50%;
-      pointer-events: none; z-index: 9999;
-    }
-
-    /* ==========================================================================
-       7. FLOATING ACTION BUTTON (Плюс)
-       ========================================================================== */
-    .fab {
-      position: fixed; bottom: calc(var(--safe-bottom) + 24px); right: 24px;
-      width: 64px; height: 64px; border-radius: 22px; border: none;
-      background: linear-gradient(135deg, var(--brand-primary), var(--brand-secondary));
-      box-shadow: 0 10px 30px rgba(255, 46, 147, 0.5);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; z-index: 100; transition: 0.3s var(--ease-spring);
-      animation: fabBreathe 3s infinite alternate;
-    }
-    .fab::before { content: '+'; color: #fff; font-size: 34px; font-weight: 300; transition: 0.4s; }
-    .fab:active { transform: scale(0.85); }
-    @keyframes fabBreathe { 0% { box-shadow: 0 10px 20px rgba(255, 46, 147, 0.4); } 100% { box-shadow: 0 15px 40px rgba(0, 240, 255, 0.6); } }
-
-    /* ==========================================================================
-       8. MODERN MODALS
-       ========================================================================== */
-    .modal-backdrop {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.7); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
-      z-index: 200; opacity: 0; pointer-events: none; transition: 0.4s;
-      display: flex; align-items: flex-end;
-    }
-    .modal-backdrop.active { opacity: 1; pointer-events: all; }
-    
-    .modal-sheet {
-      width: 100%; background: rgba(20, 20, 25, 0.95);
-      border-radius: 36px 36px 0 0; padding: 32px 24px calc(var(--safe-bottom) + 24px);
-      transform: translateY(100%); transition: transform 0.6s var(--ease-spring);
-      border-top: 1px solid rgba(255,255,255,0.1); box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
-    }
-    .modal-backdrop.active .modal-sheet { transform: translateY(0); }
-
-    .modal-drag-pill { width: 40px; height: 5px; background: rgba(255,255,255,0.2); border-radius: 5px; margin: -16px auto 24px; }
-    .modal-sheet h2 { font-size: 24px; margin-bottom: 24px; background: linear-gradient(90deg, #fff, var(--brand-secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    
-    .input-group { margin-bottom: 16px; }
-    .input-group input {
-      width: 100%; padding: 20px; border-radius: 20px;
-      background: rgba(255,255,255,0.05); border: 1px solid var(--surface-border);
-      color: #fff; font-size: 16px; outline: none; transition: 0.3s;
-    }
-    .input-group input:focus { border-color: var(--brand-primary); background: rgba(255, 46, 147, 0.05); box-shadow: 0 0 15px rgba(255, 46, 147, 0.2); transform: scale(1.02); }
-
-    .file-upload-wrapper {
-      position: relative; width: 100%; height: 110px;
-      border: 2px dashed rgba(255,255,255,0.2); border-radius: 20px;
-      display: flex; align-items: center; justify-content: center;
-      color: var(--text-300); overflow: hidden; margin-bottom: 16px; transition: 0.3s;
-    }
-    .file-upload-wrapper:active { transform: scale(0.98); background: rgba(255,255,255,0.05); }
-    .file-upload-wrapper input[type="file"] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-    .image-preview { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-size: cover; background-position: center; display: none; }
-
-    .btn-submit {
-      width: 100%; padding: 20px; border-radius: 20px; border: none;
-      background: var(--text-100); color: var(--bg-base); font-size: 18px; font-weight: 700;
-      cursor: pointer; transition: 0.3s var(--ease-spring); margin-top: 10px;
-    }
-    .btn-submit:active { transform: scale(0.95); background: var(--brand-secondary); }
-
-    .loader { display: none; border: 3px solid rgba(0,0,0,0.1); border-top-color: var(--bg-base); border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; margin: 0 auto; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .empty-state { text-align: center; color: var(--text-300); margin-top: 50vh; transform: translateY(-50%); font-size: 18px; animation: popIn 0.5s var(--ease-out); }
-    @keyframes popIn { from { opacity: 0; transform: translateY(-30%) scale(0.9); } to { opacity: 1; transform: translateY(-50%) scale(1); } }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(150,150,150,0.3); }
+    ::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; }
+    .dark ::-webkit-calendar-picker-indicator { filter: invert(1); }
   </style>
+
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
 </head>
 <body>
+  <div id="root"></div>
 
-  <!-- Фон (Аврора) -->
-  <div class="aurora-bg"></div>
-  
-  <!-- Генерация летающих частиц через JS -->
-  <div class="particles-layer" id="particlesLayer"></div>
+  <script type="text/babel">
+    const { useState, useEffect, useContext, createContext, useRef } = React;
+    const { motion, AnimatePresence } = window.Motion;
 
-  <!-- Шапка -->
-  <header class="app-header">
-    <div class="header-top">
-      <div class="app-title">Our Space ✨</div>
-      <div class="total-sum-badge" id="totalSumBadge" style="display: none;">
-        <span id="sumValue">0</span> <span>₽</span>
-      </div>
-    </div>
+    // --- Утилиты ---
+    const generateId = () => Math.random().toString(36).substr(2, 9);
+    const getTodayStr = () => new Date().toISOString().split('T')[0];
     
-    <div class="tabs-container" id="tabsContainer"></div>
-  </header>
+    // --- Иконки ---
+    const IconHome = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
+    const IconList = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>;
+    const IconClock = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+    const IconCalendar = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
+    const IconArchive = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>;
+    const IconSettings = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>;
+    const IconChevronRight = ({ className = "" }) => <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>;
+    const IconCircle = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/></svg>;
+    const IconCheckCircle = ({ className = "" }) => <svg className={className} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>;
+    const IconTrash = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>;
+    const IconPlus = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
+    const IconAlertCircle = ({ className = "" }) => <svg className={className} width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>;
+    const IconTimer = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
+    const IconSearch = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>;
+    const IconFileText = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>;
+    const IconSun = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>;
+    const IconMoon = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>;
 
-  <!-- Список -->
-  <main class="main-scroll" id="mainScroll">
-    <div class="tasks-grid" id="tasksList">
-      <div class="empty-state">Загрузка магии... 🌌</div>
-    </div>
-  </main>
+    // --- Стейт Менеджмент (Контекст) ---
+    const TaskContext = createContext();
 
-  <button class="fab" id="fabBtn"></button>
+    const initialData = [
+      { id: '1', title: 'Основы алгоритмов', subject: 'Информатика', description: 'Решить задачи со звездочкой из главы 3. Обратить внимание на сортировку слиянием.', priority: 'high', color: '#6366F1', status: 'active', parentId: null, deadline: getTodayStr(), createdAt: new Date().toISOString() },
+      { id: '2', title: 'Повторить теорию', subject: '', description: '', priority: 'normal', color: '#6366F1', status: 'completed', parentId: '1', deadline: '', createdAt: new Date().toISOString() },
+    ];
 
-  <!-- Модалки -->
-  <div class="modal-backdrop" id="taskModal">
-    <div class="modal-sheet">
-      <div class="modal-drag-pill"></div>
-      <h2>Добавить мечту</h2>
-      <div class="input-group"><input type="text" id="taskTitle" placeholder="Что это? (Например: Яндекс дропс)"></div>
-      <div class="input-group"><input type="text" id="taskPrice" placeholder="Цена или описание (+- 6500₽)"></div>
-      <div class="file-upload-wrapper" id="uploadWrapper">
-        <span id="uploadText">📸 Прикрепить фото</span>
-        <input type="file" id="taskImage" accept="image/*">
-        <div class="image-preview" id="imagePreview"></div>
-      </div>
-      <button class="btn-submit" id="saveTaskBtn"><span class="btn-text">Создать</span><div class="loader"></div></button>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="groupModal">
-    <div class="modal-sheet">
-      <div class="modal-drag-pill"></div>
-      <h2>Новая вселенная</h2>
-      <div class="input-group"><input type="text" id="groupName" placeholder="Название (Куда сходить, Покупки...)"></div>
-      <button class="btn-submit" id="saveGroupBtn">Создать</button>
-    </div>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-    import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-
-    // 🛑 ВАЖНО: ВСТАВЬ СЮДА СВОИ КЛЮЧИ!
-    const firebaseConfig = {
-      apiKey: "AIzaSyDz5wPBB05uU0q1vlQlgyGWmnyVwt3APk0",
-      authDomain: "ourwishlist-b6bd7.firebaseapp.com",
-      databaseURL: "https://ourwishlist-b6bd7-default-rtdb.firebaseio.com",
-      projectId: "ourwishlist-b6bd7",
-      storageBucket: "ourwishlist-b6bd7.firebasestorage.app",
-      messagingSenderId: "170914082679",
-      appId: "1:170914082679:web:2bc01fc83713a230fe3b72",
-      measurementId: "G-LTX7TDL8KP"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const storage = getStorage(app);
-
-    let localData = { categories: {}, tasks: {} };
-    let currentTabId = null;
-    let selectedFile = null;
-    let currentSum = 0; // Для анимации счетчика
-
-    // DOM Элементы
-    const tabsContainer = document.getElementById('tabsContainer');
-    const tasksList = document.getElementById('tasksList');
-    const totalSumBadge = document.getElementById('totalSumBadge');
-    const sumValue = document.getElementById('sumValue');
-
-    // =================================================================
-    // 🌌 ГЕНЕРАТОР ФОНОВЫХ ЧАСТИЦ
-    // =================================================================
-    function initBackgroundParticles() {
-      const layer = document.getElementById('particlesLayer');
-      for(let i = 0; i < 20; i++) {
-        let p = document.createElement('div');
-        p.className = 'particle';
-        p.style.left = Math.random() * 100 + 'vw';
-        p.style.animationDuration = (Math.random() * 5 + 5) + 's';
-        p.style.animationDelay = (Math.random() * 5) + 's';
-        layer.appendChild(p);
-      }
-    }
-    initBackgroundParticles();
-
-    // =================================================================
-    // 🎉 ВЗРЫВ ЧАСТИЦ (CONFETTI) ПРИ ВЫПОЛНЕНИИ ЗАДАЧИ
-    // =================================================================
-    window.burstConfetti = (x, y) => {
-      const colors = ['#FF2E93', '#00F0FF', '#8A2BE2', '#FFFFFF'];
-      for (let i = 0; i < 25; i++) {
-        const confetti = document.createElement('div');
-        confetti.className = 'confetti';
-        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
-        confetti.style.left = x + 'px';
-        confetti.style.top = y + 'px';
-        document.body.appendChild(confetti);
-
-        const angle = Math.random() * Math.PI * 2;
-        const velocity = 50 + Math.random() * 100;
-        const tx = Math.cos(angle) * velocity;
-        const ty = Math.sin(angle) * velocity - 50; // Гравитация вверх
-
-        confetti.animate([
-          { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-          { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
-        ], { duration: 600 + Math.random() * 400, easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)' });
-
-        setTimeout(() => confetti.remove(), 1000);
-      }
-    };
-
-    // =================================================================
-    // 🔢 АНИМАЦИЯ СЧЕТЧИКА СУММЫ (Бегущие цифры)
-    // =================================================================
-    function animateValue(start, end, duration) {
-      if (start === end) return;
-      let startTimestamp = null;
-      const step = (timestamp) => {
-        if (!startTimestamp) startTimestamp = timestamp;
-        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-        // Эффект замедления к концу
-        const easeOut = 1 - Math.pow(1 - progress, 3);
-        const current = Math.floor(start + easeOut * (end - start));
-        sumValue.innerText = current.toLocaleString('ru-RU');
-        if (progress < 1) {
-          window.requestAnimationFrame(step);
-        } else {
-          sumValue.innerText = end.toLocaleString('ru-RU');
-        }
-      };
-      window.requestAnimationFrame(step);
-    }
-
-    // Парсер суммы
-    function extractPrice(str) {
-      if (!str) return 0;
-      const clean = str.toLowerCase().replace(/\s+/g, '');
-      const matches = clean.match(/\d+(?:[.,]\d+)?(к|k)?/g);
-      if (!matches) return 0;
-      let maxNum = 0;
-      matches.forEach(m => {
-        let isK = m.includes('к') || m.includes('k');
-        let val = parseFloat(m.replace(/[кk]/g, '').replace(',', '.'));
-        if (isK) val *= 1000;
-        if (val > maxNum) maxNum = val;
+    const AppProvider = ({ children }) => {
+      const [tasks, setTasks] = useState(() => {
+        const saved = localStorage.getItem('studyflow-tasks');
+        return saved ? JSON.parse(saved) : initialData;
       });
-      return maxNum;
-    }
+      const [toasts, setToasts] = useState([]);
+      const [isDark, setIsDark] = useState(() => {
+        const saved = localStorage.getItem('studyflow-theme');
+        return saved ? saved === 'dark' : true;
+      });
 
-    // =================================================================
-    // СИНХРОНИЗАЦИЯ FIREBASE
-    // =================================================================
-    const dbRef = ref(db, 'app_data');
-    onValue(dbRef, (snapshot) => {
-      const data = snapshot.val();
-      if (!data) { localData = { categories: {}, tasks: {} }; renderUI(); return; }
-      localData = data;
-      const catIds = Object.keys(localData.categories || {});
-      if (!currentTabId || !localData.categories[currentTabId]) {
-        currentTabId = catIds[0] || null;
-      }
-      renderUI();
-    });
-
-    // =================================================================
-    // РЕНДЕР ИНТЕРФЕЙСА
-    // =================================================================
-    function renderUI() {
-      renderTabs();
-      renderTasks();
-    }
-
-    function renderTabs() {
-      tabsContainer.innerHTML = '';
-      const categories = localData.categories || {};
+      useEffect(() => { localStorage.setItem('studyflow-tasks', JSON.stringify(tasks)); }, [tasks]);
       
-      Object.keys(categories).forEach(catId => {
-        const cat = categories[catId];
-        const btn = document.createElement('div');
-        btn.className = `tab ${catId === currentTabId ? 'active' : ''}`;
-        btn.innerHTML = `${cat.name}`;
-        
-        let pressTimer;
-        btn.addEventListener('touchstart', () => { pressTimer = setTimeout(() => confirmDeleteGroup(catId), 1000); });
-        btn.addEventListener('touchend', () => clearTimeout(pressTimer));
-        btn.addEventListener('contextmenu', (e) => { e.preventDefault(); confirmDeleteGroup(catId); });
-        
-        btn.onclick = () => { currentTabId = catId; renderUI(); };
-        tabsContainer.appendChild(btn);
-      });
+      useEffect(() => {
+        localStorage.setItem('studyflow-theme', isDark ? 'dark' : 'light');
+        document.documentElement.classList.toggle('dark', isDark);
+      }, [isDark]);
 
-      const addBtn = document.createElement('div');
-      addBtn.className = 'add-tab-btn'; addBtn.innerText = '+';
-      addBtn.onclick = () => document.getElementById('groupModal').classList.add('active');
-      tabsContainer.appendChild(addBtn);
-    }
+      const addToast = (message, type = 'success') => {
+        const id = generateId();
+        setToasts(prev => [...prev, { id, message, type }]);
+        setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3000);
+      };
 
-    function renderTasks() {
-      tasksList.innerHTML = '';
-      const allTasks = localData.tasks || {};
+      const toggleComplete = (id) => {
+        setTasks(prev => {
+          const task = prev.find(t => t.id === id);
+          if (task.status !== 'completed') addToast('Отличная работа! 🎉');
+          return prev.map(t => t.id === id ? { ...t, status: t.status === 'completed' ? 'active' : 'completed' } : t);
+        });
+      };
 
-      if (!currentTabId) {
-        tasksList.innerHTML = '<div class="empty-state">Создайте первую вселенную 👆</div>';
-        totalSumBadge.style.display = 'none'; return;
-      }
+      const addTask = (task) => {
+        setTasks(prev => [...prev, { ...task, id: generateId(), createdAt: new Date().toISOString(), status: 'active' }]);
+        addToast('Сохранено');
+      };
 
-      let filteredTasks = Object.keys(allTasks).map(id => ({ id, ...allTasks[id] })).filter(task => task.catId === currentTabId);
+      const deleteTask = (id) => {
+        const getChildrenIds = (parentId, allTasks) => {
+          const children = allTasks.filter(t => t.parentId === parentId);
+          return children.reduce((acc, child) => [...acc, child.id, ...getChildrenIds(child.id, allTasks)], []);
+        };
+        const idsToRemove = [id, ...getChildrenIds(id, tasks)];
+        setTasks(prev => prev.filter(t => !idsToRemove.includes(t.id)));
+        addToast('Удалено', 'error');
+      };
 
-      if (filteredTasks.length === 0) {
-        tasksList.innerHTML = '<div class="empty-state">Тут пока пусто. Добавь мечту! ✨</div>';
-        totalSumBadge.style.display = 'none'; return;
-      }
+      const clearAll = () => { setTasks([]); addToast('База данных очищена', 'error'); };
 
-      filteredTasks.sort((a, b) => {
-        if (a.completed === b.completed) return b.createdAt - a.createdAt;
-        return a.completed ? 1 : -1;
-      });
+      return (
+        <TaskContext.Provider value={{ tasks, toggleComplete, addTask, deleteTask, clearAll, isDark, setIsDark }}>
+          {children}
+          <div className="fixed bottom-6 right-6 z-50 flex flex-col gap-2">
+            <AnimatePresence>
+              {toasts.map(toast => (
+                <motion.div key={toast.id} initial={{ opacity: 0, y: 20, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
+                  className={`px-5 py-3 rounded-xl shadow-lg border backdrop-blur-md text-sm font-medium flex items-center gap-3 ${toast.type === 'error' ? 'bg-red-500/10 border-red-500/30 text-red-500' : 'bg-emerald-500/10 border-emerald-500/30 text-emerald-500'} ${!isDark && 'bg-white'}`}>
+                  {toast.type === 'success' ? <IconCheckCircle className="w-5 h-5" /> : <IconTrash className="w-5 h-5" />}
+                  {toast.message}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        </TaskContext.Provider>
+      );
+    };
 
-      let newTargetSum = 0;
-      let delay = 0;
+    // --- Компоненты: Задачи ---
+    const TaskItem = ({ task, level = 0, onAddSubtask }) => {
+      const { tasks, toggleComplete, deleteTask } = useContext(TaskContext);
+      const [isExpanded, setIsExpanded] = useState(false);
+      const [showNotes, setShowNotes] = useState(false);
+      
+      const children = tasks.filter(t => t.parentId === task.id);
+      const isCompleted = task.status === 'completed';
+      const completedChildren = children.filter(c => c.status === 'completed').length;
+      const progress = children.length > 0 ? Math.round((completedChildren / children.length) * 100) : null;
+      const priorityColors = { low: 'textMuted', normal: 'hidden', high: 'text-orange-500', urgent: 'text-pink-500' };
 
-      filteredTasks.forEach(task => {
-        if (!task.completed) newTargetSum += extractPrice(task.desc);
+      return (
+        <div className="w-full">
+          <div className={`group flex flex-col p-3 rounded-xl transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-black/5 dark:hover:border-white/5 ${isCompleted ? 'opacity-50 grayscale' : 'opacity-100'}`}>
+            <div className="flex items-center gap-3">
+              <button onClick={() => setIsExpanded(!isExpanded)} className={`p-1 rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors ${children.length === 0 ? 'invisible' : ''}`}>
+                <motion.div animate={{ rotate: isExpanded ? 90 : 0 }}><IconChevronRight className="text-textMuted" /></motion.div>
+              </button>
+              
+              <button onClick={() => toggleComplete(task.id)} className="text-primary hover:scale-110 transition-transform flex-shrink-0">
+                {isCompleted ? <IconCheckCircle className="text-emerald-500" /> : <IconCircle />}
+              </button>
+              
+              <div className="flex-1 flex flex-col cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className={`text-[15px] font-medium transition-all ${isCompleted ? 'line-through text-textMuted' : 'text-textMain'}`}>{task.title}</span>
+                  {task.priority && task.priority !== 'normal' && <IconAlertCircle className={priorityColors[task.priority]} />}
+                  {progress !== null && !isCompleted && <span className="text-xs bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-full text-textMuted">{progress}%</span>}
+                </div>
+                
+                {(task.subject || task.deadline || task.description) && (
+                  <div className="flex gap-3 mt-1 text-xs text-textMuted items-center flex-wrap">
+                    {task.subject && <span className="bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded-md">{task.subject}</span>}
+                    {task.deadline && <span className={`flex items-center gap-1 ${task.deadline < getTodayStr() && !isCompleted ? 'text-red-500 font-medium' : ''}`}><IconClock /> {task.deadline}</span>}
+                    {task.description && (
+                      <button onClick={(e) => { e.stopPropagation(); setShowNotes(!showNotes); }} className="flex items-center gap-1 hover:text-primary transition-colors bg-black/5 dark:bg-white/5 px-2 py-0.5 rounded-md">
+                        <IconFileText /> Заметки
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                 <button onClick={() => onAddSubtask(task.id)} className="p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded-md text-textMuted hover:text-textMain" title="Добавить подзадачу"><IconPlus /></button>
+                 <button onClick={() => deleteTask(task.id)} className="p-1.5 hover:bg-red-500/10 rounded-md text-textMuted hover:text-red-500" title="Удалить"><IconTrash /></button>
+              </div>
+              <div className="w-2.5 h-2.5 rounded-full flex-shrink-0 shadow-sm" style={{ backgroundColor: task.color || '#6366F1' }} />
+            </div>
 
-        // ОБЕРТКА КАРТОЧКИ С ГРАДИЕНТНОЙ РАМКОЙ
-        const wrapper = document.createElement('div');
-        wrapper.className = `card-wrapper ${task.completed ? 'completed' : ''}`;
-        wrapper.style.animationDelay = `${delay}s`;
-        wrapper.id = `wrapper-${task.id}`;
-        delay += 0.05;
+            {/* Описание (Заметки) */}
+            <AnimatePresence>
+              {showNotes && task.description && (
+                <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                  <div className="ml-12 mt-2 p-3 bg-black/5 dark:bg-white/5 rounded-lg text-sm text-textMuted border border-glassBorder whitespace-pre-wrap">
+                    {task.description}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
-        let innerHTML = `<div class="card ${task.imageUrl ? 'has-image' : ''}">`;
-        if (task.imageUrl) {
-          innerHTML += `<div class="card-image-bg" style="background-image: url('${task.imageUrl}')"></div>`;
+            {/* Прогресс-бар для родительской задачи */}
+            {progress !== null && !isExpanded && !isCompleted && !showNotes && (
+               <div className="ml-12 mt-2 h-1 bg-black/5 dark:bg-white/5 rounded-full overflow-hidden w-1/3">
+                 <motion.div initial={{ width: 0 }} animate={{ width: `${progress}%` }} className="h-full bg-primary/80 rounded-full" />
+               </div>
+            )}
+          </div>
+
+          {/* Подзадачи */}
+          <AnimatePresence>
+            {isExpanded && children.length > 0 && (
+              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+                <div className="ml-7 pl-2 border-l border-glassBorder flex flex-col gap-1 mt-1 mb-2">
+                  {children.map(child => <TaskItem key={child.id} task={child} level={level + 1} onAddSubtask={onAddSubtask} />)}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      );
+    };
+
+    // --- Компоненты: Модальное окно создания ---
+    const AddTaskModal = ({ isOpen, onClose, parentId = null }) => {
+      const { addTask } = useContext(TaskContext);
+      if (!isOpen) return null;
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        addTask({
+          title: e.target.title.value,
+          subject: e.target.subject ? e.target.subject.value : '',
+          description: e.target.description.value,
+          deadline: e.target.deadline.value,
+          priority: e.target.priority.value,
+          color: e.target.color.value,
+          parentId
+        });
+        onClose();
+      };
+
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 dark:bg-black/60 backdrop-blur-sm">
+          <motion.div initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} className="glass-panel w-full max-w-lg p-6 bg-surface shadow-2xl">
+            <h2 className="text-xl font-bold mb-4 text-textMain">{parentId ? 'Новая подзадача' : 'Новое задание'}</h2>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <div>
+                <input name="title" required autoFocus className="w-full bg-black/5 dark:bg-black/20 border border-glassBorder rounded-lg px-4 py-3 text-textMain outline-none focus:border-primary transition-colors font-medium placeholder-textMuted" placeholder="Что нужно сделать?" />
+              </div>
+              
+              {!parentId && (
+                <div>
+                  <input name="subject" className="w-full bg-black/5 dark:bg-black/20 border border-glassBorder rounded-lg px-4 py-2.5 text-textMain outline-none focus:border-primary transition-colors text-sm placeholder-textMuted" placeholder="Предмет (например, Математика)" />
+                </div>
+              )}
+
+              <div>
+                <textarea name="description" rows="2" className="w-full bg-black/5 dark:bg-black/20 border border-glassBorder rounded-lg px-4 py-2.5 text-textMain outline-none focus:border-primary transition-colors text-sm placeholder-textMuted resize-none" placeholder="Дополнительные заметки или ссылки..." />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-black/5 dark:bg-black/20 border border-glassBorder rounded-lg px-3 py-2 flex items-center gap-2">
+                  <IconClock className="text-textMuted w-4 h-4" />
+                  <input name="deadline" type="date" className="w-full bg-transparent text-textMain outline-none text-sm" />
+                </div>
+                <div className="bg-black/5 dark:bg-black/20 border border-glassBorder rounded-lg px-3 py-2">
+                  <select name="priority" className="w-full bg-transparent text-textMain outline-none text-sm appearance-none cursor-pointer">
+                    <option value="low">Низкий приоритет</option>
+                    <option value="normal" selected>Обычный приоритет</option>
+                    <option value="high">Высокий 🔥</option>
+                    <option value="urgent">Срочный 🔴</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between mt-2 p-3 bg-black/5 dark:bg-white/5 rounded-lg border border-glassBorder">
+                <label className="text-sm text-textMuted">Цветовая метка</label>
+                <input name="color" type="color" defaultValue="#6366F1" className="h-8 w-12 bg-transparent cursor-pointer rounded" />
+              </div>
+              
+              <div className="flex justify-end gap-3 mt-2 pt-4 border-t border-glassBorder">
+                <button type="button" onClick={onClose} className="px-4 py-2 text-textMuted hover:text-textMain hover:bg-black/5 dark:hover:bg-white/5 rounded-lg transition-colors">Отмена</button>
+                <button type="submit" className="px-6 py-2 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg shadow-lg shadow-primary/30 transition-all active:scale-95">Сохранить</button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      );
+    };
+
+    // --- Разделы: Таймер Фокуса (Pomodoro) ---
+    const FocusTimerView = () => {
+      const [timeLeft, setTimeLeft] = useState(25 * 60);
+      const [isActive, setIsActive] = useState(false);
+      const [mode, setMode] = useState('focus'); // focus | break
+
+      useEffect(() => {
+        let interval = null;
+        if (isActive && timeLeft > 0) {
+          interval = setInterval(() => setTimeLeft(prev => prev - 1), 1000);
+        } else if (timeLeft === 0) {
+          setIsActive(false);
+          // Play sound ideally, but we'll just show an alert or switch mode
+          alert(mode === 'focus' ? 'Время отдыха!' : 'Пора за работу!');
+          switchMode(mode === 'focus' ? 'break' : 'focus');
         }
+        return () => clearInterval(interval);
+      }, [isActive, timeLeft, mode]);
 
-        // --- НОВАЯ СТРОГАЯ FLEX-СЕТКА ---
-        innerHTML += `
-          <div class="card-content">
-            <div class="card-header">
-              
-              <!-- 1. Чекбокс слева -->
-              <div class="checkbox-container" id="check-${task.id}" onclick="handleCheck(event, '${task.id}', ${!task.completed})">
-                <div class="ripple"></div>
-                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              </div>
-              
-              <!-- 2. Текст по центру -->
-              <div class="card-info">
-                <div class="card-title">${escapeHtml(task.title)}</div>
-                ${task.desc ? `<div class="card-price">${escapeHtml(task.desc)}</div>` : ''}
-              </div>
-              
-              <!-- 3. Кнопка удаления справа -->
-              <div class="delete-btn" onclick="animateDelete('${task.id}')">
-                <svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path></svg>
-              </div>
+      const switchMode = (newMode) => {
+        setMode(newMode);
+        setTimeLeft(newMode === 'focus' ? 25 * 60 : 5 * 60);
+        setIsActive(false);
+      };
 
+      const formatTime = (seconds) => {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+      };
+
+      const progress = mode === 'focus' ? ((25 * 60 - timeLeft) / (25 * 60)) * 100 : ((5 * 60 - timeLeft) / (5 * 60)) * 100;
+
+      return (
+        <div className="animate-fade-in flex flex-col items-center justify-center h-full pb-20">
+          <div className="glass-panel p-10 flex flex-col items-center relative overflow-hidden w-full max-w-md">
+            {/* Декоративный фон прогресса */}
+            <div className="absolute bottom-0 left-0 h-1 bg-primary transition-all duration-1000 ease-linear" style={{ width: `${progress}%` }}></div>
+            
+            <div className="flex gap-4 mb-8 bg-black/5 dark:bg-white/5 p-1.5 rounded-xl border border-glassBorder">
+              <button onClick={() => switchMode('focus')} className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${mode === 'focus' ? 'bg-primary text-white shadow-md' : 'text-textMuted hover:text-textMain'}`}>Фокус (25м)</button>
+              <button onClick={() => switchMode('break')} className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${mode === 'break' ? 'bg-emerald-500 text-white shadow-md' : 'text-textMuted hover:text-textMain'}`}>Отдых (5м)</button>
+            </div>
+
+            <div className="text-7xl font-bold text-textMain tracking-tighter mb-8 tabular-nums drop-shadow-sm">
+              {formatTime(timeLeft)}
+            </div>
+
+            <div className="flex gap-4 w-full">
+              <button onClick={() => setIsActive(!isActive)} className={`flex-1 py-3 rounded-xl font-bold text-lg shadow-lg transition-transform active:scale-95 ${isActive ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-primary text-white'}`}>
+                {isActive ? 'ПАУЗА' : 'СТАРТ'}
+              </button>
+              <button onClick={() => switchMode(mode)} className="px-6 py-3 bg-black/5 dark:bg-white/5 text-textMuted hover:text-textMain rounded-xl font-medium transition-colors border border-glassBorder">
+                Сброс
+              </button>
             </div>
           </div>
-        </div>`;
+          <p className="mt-6 text-textMuted text-sm text-center max-w-xs">
+            Метод Помодоро помогает сохранять концентрацию и избегать выгорания при выполнении долгих заданий.
+          </p>
+        </div>
+      );
+    };
 
-        wrapper.innerHTML = innerHTML;
-        tasksList.appendChild(wrapper);
-      });
-
-      // Логика отображения и анимации суммы
-      if (newTargetSum > 0) {
-        totalSumBadge.style.display = 'flex';
-        if (newTargetSum !== currentSum) {
-          animateValue(currentSum, newTargetSum, 1000);
-          currentSum = newTargetSum;
-        }
-      } else {
-        totalSumBadge.style.display = 'none';
-        currentSum = 0;
-      }
-    }
-
-    function escapeHtml(text) { return text.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m])); }
-
-    // =================================================================
-    // ВЗАИМОДЕЙСТВИЯ: АНИМАЦИИ ВЫПОЛНЕНИЯ И УДАЛЕНИЯ
-    // =================================================================
-    window.handleCheck = (event, taskId, status) => {
-      // Запуск анимации Ripple
-      const checkBtn = document.getElementById(`check-${taskId}`);
-      checkBtn.classList.add('animating');
+    // --- Разделы: Главная (Дашборд с Поиском) ---
+    const Dashboard = ({ openModal }) => {
+      const { tasks } = useContext(TaskContext);
+      const [search, setSearch] = useState('');
       
-      if (status) { // Если выполнили
-        const rect = checkBtn.getBoundingClientRect();
-        window.burstConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
-      }
+      const allTasks = tasks.filter(t => t.parentId === null && t.status === 'active');
+      const filteredTasks = allTasks.filter(t => t.title.toLowerCase().includes(search.toLowerCase()) || (t.subject && t.subject.toLowerCase().includes(search.toLowerCase())));
+      
+      // Простая статистика
+      const totalRoot = tasks.filter(t => t.parentId === null).length;
+      const completedRoot = tasks.filter(t => t.parentId === null && t.status === 'completed').length;
+      const progressTotal = totalRoot === 0 ? 0 : Math.round((completedRoot / totalRoot) * 100);
 
-      // Небольшая задержка перед отправкой в базу, чтобы увидеть анимацию
-      setTimeout(() => {
-        update(ref(db, `app_data/tasks/${taskId}`), { completed: status });
-      }, 300);
+      return (
+        <div className="animate-fade-in pb-20">
+          <header className="mb-8 flex flex-col md:flex-row justify-between md:items-end gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-textMain mb-2 tracking-tight">Рабочая панель</h1>
+              <div className="flex items-center gap-3">
+                <div className="w-32 h-2 bg-black/5 dark:bg-white/10 rounded-full overflow-hidden">
+                  <div className="h-full bg-emerald-500" style={{ width: `${progressTotal}%` }}></div>
+                </div>
+                <span className="text-textMuted text-sm">Общий прогресс: {progressTotal}%</span>
+              </div>
+            </div>
+            
+            <div className="relative w-full md:w-64">
+              <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-textMuted w-4 h-4" />
+              <input 
+                type="text" 
+                placeholder="Поиск заданий..." 
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-surface border border-glassBorder rounded-xl pl-9 pr-4 py-2.5 text-textMain outline-none focus:border-primary shadow-sm text-sm transition-all"
+              />
+            </div>
+          </header>
+
+          <div className="glass-panel p-2">
+            <div className="flex justify-between items-center p-4 mb-2 border-b border-glassBorder">
+              <h2 className="text-lg font-semibold text-textMain">Список заданий {search && <span className="text-primary text-sm font-normal">({filteredTasks.length} найдено)</span>}</h2>
+              <button onClick={() => openModal()} className="bg-primary/10 text-primary hover:bg-primary hover:text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 border border-primary/20">
+                <IconPlus /> Добавить
+              </button>
+            </div>
+            <div className="p-2 min-h-[300px]">
+              {allTasks.length === 0 ? 
+                <div className="text-center text-textMuted py-20 flex flex-col items-center"><IconCheckCircle className="w-12 h-12 mb-4 opacity-20"/>Все задания выполнены!</div> : 
+                filteredTasks.length === 0 ?
+                <div className="text-center text-textMuted py-10">По запросу ничего не найдено.</div> :
+                filteredTasks.map(task => <TaskItem key={task.id} task={task} onAddSubtask={openModal} />)
+              }
+            </div>
+          </div>
+        </div>
+      );
     };
 
-    window.animateDelete = (taskId) => {
-      if(confirm('Точно удалить цель?')) {
-        const wrapper = document.getElementById(`wrapper-${taskId}`);
-        wrapper.classList.add('removing'); // Класс сжимает карточку
-        setTimeout(() => {
-          remove(ref(db, `app_data/tasks/${taskId}`));
-        }, 300); // Ждем конец анимации, затем удаляем из базы
-      }
+    // --- Разделы: Настройки (Тема) ---
+    const SettingsView = () => {
+      const { clearAll, tasks, isDark, setIsDark } = useContext(TaskContext);
+      
+      return (
+        <div className="animate-fade-in max-w-2xl">
+          <h1 className="text-3xl font-bold text-textMain mb-8">Настройки</h1>
+          <div className="glass-panel p-6 flex flex-col gap-8">
+            
+            <div className="flex items-center justify-between border-b border-glassBorder pb-6">
+              <div>
+                <h3 className="text-lg font-medium text-textMain mb-1">Оформление</h3>
+                <p className="text-textMuted text-sm">Выберите предпочтительную тему.</p>
+              </div>
+              <button onClick={() => setIsDark(!isDark)} className="flex items-center gap-2 px-4 py-2 bg-black/5 dark:bg-white/10 text-textMain rounded-xl border border-glassBorder hover:border-primary transition-colors">
+                {isDark ? <IconSun /> : <IconMoon />}
+                {isDark ? 'Светлая тема' : 'Темная тема'}
+              </button>
+            </div>
+
+            <div className="border-b border-glassBorder pb-6">
+              <h3 className="text-lg font-medium text-textMain mb-2">Резервное копирование</h3>
+              <p className="text-textMuted text-sm mb-4">Сохраните свои данные в файл (JSON).</p>
+              <button onClick={() => {
+                const blob = new Blob([JSON.stringify(tasks, null, 2)], { type: "application/json" });
+                const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'studyflow.json'; a.click();
+              }} className="px-4 py-2 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 text-textMain rounded-lg transition-colors border border-glassBorder">Экспорт данных</button>
+            </div>
+            
+            <div>
+              <h3 className="text-lg font-medium text-red-500 mb-2">Опасная зона</h3>
+              <p className="text-textMuted text-sm mb-4">Полное удаление всех ваших заданий и истории.</p>
+              <button onClick={() => { if(window.confirm('Точно удалить все данные? Это действие необратимо.')) clearAll(); }} className="px-4 py-2 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors border border-red-500/20">Очистить базу данных</button>
+            </div>
+          </div>
+        </div>
+      );
     };
 
-    window.confirmDeleteGroup = (catId) => {
-      if(confirm('Удалить вселенную и ВСЕ карточки в ней?')) {
-        const tasks = localData.tasks || {};
-        Object.keys(tasks).forEach(id => {
-          if (tasks[id].catId === catId) remove(ref(db, `app_data/tasks/${id}`));
-        });
-        remove(ref(db, `app_data/categories/${catId}`));
-        if (currentTabId === catId) currentTabId = null;
-      }
+    // --- Главный Лейаут ---
+    const App = () => {
+      const [currentView, setCurrentView] = useState('dashboard');
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const [activeParentId, setActiveParentId] = useState(null);
+      const { isDark, setIsDark } = useContext(TaskContext);
+
+      const navItems = [
+        { id: 'dashboard', icon: IconHome, label: 'Главная' },
+        { id: 'focus', icon: IconTimer, label: 'Таймер Фокуса' },
+      ];
+      
+      const dataItems = [
+        { id: 'history', icon: IconArchive, label: 'История' },
+        { id: 'settings', icon: IconSettings, label: 'Настройки' }
+      ]
+
+      const openModal = (parentId = null) => { setActiveParentId(parentId); setIsModalOpen(true); };
+
+      const NavButton = ({ item }) => (
+        <button onClick={() => setCurrentView(item.id)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all w-full text-left ${currentView === item.id ? 'bg-primary/10 text-primary border border-primary/20 font-medium shadow-sm' : 'text-textMuted hover:bg-black/5 dark:hover:bg-white/5 hover:text-textMain border border-transparent'}`}>
+          <item.icon /> {item.label}
+        </button>
+      );
+
+      return (
+        <div className="flex h-screen w-full">
+          {/* Боковая навигация */}
+          <aside className="w-64 h-full border-r border-glassBorder bg-surface/50 backdrop-blur-xl flex flex-col p-6 flex-shrink-0 z-10 shadow-2xl">
+            <div className="flex items-center gap-3 mb-10 text-textMain cursor-pointer hover:scale-105 transition-transform" onClick={() => setCurrentView('dashboard')}>
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/20"><span className="font-bold text-lg text-white">S</span></div>
+              <span className="text-xl font-bold tracking-wide">StudyFlow</span>
+            </div>
+            
+            <div className="text-xs font-bold uppercase tracking-wider text-textMuted mb-2 pl-2">Инструменты</div>
+            <nav className="flex flex-col gap-1 mb-8">
+              {navItems.map(item => <NavButton key={item.id} item={item} />)}
+            </nav>
+
+            <div className="text-xs font-bold uppercase tracking-wider text-textMuted mb-2 pl-2">Данные</div>
+            <nav className="flex flex-col gap-1 flex-1">
+              {dataItems.map(item => <NavButton key={item.id} item={item} />)}
+            </nav>
+
+            <div className="pt-4 border-t border-glassBorder mt-auto">
+              <button onClick={() => setIsDark(!isDark)} className="flex justify-between items-center px-4 py-3 rounded-xl transition-all w-full text-left text-textMuted hover:bg-black/5 dark:hover:bg-white/5 hover:text-textMain border border-glassBorder">
+                <span className="flex items-center gap-2"><IconSun className="w-4 h-4"/> Тема</span>
+                <div className={`w-8 h-4 rounded-full p-0.5 transition-colors ${isDark ? 'bg-primary' : 'bg-gray-300'}`}>
+                   <div className={`w-3 h-3 bg-white rounded-full shadow-sm transition-transform ${isDark ? 'translate-x-4' : ''}`}></div>
+                </div>
+              </button>
+            </div>
+          </aside>
+
+          {/* Основной контент */}
+          <main className="flex-1 h-full overflow-y-auto p-8 relative">
+            {currentView === 'dashboard' && <Dashboard openModal={openModal} />}
+            {currentView === 'focus' && <FocusTimerView />}
+            {currentView === 'history' && <div className="text-textMain"><h1 className="text-3xl font-bold mb-8">История</h1><div className="glass-panel p-10 text-center text-textMuted">Здесь будут ваши выполненные задания</div></div>}
+            {currentView === 'settings' && <SettingsView />}
+          </main>
+        </div>
+      );
     };
 
-    // =================================================================
-    // МОДАЛКИ И ФАЙЛЫ
-    // =================================================================
-    const modals = document.querySelectorAll('.modal-backdrop');
-    document.getElementById('fabBtn').onclick = () => {
-      if(!currentTabId) return alert("Сначала создайте группу!");
-      document.getElementById('taskModal').classList.add('active');
-    };
+    const RootApp = () => (
+      <AppProvider>
+        <App />
+        <TaskContext.Consumer>
+          {({ tasks }) => <AddTaskModal isOpen={false} onClose={() => {}} />} 
+          {/* Fake render for AddTaskModal context wrapper structure below */}
+        </TaskContext.Consumer>
+      </AppProvider>
+    );
     
-    function hideModals() {
-      modals.forEach(m => m.classList.remove('active'));
-      document.getElementById('taskTitle').value = ''; 
-      document.getElementById('taskPrice').value = ''; 
-      document.getElementById('taskImage').value = '';
-      document.getElementById('imagePreview').style.display = 'none'; selectedFile = null;
-      document.getElementById('groupName').value = '';
+    // Proper Modal Injection
+    const AppWrapper = () => {
+       const [isModalOpen, setIsModalOpen] = useState(false);
+       return <RootApp />
     }
 
-    modals.forEach(modal => modal.addEventListener('click', (e) => { if (e.target === modal) hideModals(); }));
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    
+    // Переписываем сборку, чтобы Модальное окно могло открываться из App напрямую
+    const FinalApp = () => {
+      return (
+        <AppProvider>
+          <AppWithModal />
+        </AppProvider>
+      )
+    }
 
-    document.getElementById('taskImage').addEventListener('change', function(e) {
-      const file = e.target.files[0];
-      if (file) {
-        selectedFile = file;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          const preview = document.getElementById('imagePreview');
-          preview.style.backgroundImage = `url(${e.target.result})`;
-          preview.style.display = 'block';
-        }
-        reader.readAsDataURL(file);
-      }
-    });
+    const AppWithModal = () => {
+      // Re-implementing the app shell here to keep modal state high
+      const [currentView, setCurrentView] = useState('dashboard');
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const [activeParentId, setActiveParentId] = useState(null);
+      const { isDark, setIsDark } = useContext(TaskContext);
 
-    document.getElementById('saveTaskBtn').onclick = async () => {
-      const title = document.getElementById('taskTitle').value.trim();
-      const desc = document.getElementById('taskPrice').value.trim();
-      if (!title) return;
+      const navItems = [{ id: 'dashboard', icon: IconHome, label: 'Главная' }, { id: 'focus', icon: IconTimer, label: 'Таймер Фокуса' }];
+      const dataItems = [{ id: 'history', icon: IconArchive, label: 'История' }, { id: 'settings', icon: IconSettings, label: 'Настройки' }];
+      
+      const openModal = (parentId = null) => { setActiveParentId(parentId); setIsModalOpen(true); };
 
-      const btn = document.getElementById('saveTaskBtn');
-      btn.querySelector('.btn-text').style.display = 'none'; 
-      btn.querySelector('.loader').style.display = 'block';
-      btn.disabled = true;
+      const NavButton = ({ item }) => (
+        <button onClick={() => setCurrentView(item.id)} className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all w-full text-left ${currentView === item.id ? 'bg-primary/10 text-primary border border-primary/20 font-medium shadow-sm' : 'text-textMuted hover:bg-black/5 dark:hover:bg-white/5 hover:text-textMain border border-transparent'}`}>
+          <item.icon /> {item.label}
+        </button>
+      );
 
-      let imageUrl = null;
-      if (selectedFile) {
-        try {
-          const fileRef = storageRef(storage, `images/${Date.now()}_${selectedFile.name}`);
-          const snapshot = await uploadBytes(fileRef, selectedFile);
-          imageUrl = await getDownloadURL(snapshot.ref);
-        } catch (error) {
-          alert("Ошибка загрузки. Проверь Storage!");
-        }
-      }
+      return (
+        <div className="flex h-screen w-full">
+          <aside className="w-16 md:w-64 h-full border-r border-glassBorder bg-surface/50 backdrop-blur-xl flex flex-col md:p-6 p-2 flex-shrink-0 z-10 shadow-2xl transition-all">
+            <div className="flex items-center gap-3 mb-10 text-textMain cursor-pointer md:justify-start justify-center" onClick={() => setCurrentView('dashboard')}>
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-lg shadow-primary/20 flex-shrink-0"><span className="font-bold text-lg text-white">S</span></div>
+              <span className="text-xl font-bold tracking-wide hidden md:block">StudyFlow</span>
+            </div>
+            
+            <div className="text-xs font-bold uppercase tracking-wider text-textMuted mb-2 pl-2 hidden md:block">Инструменты</div>
+            <nav className="flex flex-col gap-1 mb-8">
+              {navItems.map(item => <NavButton key={item.id} item={item} />)}
+            </nav>
 
-      await set(push(ref(db, 'app_data/tasks')), { catId: currentTabId, title, desc, imageUrl, completed: false, createdAt: Date.now() });
+            <div className="text-xs font-bold uppercase tracking-wider text-textMuted mb-2 pl-2 hidden md:block">Данные</div>
+            <nav className="flex flex-col gap-1 flex-1">
+              {dataItems.map(item => <NavButton key={item.id} item={item} />)}
+            </nav>
 
-      btn.querySelector('.btn-text').style.display = 'block'; 
-      btn.querySelector('.loader').style.display = 'none';
-      btn.disabled = false;
-      hideModals();
-    };
+            <div className="pt-4 border-t border-glassBorder mt-auto">
+              <button onClick={() => setIsDark(!isDark)} className="flex justify-center md:justify-between items-center p-3 md:px-4 md:py-3 rounded-xl transition-all w-full text-textMuted hover:bg-black/5 dark:hover:bg-white/5 hover:text-textMain border border-glassBorder">
+                <span className="flex items-center gap-2"><IconSun className="w-4 h-4"/> <span className="hidden md:inline">Тема</span></span>
+                <div className={`hidden md:block w-8 h-4 rounded-full p-0.5 transition-colors ${isDark ? 'bg-primary' : 'bg-gray-300'}`}>
+                   <div className={`w-3 h-3 bg-white rounded-full shadow-sm transition-transform ${isDark ? 'translate-x-4' : ''}`}></div>
+                </div>
+              </button>
+            </div>
+          </aside>
 
-    document.getElementById('saveGroupBtn').onclick = () => {
-      const name = document.getElementById('groupName').value.trim();
-      if (!name) return;
-      const newCatRef = push(ref(db, 'app_data/categories'));
-      set(newCatRef, { name: name, createdAt: Date.now() }).then(() => {
-        currentTabId = newCatRef.key;
-        hideModals();
-      });
-    };
+          <main className="flex-1 h-full overflow-y-auto p-4 md:p-8 relative">
+            {currentView === 'dashboard' && <Dashboard openModal={openModal} />}
+            {currentView === 'focus' && <FocusTimerView />}
+            {currentView === 'history' && (
+               <div className="animate-fade-in text-textMain pb-20">
+                 <h1 className="text-3xl font-bold mb-8">История</h1>
+                 <div className="glass-panel p-6">
+                   <TaskContext.Consumer>
+                     {({ tasks }) => {
+                       const completed = tasks.filter(t => t.status === 'completed');
+                       return completed.length === 0 ? <p className="text-textMuted text-center py-10">Нет выполненных заданий.</p> : 
+                       <div className="flex flex-col gap-2">
+                         {completed.map(t => (
+                           <div key={t.id} className="flex items-center gap-3 p-3 bg-black/5 dark:bg-white/5 rounded-xl border border-glassBorder opacity-70">
+                             <IconCheckCircle className="text-emerald-500" />
+                             <span className="line-through text-textMuted">{t.title}</span>
+                           </div>
+                         ))}
+                       </div>
+                     }}
+                   </TaskContext.Consumer>
+                 </div>
+               </div>
+            )}
+            {currentView === 'settings' && <SettingsView />}
+          </main>
+          
+          <AddTaskModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} parentId={activeParentId} />
+        </div>
+      );
+    }
+
+    root.render(<FinalApp />);
   </script>
 </body>
 </html>
