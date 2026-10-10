@@ -1,643 +1,1100 @@
 <!DOCTYPE html>
-<html lang="ru" class="dark">
+<html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>StudyFlow - Premium Planner</title>
-  
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: { 
-            background: 'var(--bg-color)', 
-            surface: 'var(--surface-color)', 
-            primary: 'var(--primary-color)', 
-            primaryHover: 'var(--primary-hover)',
-            glass: 'var(--glass-bg)',
-            glassBorder: 'var(--glass-border)',
-            textMain: 'var(--text-main)',
-            textMuted: 'var(--text-muted)'
-          },
-          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Mafia Omni OS - Grand Edition</title>
+    
+    <!-- React & Babel -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'scale-up': 'scaleUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'slide-up': 'slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow-amber': 'pulseGlowAmber 2.5s infinite',
+                        'pulse-glow-rose': 'pulseGlowRose 2s infinite',
+                        'pulse-glow-indigo': 'pulseGlowIndigo 3s infinite',
+                        'heartbeat': 'heartbeat 1.2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'spin-slow': 'spin 20s linear infinite',
+                        'deal-cards': 'dealCards 2.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        scaleUp: { '0%': { opacity: '0', transform: 'scale(0.90)' }, '100%': { opacity: '1', transform: 'scale(1)' } },
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(40px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-12px)' } },
+                        pulseGlowAmber: { '0%, 100%': { boxShadow: '0 0 15px rgba(245,158,11,0.2)' }, '50%': { boxShadow: '0 0 45px rgba(245,158,11,0.7)' } },
+                        pulseGlowRose: { '0%, 100%': { boxShadow: '0 0 15px rgba(225,29,72,0.2)' }, '50%': { boxShadow: '0 0 45px rgba(225,29,72,0.7)' } },
+                        pulseGlowIndigo: { '0%, 100%': { boxShadow: '0 0 15px rgba(99,102,241,0.2)' }, '50%': { boxShadow: '0 0 50px rgba(99,102,241,0.8)' } },
+                        heartbeat: { '0%, 100%': { transform: 'scale(1)', opacity: '1' }, '15%': { transform: 'scale(1.15)', opacity: '0.9' }, '30%': { transform: 'scale(1)', opacity: '1' }, '45%': { transform: 'scale(1.15)', opacity: '0.9' }, '60%': { transform: 'scale(1)', opacity: '1' } },
+                        dealCards: { '0%': { opacity: '0', transform: 'translateY(100px) scale(0.5) rotate(10deg)' }, '100%': { opacity: '1', transform: 'translateY(0) scale(1) rotate(0deg)' } }
+                    }
+                }
+            },
+            plugins: [
+                function ({ addUtilities }) {
+                    addUtilities({
+                        '.preserve-3d': { 'transform-style': 'preserve-3d' },
+                        '.backface-hidden': { 'backface-visibility': 'hidden' },
+                        '.rotate-y-180': { transform: 'rotateY(180deg)' },
+                    })
+                }
+            ]
         }
-      }
-    }
-  </script>
+    </script>
 
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-    
-    /* Тотально салатовая светлая тема */
-    :root {
-      --bg-color: #9fc792;
-      --surface-color: rgba(255, 255, 255, 0.55);
-      --glass-bg: rgba(255, 255, 255, 0.55);
-      --glass-border: rgba(255, 255, 255, 0.8); 
-      --text-main: #1a2916;
-      --text-muted: #3a5231;        
-      --primary-color: #3e6034;
-      --primary-hover: #2b4523;
-    }
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;900&family=Space+Grotesk:wght@500;700&display=swap');
+        
+        body { 
+            background-color: #010205; 
+            color: #f8fafc; 
+            overflow-x: hidden; 
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Outfit', sans-serif;
+            perspective: 1200px;
+        }
+        
+        .font-tech { font-family: 'Space Grotesk', sans-serif; }
 
-    /* Темная тема (классика с салатовым акцентом) */
-    .dark {
-      --bg-color: #0f120f;
-      --surface-color: #161a16;
-      --glass-bg: rgba(255, 255, 255, 0.03);
-      --glass-border: rgba(255, 255, 255, 0.08);
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
-      --primary-color: #9fc792;
-      --primary-hover: #8ab07d;
-    }
+        button { touch-action: manipulation; outline: none; }
+        
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(99,102,241,0.5); }
 
-    body {
-      background-color: var(--bg-color); color: var(--text-main);
-      margin: 0; overflow: hidden;
-      transition: background-color 0.3s ease, color 0.3s ease;
-    }
-    
-    .glass-panel {
-      background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
-      border: 1px solid var(--glass-border); border-radius: 1.25rem; 
-      box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.08);
-    }
-    
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--glass-border); border-radius: 10px; }
-    ::-webkit-calendar-picker-indicator { cursor: pointer; opacity: 0.6; }
-    .dark ::-webkit-calendar-picker-indicator { filter: invert(1); }
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  </style>
+        .omni-glass {
+            background: rgba(13, 17, 35, 0.7);
+            backdrop-filter: blur(40px) saturate(150%);
+            -webkit-backdrop-filter: blur(40px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
 
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+        .omni-card {
+            background: linear-gradient(160deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.005) 100%);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .omni-card:hover {
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            background: linear-gradient(160deg, rgba(99, 102, 241, 0.08) 0%, rgba(255, 255, 255, 0.01) 100%);
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 20px 40px -10px rgba(99, 102, 241, 0.15);
+        }
+
+        .bg-grid {
+            background-size: 60px 60px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+            -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 90%);
+        }
+
+        .player-card-container {
+            perspective: 1000px;
+        }
+        
+        .player-card-flipper {
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .player-card-flipper.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 2rem;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+        }
+        
+        .vote-bar-fill {
+            transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+    </style>
 </head>
-<body>
-  <div id="root"></div>
+<body class="antialiased">
+    <div id="root"></div>
 
-  <script type="text/babel">
-    const { useState, useEffect, useContext, createContext, useRef } = React;
-    const { motion, AnimatePresence } = window.Motion;
+    <script type="text/babel">
+        const { useState, useEffect, useRef, useMemo } = React;
 
-    // --- Утилиты ---
-    const generateId = () => Math.random().toString(36).substr(2, 9);
-    const getTodayStr = () => {
-      const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    };
-    
-    const getRelativeDateStr = (dateStr) => {
-      if (!dateStr) return '';
-      const today = new Date(getTodayStr()); const target = new Date(dateStr);
-      const diffDays = Math.round((target - today) / (1000 * 60 * 60 * 24));
-      
-      if (diffDays === 0) return 'Сегодня';
-      if (diffDays === 1) return 'Завтра';
-      if (diffDays === 2) return 'Послезавтра';
-      if (diffDays === -1) return 'Вчера (Просрочено)';
-      if (diffDays < -1) return `Просрочено на ${Math.abs(diffDays)} дн.`;
-      return target.toLocaleDateString('ru-RU', { day: 'numeric', month: 'short' });
-    };
+        const playOmniSound = (type) => {
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                const now = ctx.currentTime;
+                
+                const createOsc = (type, freq, vStart, vEnd, dur, wave='sine') => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = wave;
+                    osc.frequency.setValueAtTime(freq, now);
+                    gain.gain.setValueAtTime(vStart, now);
+                    gain.gain.exponentialRampToValueAtTime(vEnd, now + dur);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now);
+                    osc.stop(now + dur);
+                };
 
-    const getStartOfWeek = (date) => {
-      const d = new Date(date);
-      const day = d.getDay();
-      const diff = d.getDate() - day + (day === 0 ? -6 : 1); 
-      return new Date(d.setDate(diff));
-    };
-
-    const priorityScore = { urgent: 4, high: 3, normal: 2, low: 1 };
-    const priorityLabels = { urgent: 'Срочный 🔴', high: 'Высокий 🔥', normal: 'Обычный', low: 'Низкий' };
-    const monthNames = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
-    const dayNames = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-
-    // --- Иконки ---
-    const IconHome = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>;
-    const IconCalendar = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
-    const IconSettings = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>;
-    const IconChevronRight = ({ className = "" }) => <svg className={className} width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>;
-    const IconCircle = () => <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/></svg>;
-    const IconCheckCircle = ({ className = "" }) => <svg className={className} width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>;
-    const IconTrash = ({ className = "" }) => <svg className={className} width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>;
-    const IconEdit = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>;
-    const IconPlus = () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
-    const IconClock = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
-    const IconX = () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>;
-    const IconSun = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>;
-
-    // --- Стейт Менеджмент (Надежная миграция данных) ---
-    const TaskContext = createContext();
-
-    const AppProvider = ({ children }) => {
-      const [tasks, setTasks] = useState(() => {
-        // Умная миграция: проверяем старые ключи от новых к старым
-        for (let i = 10; i >= 1; i--) {
-          const saved = localStorage.getItem(`studyflow-tasks-v${i}`);
-          if (saved) return JSON.parse(saved);
-        }
-        // Самый старый резервный ключ
-        const legacy = localStorage.getItem('studyflow-tasks');
-        if (legacy) return JSON.parse(legacy);
-
-        return [{ id: '1', title: 'Создать проект', subject: 'Программирование', description: 'Завершить первую версию приложения.', priority: 'high', color: 'var(--primary-color)', status: 'active', parentId: null, deadline: getTodayStr(), createdAt: getTodayStr() }];
-      });
-      
-      const [toasts, setToasts] = useState([]);
-      
-      const [isDark, setIsDark] = useState(() => {
-        const saved = localStorage.getItem('studyflow-theme-settings');
-        return saved ? saved === 'dark' : false; // По умолчанию светлая
-      });
-
-      // Сохраняем всегда в актуальный ключ
-      useEffect(() => { localStorage.setItem('studyflow-tasks-v6', JSON.stringify(tasks)); }, [tasks]);
-      useEffect(() => {
-        localStorage.setItem('studyflow-theme-settings', isDark ? 'dark' : 'light');
-        document.documentElement.classList.toggle('dark', isDark);
-      }, [isDark]);
-
-      const addToast = (message, type = 'success') => {
-        const id = generateId(); setToasts(prev => [...prev, { id, message, type }]);
-        setTimeout(() => setToasts(prev => prev.filter(t => t.id !== id)), 3000);
-      };
-
-      const toggleComplete = (id) => setTasks(prev => prev.map(t => t.id === id ? { ...t, status: t.status === 'completed' ? 'active' : 'completed' } : t));
-
-      const saveTask = (task) => {
-        if (task.id) {
-          setTasks(prev => prev.map(t => t.id === task.id ? { ...t, ...task } : t));
-          addToast('Изменения сохранены');
-        } else {
-          setTasks(prev => [...prev, { ...task, id: generateId(), createdAt: getTodayStr(), status: 'active' }]);
-          addToast('Задача добавлена');
-        }
-      };
-
-      const deleteTask = (id) => {
-        const getChildrenIds = (parentId, allTasks) => {
-          const children = allTasks.filter(t => t.parentId === parentId);
-          return children.reduce((acc, child) => [...acc, child.id, ...getChildrenIds(child.id, allTasks)], []);
+                switch (type) {
+                    case 'hologram':
+                        createOsc('sine', 880, 0.08, 0.001, 0.15);
+                        createOsc('sine', 1760, 0.04, 0.001, 0.2);
+                        break;
+                    case 'select':
+                        createOsc('square', 440, 0.05, 0.001, 0.1);
+                        break;
+                    case 'flip':
+                        createOsc('triangle', 300, 0.1, 0.01, 0.3);
+                        createOsc('sine', 600, 0.05, 0.001, 0.4);
+                        break;
+                    case 'danger':
+                        createOsc('sawtooth', 100, 0.15, 0.001, 0.4);
+                        createOsc('square', 50, 0.15, 0.001, 0.5);
+                        break;
+                    case 'night_start':
+                        createOsc('sine', 150, 0.1, 0.001, 3);
+                        createOsc('triangle', 75, 0.1, 0.001, 4);
+                        break;
+                    case 'distribute':
+                        for(let i=0; i<8; i++) {
+                            setTimeout(() => createOsc('square', 800 + (i*100), 0.03, 0.001, 0.1), i * 120);
+                        }
+                        break;
+                    case 'victory':
+                        [523.25, 659.25, 783.99, 1046.50, 1318.51].forEach((f, i) => {
+                            setTimeout(() => createOsc('sine', f, 0.1, 0.001, 0.6), i * 200);
+                        });
+                        break;
+                }
+            } catch(e) {}
         };
-        const idsToRemove = [id, ...getChildrenIds(id, tasks)];
-        setTasks(prev => prev.filter(t => !idsToRemove.includes(t.id)));
-        addToast('Удалено', 'error');
-      };
 
-      return (
-        <TaskContext.Provider value={{ tasks, setTasks, toggleComplete, saveTask, deleteTask, isDark, setIsDark, addToast }}>
-          {children}
-          <div className="fixed top-6 right-6 z-[200] flex flex-col gap-2">
-            <AnimatePresence>
-              {toasts.map(toast => (
-                <motion.div key={toast.id} initial={{ opacity: 0, y: -20, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-                  className="px-4 py-3 rounded-xl shadow-lg border backdrop-blur-md text-sm font-medium flex items-center gap-3 bg-surface border-glassBorder text-textMain">
-                  {toast.type === 'error' ? <IconTrash className="text-red-500" /> : <IconCheckCircle className="text-primary" />}
-                  {toast.message}
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </div>
-        </TaskContext.Provider>
-      );
-    };
+        const haptic = (intensity = 'light') => {
+            if (!navigator.vibrate) return;
+            try {
+                if (intensity === 'light') navigator.vibrate(10);
+                if (intensity === 'medium') navigator.vibrate(30);
+                if (intensity === 'heavy') navigator.vibrate([50, 40, 50]);
+                if (intensity === 'pulse') navigator.vibrate([15, 50, 15, 50, 20]);
+                if (intensity === 'distribute') navigator.vibrate([20, 50, 20, 50, 20, 50, 40]);
+            } catch(e) {}
+        };
 
-    // --- Компонент задачи ---
-    const TaskItem = ({ task, level = 0, onOpenModal }) => {
-      const { tasks, toggleComplete, deleteTask } = useContext(TaskContext);
-      const [isExpanded, setIsExpanded] = useState(false);
-      
-      const children = tasks.filter(t => t.parentId === task.id);
-      const isCompleted = task.status === 'completed';
-      const progress = children.length > 0 ? Math.round((children.filter(c => c.status === 'completed').length / children.length) * 100) : null;
-      
-      const dateStatusStr = getRelativeDateStr(task.deadline);
-      const isOverdue = task.deadline && task.deadline < getTodayStr() && !isCompleted;
+        const iconsPaths = {
+            Shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+            Moon: '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+            Sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
+            RotateCcw: '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
+            Play: '<polygon points="5 3 19 12 5 21 5 3"/>',
+            Pause: '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>',
+            Square: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>',
+            Skull: '<circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><path d="M8 20v2h8v-2"/><path d="m12.5 17-.5-1-.5 1h1z"/><path d="M16 20a2 2 0 0 0 1.56-1.25 2 2 0 0 0-.44-2.25l-1.2-1.25a7.92 7.92 0 0 0 1.1-6.17C16.1 5.92 13 3 9 3c-4.4 0-7.3 2.92-8.02 6.08a7.92 7.92 0 0 0 1.1 6.17l-1.2 1.25a2 2 0 0 0-.44 2.25A2 2 0 0 0 2 20h2"/>',
+            Eye: '<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>',
+            EyeOff: '<path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/>',
+            Wand2: '<path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/>',
+            Trophy: '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
+            Terminal: '<polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>',
+            Mic: '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" x2="12" y1="19" y2="22"/>',
+            X: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+            Crosshair: '<circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/>',
+            Volume2: '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>',
+            VolumeX: '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/>',
+            Check: '<polyline points="20 6 9 17 4 12"/>',
+            Clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+            Flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
+            Database: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>'
+        };
 
-      return (
-        <div className="w-full">
-          <div className={`group flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-xl transition-all duration-200 hover:bg-black/5 dark:hover:bg-white/5 border border-transparent hover:border-glassBorder ${isCompleted ? 'opacity-60 grayscale' : 'opacity-100'}`}>
-            
-            <div className="flex items-start gap-3 flex-1 min-w-0">
-              <button onClick={() => setIsExpanded(!isExpanded)} className={`p-1 mt-0.5 rounded-md hover:bg-black/10 dark:hover:bg-white/10 transition-colors ${children.length === 0 ? 'invisible' : ''}`}>
-                <motion.div animate={{ rotate: isExpanded ? 90 : 0 }}><IconChevronRight className="text-textMuted" /></motion.div>
-              </button>
-              
-              <button onClick={() => toggleComplete(task.id)} className="text-primary hover:scale-110 transition-transform flex-shrink-0 mt-0.5">
-                {isCompleted ? <IconCheckCircle /> : <IconCircle />}
-              </button>
-              
-              <div className="flex-1 flex flex-col cursor-pointer min-w-0" onClick={() => setIsExpanded(!isExpanded)}>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className={`text-[15px] font-medium break-words ${isCompleted ? 'line-through text-textMuted' : 'text-textMain'}`}>{task.title}</span>
-                  {progress !== null && !isCompleted && <span className="text-xs bg-black/5 dark:bg-white/10 px-2 py-0.5 rounded-full text-textMuted font-medium">{progress}%</span>}
-                  {!isCompleted && task.priority && task.priority !== 'normal' && <span className="text-xs font-bold text-red-500 opacity-90">{priorityLabels[task.priority]}</span>}
-                </div>
-                
-                {task.description && <p className="text-xs text-textMuted mt-1 line-clamp-2">{task.description}</p>}
-                
-                <div className="flex gap-2 mt-1.5 text-xs text-textMuted items-center flex-wrap">
-                  {task.subject && <span className="bg-surface px-2 py-0.5 rounded-md border border-glassBorder font-medium">{task.subject}</span>}
-                  {task.deadline && (
-                    <span className={`flex items-center gap-1 bg-surface px-2 py-0.5 rounded-md border border-glassBorder font-medium ${isOverdue ? 'text-red-500 border-red-500/40 bg-red-500/10' : ''}`}>
-                      <IconClock /> {dateStatusStr}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
+        const Icon = ({ name, size = 20, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className={className} dangerouslySetInnerHTML={{ __html: iconsPaths[name] }} />
+        );
 
-            <div className="flex items-center gap-2 mt-3 sm:mt-0 ml-12 sm:ml-0 opacity-100 sm:opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0">
-               <button onClick={() => onOpenModal({ parentId: task.id })} className="flex items-center gap-1 px-2 py-1.5 bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 rounded-md text-textMuted hover:text-textMain transition-colors text-xs font-medium">
-                 <IconPlus /> Подзадача
-               </button>
-               <button onClick={() => onOpenModal({ editTask: task })} className="p-1.5 hover:bg-black/10 dark:hover:bg-white/10 rounded-md text-textMuted hover:text-textMain transition-colors" title="Редактировать">
-                 <IconEdit />
-               </button>
-               <button onClick={() => deleteTask(task.id)} className="p-1.5 hover:bg-red-500/20 rounded-md text-textMuted hover:text-red-600 transition-colors" title="Удалить">
-                 <IconTrash />
-               </button>
-               <div className="w-2.5 h-2.5 rounded-full shadow-sm ml-1 border border-glassBorder" style={{ backgroundColor: task.color || 'var(--primary-color)' }} />
-            </div>
-          </div>
+        const ROLES = {
+            CITIZEN: { id: 'CITIZEN', name: 'Мирный', color: 'text-slate-200', bg: 'bg-slate-500/20', border: 'border-slate-400/40', glow: 'shadow-slate-400/30' },
+            MAFIA: { id: 'MAFIA', name: 'Мафия', color: 'text-rose-400', bg: 'bg-rose-900/40', border: 'border-rose-500/50', glow: 'shadow-rose-500/40' },
+            DON: { id: 'DON', name: 'Дон', color: 'text-red-500', bg: 'bg-red-900/50', border: 'border-red-600/60', glow: 'shadow-red-600/50' },
+            SHERIFF: { id: 'SHERIFF', name: 'Шериф', color: 'text-amber-400', bg: 'bg-amber-900/40', border: 'border-amber-500/50', glow: 'shadow-amber-500/40' },
+            DOCTOR: { id: 'DOCTOR', name: 'Доктор', color: 'text-emerald-400', bg: 'bg-emerald-900/40', border: 'border-emerald-500/50', glow: 'shadow-emerald-500/40' },
+            MANIAC: { id: 'MANIAC', name: 'Маньяк', color: 'text-orange-400', bg: 'bg-orange-900/40', border: 'border-orange-500/50', glow: 'shadow-orange-500/40' },
+            BEAUTY: { id: 'BEAUTY', name: 'Красотка', color: 'text-fuchsia-400', bg: 'bg-fuchsia-900/40', border: 'border-fuchsia-500/50', glow: 'shadow-fuchsia-500/40' },
+        };
 
-          <AnimatePresence>
-            {isExpanded && children.length > 0 && (
-              <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
-                <div className="ml-4 sm:ml-7 pl-2 border-l border-glassBorder flex flex-col gap-1 mt-1 mb-2">
-                  {children.map(child => <TaskItem key={child.id} task={child} level={level + 1} onOpenModal={onOpenModal} />)}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      );
-    };
+        const PHASES = { SETUP: 'SETUP', DISTRIBUTION: 'DISTRIBUTION', DAY: 'DAY', VOTING: 'VOTING', NIGHT: 'NIGHT', BRIEFING: 'BRIEFING', GAME_OVER: 'GAME_OVER' };
 
-    // --- Универсальное Модальное окно (Решено с цветом текста!) ---
-    const TaskModal = ({ isOpen, onClose, config }) => {
-      const { tasks, saveTask, isDark } = useContext(TaskContext);
-      
-      const [formData, setFormData] = useState({
-        id: null, title: '', subject: '', description: '', deadline: '', priority: 'normal', color: '', parentId: ''
-      });
-
-      useEffect(() => {
-        if (isOpen) {
-          const defaultColor = isDark ? '#9fc792' : '#3e6034';
-          if (config.editTask) {
-            setFormData({ ...config.editTask, parentId: config.editTask.parentId || '' });
-          } else {
-            setFormData({
-              id: null, title: '', subject: '', description: '',
-              deadline: config.date || '', priority: 'normal', color: defaultColor, parentId: config.parentId || ''
+        function MafiaOS() {
+            const [phase, setPhase] = useState(PHASES.SETUP);
+            const [dayCount, setDayCount] = useState(1);
+            const [players, setPlayers] = useState([]);
+            const [deck, setDeck] = useState({
+                total: 10,
+                roles: { MAFIA: 2, DON: 1, SHERIFF: 1, DOCTOR: 0, MANIAC: 0, BEAUTY: 0, CITIZEN: 6 }
             });
-          }
-        }
-      }, [isOpen, config, isDark]);
 
-      if (!isOpen) return null;
-
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        saveTask({ ...formData, parentId: formData.parentId === '' ? null : formData.parentId });
-        onClose();
-      };
-
-      const possibleParents = tasks.filter(t => t.id !== formData.id && t.parentId === null);
-
-      return (
-        <div className="fixed inset-0 z-[150] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/40 dark:bg-black/70 backdrop-blur-md transition-opacity">
-          <motion.div initial={{ y: '100%' }} animate={{ y: 0 }} className="glass-panel w-full sm:max-w-lg p-6 bg-surface shadow-2xl rounded-t-3xl sm:rounded-2xl pb-10 sm:pb-6 max-h-[90vh] overflow-y-auto no-scrollbar border border-glassBorder">
-            <div className="w-12 h-1.5 bg-black/10 dark:bg-white/10 rounded-full mx-auto mb-6 sm:hidden"></div>
-            <h2 className="text-xl font-bold mb-5 text-textMain">{formData.id ? 'Редактировать' : 'Новое задание'}</h2>
+            const [nominations, setNominations] = useState([]);
+            const [votes, setVotes] = useState({});
+            const [nightActions, setNightActions] = useState({});
+            const [nightStep, setNightStep] = useState(0);
+            const [briefingData, setBriefingData] = useState(null);
+            const [winner, setWinner] = useState(null);
+            const [speakerId, setSpeakerId] = useState(null);
             
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-              {/* Исправленные инпуты: фон белый в светлой теме, полупрозрачный в темной, текст контрастный */}
-              <input value={formData.title} onChange={e=>setFormData({...formData, title: e.target.value})} required autoFocus 
-                className="w-full bg-white dark:bg-black/40 border border-glassBorder rounded-xl px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-primary font-medium shadow-sm" 
-                placeholder="Что нужно сделать?" />
-              
-              <input value={formData.subject} onChange={e=>setFormData({...formData, subject: e.target.value})} 
-                className="w-full bg-white dark:bg-black/40 border border-glassBorder rounded-xl px-4 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-primary text-sm shadow-sm" 
-                placeholder="Предмет или категория" />
-              
-              <textarea value={formData.description} onChange={e=>setFormData({...formData, description: e.target.value})} rows="2" 
-                className="w-full bg-white dark:bg-black/40 border border-glassBorder rounded-xl px-4 py-2.5 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none focus:border-primary text-sm resize-none shadow-sm" 
-                placeholder="Подробное описание или ссылки..." />
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white dark:bg-black/40 border border-glassBorder rounded-xl px-4 py-2 flex flex-col shadow-sm">
-                  <label className="text-[10px] uppercase text-textMuted font-bold">Дедлайн</label>
-                  <input type="date" value={formData.deadline} onChange={e=>setFormData({...formData, deadline: e.target.value})} className="w-full bg-transparent text-gray-900 dark:text-white outline-none text-sm cursor-pointer mt-1 font-medium" />
-                </div>
-                <div className="bg-white dark:bg-black/40 border border-glassBorder rounded-xl px-4 py-2 flex flex-col shadow-sm">
-                  <label className="text-[10px] uppercase text-textMuted font-bold">Приоритет</label>
-                  <select value={formData.priority} onChange={e=>setFormData({...formData, priority: e.target.value})} className="w-full bg-transparent text-gray-900 dark:text-white outline-none text-sm cursor-pointer mt-1 appearance-none font-medium">
-                    <option value="low">Низкий</option>
-                    <option value="normal">Обычный</option>
-                    <option value="high">Высокий 🔥</option>
-                    <option value="urgent">Срочный 🔴</option>
-                  </select>
-                </div>
-              </div>
+            const [soundEnabled, setSoundEnabled] = useState(true);
+            const [showLog, setShowLog] = useState(false);
+            const [gameLog, setGameLog] = useState([]);
 
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white dark:bg-black/40 border border-glassBorder rounded-xl px-4 py-2 flex flex-col justify-center shadow-sm">
-                   <label className="text-[10px] uppercase text-textMuted font-bold mb-1">Цвет метки</label>
-                   <input type="color" value={formData.color} onChange={e=>setFormData({...formData, color: e.target.value})} className="h-6 w-full bg-transparent cursor-pointer rounded border-none" />
-                </div>
-                <div className="bg-white dark:bg-black/40 border border-glassBorder rounded-xl px-4 py-2 flex flex-col shadow-sm">
-                  <label className="text-[10px] uppercase text-textMuted font-bold">Вложить в</label>
-                  <select value={formData.parentId} onChange={e=>setFormData({...formData, parentId: e.target.value})} className="w-full bg-transparent text-gray-900 dark:text-white outline-none text-sm cursor-pointer mt-1 appearance-none font-medium">
-                    <option value="">-</option>
-                    {possibleParents.map(p => <option key={p.id} value={p.id}>{p.title}</option>)}
-                  </select>
-                </div>
-              </div>
-              
-              <div className="flex justify-end gap-3 mt-4">
-                <button type="button" onClick={onClose} className="px-5 py-2.5 text-textMuted hover:bg-black/5 dark:hover:bg-white/5 rounded-xl transition-colors font-medium">Отмена</button>
-                <button type="submit" className="px-6 py-2.5 bg-primary hover:bg-primaryHover text-white font-medium rounded-xl shadow-lg shadow-primary/30 transition-all active:scale-95">Сохранить</button>
-              </div>
-            </form>
-          </motion.div>
-        </div>
-      );
-    };
-
-    // --- Разделы ---
-    const Dashboard = ({ onOpenModal }) => {
-      const { tasks } = useContext(TaskContext);
-      const todayStr = getTodayStr();
-      
-      // На дашборде выводим только корневые задачи
-      const allRoot = tasks.filter(t => t.parentId === null);
-      
-      // Прогресс считается только для тех задач, которые нужно сдать СЕГОДНЯ
-      const todayTasks = allRoot.filter(t => t.deadline === todayStr);
-      const todayCompleted = todayTasks.filter(t => t.status === 'completed').length;
-      
-      let progressToday = 100;
-      let progressText = '100% (Можно играть в SIMS 🎮)';
-      let subtitleText = 'На сегодня задач нет.';
-
-      if (todayTasks.length > 0) {
-        progressToday = Math.round((todayCompleted / todayTasks.length) * 100);
-        subtitleText = `Выполнено ${todayCompleted} из ${todayTasks.length} задач`;
-        progressText = progressToday === 100 ? '100% (Можно играть в SIMS 🎮)' : `${progressToday}%`;
-      }
-
-      const activeRoot = allRoot.filter(t => t.status === 'active');
-      activeRoot.sort((a, b) => {
-        const scoreA = priorityScore[a.priority || 'normal'];
-        const scoreB = priorityScore[b.priority || 'normal'];
-        if (scoreA !== scoreB) return scoreB - scoreA;
-        const dateA = a.deadline || '9999-99-99'; const dateB = b.deadline || '9999-99-99';
-        return dateA.localeCompare(dateB);
-      });
-      const completedRoot = allRoot.filter(t => t.status === 'completed');
-
-      return (
-        <div className="animate-fade-in pb-32 sm:pb-10">
-          <header className="mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-textMain mb-3 tracking-tight">Ваш план</h1>
-            <div className="glass-panel p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-5 bg-surface/80 border-glassBorder">
-              <div>
-                <h3 className="font-semibold text-textMain text-lg">Прогресс за сегодня</h3>
-                <p className="text-sm text-textMuted mt-1">{subtitleText}</p>
-              </div>
-              <div className="w-full sm:w-1/2 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4">
-                <div className="flex-1 h-4 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden border border-glassBorder shadow-inner">
-                  <motion.div initial={{ width: 0 }} animate={{ width: `${progressToday}%` }} className="h-full bg-primary rounded-full relative overflow-hidden transition-all duration-500">
-                    <div className="absolute inset-0 bg-white/20 w-full h-full skew-x-12 translate-x-[-100%] animate-[shimmer_2s_infinite]"></div>
-                  </motion.div>
-                </div>
-                <span className="text-sm font-bold text-primary">{progressText}</span>
-              </div>
-            </div>
-          </header>
-
-          <div className="glass-panel p-2 mb-6 bg-surface/50 border-glassBorder">
-            <div className="flex justify-between items-center p-4 mb-2 border-b border-glassBorder">
-              <h2 className="text-lg font-semibold text-textMain">Активные задания</h2>
-              <button onClick={() => onOpenModal({})} className="bg-primary hover:bg-primaryHover text-white px-4 py-2 rounded-xl text-sm font-medium transition-colors shadow-lg shadow-primary/20">
-                + Добавить
-              </button>
-            </div>
-            <div className="p-2">
-              {activeRoot.length === 0 ? 
-                <div className="text-center text-textMuted py-10 font-medium">Все актуальные задачи выполнены! ✨</div> : 
-                activeRoot.map(task => <TaskItem key={task.id} task={task} onOpenModal={onOpenModal} />)
-              }
-            </div>
-          </div>
-
-          {completedRoot.length > 0 && (
-            <div className="p-2">
-              <h3 className="text-sm font-bold text-textMuted uppercase tracking-wider mb-3 pl-2">Выполненные</h3>
-              <div className="flex flex-col gap-1 opacity-60 hover:opacity-100 transition-opacity">
-                {completedRoot.map(task => <TaskItem key={task.id} task={task} onOpenModal={onOpenModal} />)}
-              </div>
-            </div>
-          )}
-        </div>
-      );
-    };
-
-    const CalendarView = ({ onOpenModal }) => {
-      const { tasks } = useContext(TaskContext);
-      const [viewMode, setViewMode] = useState('month'); 
-      const [currentMonth, setCurrentMonth] = useState(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
-      const [currentWeek, setCurrentWeek] = useState(() => getStartOfWeek(new Date()));
-
-      const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
-      let firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
-      firstDay = firstDay === 0 ? 6 : firstDay - 1;
-      
-      const nextMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1));
-      const prevMonth = () => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1));
-      
-      const nextWeek = () => { const d = new Date(currentWeek); d.setDate(d.getDate() + 7); setCurrentWeek(d); };
-      const prevWeek = () => { const d = new Date(currentWeek); d.setDate(d.getDate() - 7); setCurrentWeek(d); };
-      
-      const weekDays = Array.from({length: 7}).map((_, i) => {
-        const d = new Date(currentWeek); d.setDate(d.getDate() + i);
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-      });
-
-      // УМНАЯ ЛОГИКА КАЛЕНДАРЯ: Получаем задачи и подзадачи на конкретный день, избегая дублирования.
-      const getTasksForDate = (dateStr) => {
-         return tasks.filter(t => {
-            if (t.deadline !== dateStr) return false;
-            // Если это подзадача, проверяем дедлайн её родителя. 
-            // Если родитель стоит на ТОТ ЖЕ день, скрываем подзадачу (родитель сам её отрендерит внутри себя)
-            if (t.parentId) {
-               const parent = tasks.find(p => p.id === t.parentId);
-               if (parent && parent.deadline === dateStr) return false; 
-            }
-            return true;
-         });
-      };
-
-      const weekTasks = [];
-      weekDays.forEach(d => weekTasks.push(...getTasksForDate(d)));
-      const weekProgress = weekTasks.length > 0 ? Math.round((weekTasks.filter(t => t.status === 'completed').length / weekTasks.length) * 100) : 100;
-
-      const titleMonth = `${monthNames[currentMonth.getMonth()]} ${currentMonth.getFullYear()}`;
-      const titleWeek = `${new Date(weekDays[0]).getDate()} ${monthNames[new Date(weekDays[0]).getMonth()]} - ${new Date(weekDays[6]).getDate()} ${monthNames[new Date(weekDays[6]).getMonth()]}`;
-
-      return (
-        <div className="animate-fade-in pb-32 sm:pb-10 h-full flex flex-col">
-          <header className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div className="flex items-center justify-between w-full sm:w-auto gap-4">
-               <h1 className="text-2xl font-bold text-textMain">Календарь</h1>
-               <div className="flex bg-surface p-1 rounded-xl border border-glassBorder shadow-sm">
-                 <button onClick={() => setViewMode('month')} className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${viewMode === 'month' ? 'bg-primary text-white' : 'text-textMuted hover:text-textMain'}`}>Месяц</button>
-                 <button onClick={() => setViewMode('week')} className={`px-4 py-1.5 text-sm font-medium rounded-lg transition-colors ${viewMode === 'week' ? 'bg-primary text-white' : 'text-textMuted hover:text-textMain'}`}>Неделя</button>
-               </div>
-            </div>
+            const [timeLeft, setTimeLeft] = useState(0);
+            const [isTimerRunning, setIsTimerRunning] = useState(false);
+            const timerRef = useRef(null);
+            const maxTimeRef = useRef(60);
             
-            <div className="flex items-center gap-2 bg-surface p-1.5 rounded-2xl border border-glassBorder shadow-sm w-full sm:w-auto justify-between sm:justify-start">
-              <button onClick={viewMode === 'month' ? prevMonth : prevWeek} className="p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors"><IconChevronRight className="rotate-180" /></button>
-              <span className="font-bold text-sm text-center text-textMain px-2 whitespace-nowrap">{viewMode === 'month' ? titleMonth : titleWeek}</span>
-              <button onClick={viewMode === 'month' ? nextMonth : nextWeek} className="p-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/5 transition-colors"><IconChevronRight /></button>
-            </div>
-          </header>
+            const [history, setHistory] = useState([]);
 
-          {viewMode === 'month' ? (
-            <div className="glass-panel flex-1 p-4 sm:p-6 flex flex-col bg-surface/50 border-glassBorder animate-fade-in">
-              <div className="grid grid-cols-7 gap-1 sm:gap-2 mb-3 text-center text-[10px] sm:text-xs font-bold text-textMuted uppercase">
-                <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div className="text-red-500/80">Сб</div><div className="text-red-500/80">Вс</div>
-              </div>
-              <div className="grid grid-cols-7 gap-1 sm:gap-2 flex-1 auto-rows-fr">
-                {Array.from({ length: firstDay }).map((_, i) => <div key={`empty-${i}`} className="rounded-2xl bg-black/5 dark:bg-white/5 opacity-30"></div>)}
-                {Array.from({ length: daysInMonth }).map((_, i) => {
-                  const day = i + 1;
-                  const dateStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                  const dayTasks = getTasksForDate(dateStr);
-                  const isToday = dateStr === getTodayStr();
+            const triggerSound = (type) => { if (soundEnabled) playOmniSound(type); };
 
-                  return (
-                    <div key={day} onClick={() => onOpenModal({ date: dateStr })} className={`p-1 sm:p-2 rounded-2xl border flex flex-col gap-1 cursor-pointer transition-colors ${isToday ? 'border-primary bg-primary/15 shadow-sm' : 'border-glassBorder bg-surface hover:border-primary/50 hover:bg-primary/5'}`}>
-                      <div className="flex justify-between items-center px-1">
-                        <span className={`text-xs sm:text-sm font-bold ${isToday ? 'text-primary' : 'text-textMain'}`}>{day}</span>
-                        {dayTasks.length > 0 && <span className="w-1.5 h-1.5 rounded-full bg-primary sm:hidden"></span>}
-                      </div>
-                      <div className="hidden sm:flex flex-col gap-1 overflow-y-auto no-scrollbar max-h-20 mt-1">
-                        {dayTasks.map(t => (
-                          <div key={t.id} className={`text-[10px] px-1.5 py-0.5 rounded-md flex items-center gap-1 truncate font-medium ${t.status === 'completed' ? 'opacity-50 line-through bg-black/5 dark:bg-white/5' : 'bg-primary/20 text-textMain border border-primary/20'}`}>
-                            {t.parentId && <span className="text-primary opacity-50 text-[8px] mr-0.5">└</span>} {t.title}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ) : (
-            <div className="glass-panel flex-1 p-4 sm:p-6 flex flex-col overflow-y-auto bg-surface/50 border-glassBorder animate-fade-in no-scrollbar">
-               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-6 p-4 bg-primary/10 rounded-2xl border border-primary/20">
-                 <span className="font-semibold text-textMain">Прогресс недели (Все задачи)</span>
-                 <div className="flex items-center gap-3 w-full sm:w-1/2">
-                    <div className="flex-1 h-3 bg-black/10 dark:bg-white/10 rounded-full overflow-hidden">
-                      <motion.div initial={{ width: 0 }} animate={{ width: `${weekProgress}%` }} className="h-full bg-primary rounded-full"></motion.div>
-                    </div>
-                    <span className="text-sm font-bold text-primary">{weekProgress}%</span>
-                 </div>
-               </div>
+            const logEvent = (text, type = 'info') => {
+                const time = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'});
+                setGameLog(prev => [{ id: Date.now() + Math.random(), day: dayCount, text, type, time }, ...prev]);
+            };
 
-               <div className="flex flex-col gap-4">
-                 {weekDays.map((dateStr, i) => {
-                    const dayTasks = getTasksForDate(dateStr);
-                    const isToday = dateStr === getTodayStr();
-                    const d = new Date(dateStr);
+            const saveToHistory = () => {
+                const currentState = JSON.stringify({ phase, dayCount, players, nominations, votes, nightActions, nightStep, briefingData, winner, gameLog });
+                setHistory(prev => [...prev.slice(-40), currentState]);
+            };
+
+            const undo = () => {
+                if (history.length === 0) return;
+                haptic('medium');
+                triggerSound('select');
+                const s = JSON.parse(history[history.length - 1]);
+                setPhase(s.phase); setDayCount(s.dayCount); setPlayers(s.players);
+                setNominations(s.nominations); setVotes(s.votes); setNightActions(s.nightActions);
+                setNightStep(s.nightStep); setBriefingData(s.briefingData); setWinner(s.winner); setGameLog(s.gameLog);
+                setHistory(prev => prev.slice(0, -1));
+            };
+
+            const stats = useMemo(() => {
+                const alive = players.filter(p => p.isAlive);
+                const mafia = alive.filter(p => p.role === 'MAFIA' || p.role === 'DON').length;
+                const city = alive.length - mafia;
+                return { alive: alive.length, mafia, city, total: players.length };
+            }, [players]);
+
+            const checkWin = (currentPlayers) => {
+                const alive = currentPlayers.filter(p => p.isAlive);
+                if (alive.length === 0) return 'Ничья (Все мертвы)';
+                const mafia = alive.filter(p => p.role === 'MAFIA' || p.role === 'DON').length;
+                const city = alive.length - mafia;
+                if (mafia === 0) return 'Победа Мирных';
+                if (mafia >= city) return 'Победа Мафии';
+                return null;
+            };
+
+            const autoBalance = () => {
+                haptic('hologram');
+                triggerSound('hologram');
+                const total = deck.total;
+                const mafiaCount = Math.floor(total / 3);
+                const don = deck.roles.DON > 0 ? 1 : 0;
+                const mafia = Math.max(0, mafiaCount - don);
+                const sheriff = deck.roles.SHERIFF > 0 ? 1 : 0;
+                const doctor = deck.roles.DOCTOR > 0 ? 1 : 0;
+                const maniac = deck.roles.MANIAC > 0 ? 1 : 0;
+                const beauty = deck.roles.BEAUTY > 0 ? 1 : 0;
+                const citizens = Math.max(0, total - (mafia + don + sheriff + doctor + maniac + beauty));
+                
+                setDeck({ total, roles: { MAFIA: mafia, DON: don, SHERIFF: sheriff, DOCTOR: doctor, MANIAC: maniac, BEAUTY: beauty, CITIZEN: citizens } });
+            };
+
+            const startGame = () => {
+                haptic('distribute');
+                triggerSound('distribute');
+                const rolePool = [];
+                Object.entries(deck.roles).forEach(([role, count]) => {
+                    for (let i = 0; i < count; i++) rolePool.push(role);
+                });
+                
+                for (let i = rolePool.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [rolePool[i], rolePool[j]] = [rolePool[j], rolePool[i]];
+                }
+
+                setPlayers(rolePool.map((role, idx) => ({
+                    id: idx + 1, name: `Игрок ${idx + 1}`, role, isAlive: true, isExposed: false,
+                    knownToSheriff: false, knownToDon: false
+                })));
+                
+                setPhase(PHASES.DISTRIBUTION);
+                setHistory([]);
+                setGameLog([]);
+                logEvent('Генерация ролей завершена. Матрица загружена.', 'system');
+
+                setTimeout(() => {
+                    setPhase(PHASES.DAY);
+                    setDayCount(1);
+                    setWinner(null);
+                    triggerSound('night_start');
+                    logEvent('День 1. Город просыпается.', 'info');
+                }, 4000);
+            };
+
+            const handleNameChange = (id, newName) => {
+                setPlayers(prev => prev.map(p => p.id === id ? { ...p, name: newName } : p));
+            };
+
+            const cyclePlayerStatus = (id) => {
+                haptic('heavy');
+                triggerSound('danger');
+                setPlayers(prev => prev.map(p => {
+                    if (p.id !== id) return p;
+                    const nextAlive = !p.isAlive;
+                    logEvent(`${p.name} (ID: ${p.id}) статус изменен: ${nextAlive ? 'Ожил' : 'Убит'}`, nextAlive ? 'success' : 'danger');
+                    return { ...p, isAlive: nextAlive, isExposed: !nextAlive ? true : p.isExposed };
+                }));
+            };
+
+            useEffect(() => {
+                if (isTimerRunning && timeLeft > 0) {
+                    timerRef.current = setTimeout(() => {
+                        setTimeLeft(prev => {
+                            if (prev <= 10 && prev > 1) {
+                                triggerSound('select');
+                                haptic('light');
+                            }
+                            return prev - 1;
+                        });
+                    }, 1000);
+                } else if (timeLeft === 0 && isTimerRunning) {
+                    setIsTimerRunning(false);
+                    haptic('heavy');
+                    triggerSound('danger');
+                    setSpeakerId(null);
+                }
+                return () => clearTimeout(timerRef.current);
+            }, [timeLeft, isTimerRunning]);
+
+            const startTimer = (secs, spkId = null) => {
+                haptic('light');
+                triggerSound('hologram');
+                maxTimeRef.current = secs;
+                setTimeLeft(secs);
+                setIsTimerRunning(true);
+                if (spkId) setSpeakerId(spkId);
+            };
+
+            const toggleSpeaker = (id) => {
+                haptic('light');
+                triggerSound('select');
+                if (speakerId === id) {
+                    setSpeakerId(null);
+                    setIsTimerRunning(false);
+                } else {
+                    startTimer(60, id);
+                }
+            };
+
+            const toggleNomination = (playerId) => {
+                haptic('medium');
+                triggerSound('select');
+                setNominations(prev => {
+                    if (prev.includes(playerId)) return prev.filter(id => id !== playerId);
+                    const p = players.find(x => x.id === playerId);
+                    logEvent(`${p?.name} выставлен на голосование`, 'warning');
+                    return [...prev, playerId];
+                });
+            };
+
+            const endDay = () => {
+                saveToHistory();
+                haptic('medium');
+                triggerSound('select');
+                setSpeakerId(null);
+                setIsTimerRunning(false);
+                if (nominations.length > 0) {
+                    setPhase(PHASES.VOTING);
+                    const initialVotes = {};
+                    nominations.forEach(id => initialVotes[id] = 0);
+                    setVotes(initialVotes);
+                    logEvent(`Начало суда. Выставлено: ${nominations.length}`, 'system');
+                } else {
+                    logEvent('Голосование не состоялось. Уход в ночь.', 'night');
+                    startNight();
+                }
+            };
+
+            const addVote = (playerId, delta) => {
+                haptic('light');
+                triggerSound('select');
+                const aliveCount = stats.alive;
+                const currentTotal = Object.values(votes).reduce((a, b) => a + b, 0);
+                
+                setVotes(prev => {
+                    const newVal = Math.max(0, (prev[playerId] || 0) + delta);
+                    if (delta > 0 && currentTotal >= aliveCount) return prev; // Cannot exceed alive players
+                    return { ...prev, [playerId]: newVal };
+                });
+            };
+
+            const calculateVoting = () => {
+                saveToHistory();
+                haptic('pulse');
+                triggerSound('danger');
+                const maxVotes = Math.max(...Object.values(votes));
+                const leaders = Object.keys(votes).filter(id => votes[id] === maxVotes).map(Number);
+
+                if (leaders.length === 1 && maxVotes > 0) {
+                    const victim = players.find(p => p.id === leaders[0]);
+                    const newPlayers = players.map(p => p.id === leaders[0] ? { ...p, isAlive: false, isExposed: true } : p);
+                    setPlayers(newPlayers);
+                    setNominations([]);
+                    logEvent(`Итог суда: изгнан ${victim.name} (${ROLES[victim.role].name}) [${maxVotes} гол.]`, 'danger');
                     
-                    return (
-                      <div key={dateStr} className={`p-4 rounded-2xl border ${isToday ? 'border-primary bg-primary/5 shadow-sm' : 'border-glassBorder bg-surface'} flex flex-col gap-3`}>
-                        <div className="flex justify-between items-center border-b border-glassBorder pb-2">
-                          <h3 className={`font-bold ${isToday ? 'text-primary' : 'text-textMain'}`}>{dayNames[i]}, <span className="font-medium text-textMuted text-sm">{d.getDate()} {monthNames[d.getMonth()]}</span></h3>
-                          <button onClick={() => onOpenModal({ date: dateStr })} className="text-primary bg-primary/10 hover:bg-primary hover:text-white p-1.5 rounded-lg transition-colors"><IconPlus /></button>
+                    const win = checkWin(newPlayers);
+                    if (win) {
+                        setWinner(win);
+                        triggerSound('victory');
+                        logEvent(win, 'success');
+                        setPhase(PHASES.GAME_OVER);
+                    } else {
+                        startNight();
+                    }
+                } else if (maxVotes === 0) {
+                    setNominations([]);
+                    logEvent('Никто не получил голосов. Город спит.', 'info');
+                    startNight();
+                } else {
+                    setNominations(leaders);
+                    const newVotes = {};
+                    leaders.forEach(id => newVotes[id] = 0);
+                    setVotes(newVotes);
+                    logEvent(`Автокатастрофа: ${leaders.length} игроков набрали по ${maxVotes} гол.`, 'warning');
+                }
+            };
+
+            const getActiveNightRoles = () => {
+                const active = [];
+                const hasAlive = (roleId) => players.some(p => p.role === roleId && p.isAlive);
+                
+                if (hasAlive('BEAUTY')) active.push({ role: 'BEAUTY', action: 'Путана / Красотка', desc: 'Блокировка и алиби для игрока' });
+                if (hasAlive('MAFIA') || hasAlive('DON')) active.push({ role: 'MAFIA_GROUP', action: 'Мафия стреляет', desc: 'Единый заказ клана' });
+                if (hasAlive('MANIAC')) active.push({ role: 'MANIAC', action: 'Маньяк', desc: 'Слепая жажда убийства' });
+                if (hasAlive('DOCTOR')) active.push({ role: 'DOCTOR', action: 'Доктор', desc: 'Спасение от смертельного выстрела' });
+                if (hasAlive('SHERIFF')) active.push({ role: 'SHERIFF', action: 'Шериф', desc: 'Поиск представителей мафии' });
+                if (hasAlive('DON')) active.push({ role: 'DON', action: 'Дон мафии', desc: 'Поиск комиссара / шерифа' });
+                return active;
+            };
+
+            const nightOrder = getActiveNightRoles();
+
+            const startNight = () => {
+                setPhase(PHASES.NIGHT);
+                setNightActions({});
+                setNightStep(0);
+                setNominations([]);
+                triggerSound('night_start');
+                logEvent(`Город погрузился в сон. Ночь ${dayCount}`, 'night');
+            };
+
+            const handleNightAction = (targetId) => {
+                haptic('medium');
+                triggerSound('select');
+                const currentRole = nightOrder[nightStep].role;
+                const newActions = { ...nightActions, [currentRole]: targetId };
+                setNightActions(newActions);
+                
+                if (nightStep + 1 < nightOrder.length) setNightStep(prev => prev + 1);
+                else finishNight(newActions);
+            };
+
+            const finishNight = (actions) => {
+                saveToHistory();
+                haptic('heavy');
+                let killed = [];
+                let saved = [];
+                let reports = [];
+
+                if (actions['BEAUTY']) saved.push(actions['BEAUTY']);
+                if (actions['DOCTOR']) saved.push(actions['DOCTOR']);
+                
+                if (actions['MAFIA_GROUP'] && !saved.includes(actions['MAFIA_GROUP'])) killed.push(actions['MAFIA_GROUP']);
+                if (actions['MANIAC'] && !saved.includes(actions['MANIAC'])) killed.push(actions['MANIAC']);
+
+                let nextPlayers = [...players];
+
+                if (actions['SHERIFF']) {
+                    const p = nextPlayers.find(p => p.id === actions['SHERIFF']);
+                    if(p) {
+                        const isMafia = p.role === 'MAFIA' || p.role === 'DON';
+                        reports.push(`ШЕРИФ: [${p.id}] ${p.name} — ${isMafia ? 'ЧЕРНЫЙ' : 'КРАСНЫЙ'}`);
+                        nextPlayers = nextPlayers.map(pl => pl.id === p.id ? { ...pl, knownToSheriff: true } : pl);
+                    }
+                }
+                if (actions['DON']) {
+                    const p = nextPlayers.find(p => p.id === actions['DON']);
+                    if(p) {
+                        const isSheriff = p.role === 'SHERIFF';
+                        reports.push(`ДОН: [${p.id}] ${p.name} — ${isSheriff ? 'ШЕРИФ' : 'МИРНЫЙ'}`);
+                        nextPlayers = nextPlayers.map(pl => pl.id === p.id ? { ...pl, knownToDon: true } : pl);
+                    }
+                }
+
+                const uniqueKilled = [...new Set(killed)];
+                nextPlayers = nextPlayers.map(p => uniqueKilled.includes(p.id) ? { ...p, isAlive: false, isExposed: true } : p);
+                setPlayers(nextPlayers);
+                
+                const killedNames = uniqueKilled.map(id => nextPlayers.find(p => p.id === id)?.name);
+                if (killedNames.length > 0) {
+                    logEvent(`Жертвы ночи: ${killedNames.join(', ')}`, 'danger');
+                } else {
+                    logEvent('Идеальная ночь: жертв нет.', 'success');
+                }
+                reports.forEach(r => logEvent(r, 'night'));
+
+                const win = checkWin(nextPlayers);
+                if (win) triggerSound('victory');
+                
+                setBriefingData({ killedNames, reports, gameOver: win });
+                setPhase(PHASES.BRIEFING);
+            };
+
+            const BackgroundGrid = () => (
+                <div className="fixed inset-0 pointer-events-none z-[-1] flex items-center justify-center overflow-hidden">
+                    <div className="absolute inset-0 bg-grid opacity-30" />
+                    <div className={`absolute w-[100vw] h-[100vw] rounded-full blur-[150px] transition-colors duration-1000 opacity-20 ${phase === PHASES.NIGHT ? 'bg-indigo-900' : 'bg-indigo-600'} animate-spin-slow`} />
+                    <div className={`absolute right-[-20%] bottom-[-20%] w-[80vw] h-[80vw] rounded-full blur-[120px] transition-colors duration-1000 opacity-20 ${phase === PHASES.NIGHT ? 'bg-rose-900' : 'bg-rose-600'}`} />
+                </div>
+            );
+
+            return (
+                <div className="min-h-screen pb-40 selection:bg-indigo-500/30 font-sans">
+                    <BackgroundGrid />
+
+                    {/* EVENT LOG DRAWER */}
+                    <div className={`fixed inset-y-0 right-0 w-[400px] max-w-[90vw] omni-glass z-[200] transform transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] flex flex-col border-l border-white/10 ${showLog ? 'translate-x-0' : 'translate-x-full'}`}>
+                        <div className="p-6 border-b border-white/10 flex justify-between items-center bg-slate-900/50">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.3)]">
+                                    <Icon name="Database" size={20}/>
+                                </div>
+                                <span className="font-tech font-bold text-lg tracking-wider uppercase text-white drop-shadow-md">Терминал логов</span>
+                            </div>
+                            <button onClick={() => setShowLog(false)} className="p-2.5 rounded-xl bg-white/5 hover:bg-white/15 text-slate-400 hover:text-white transition">
+                                <Icon name="X" size={20}/>
+                            </button>
                         </div>
-                        <div className="flex flex-col gap-1">
-                           {dayTasks.length === 0 ? <p className="text-xs text-textMuted italic">Нет задач</p> : dayTasks.map(t => <TaskItem key={t.id} task={t} onOpenModal={onOpenModal} />)}
+                        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                            {gameLog.length === 0 && (
+                                <div className="h-full flex flex-col items-center justify-center text-slate-500 opacity-50 space-y-4">
+                                    <Icon name="Terminal" size={48} />
+                                    <p className="font-tech text-sm uppercase tracking-widest">Ожидание событий...</p>
+                                </div>
+                            )}
+                            {gameLog.map(item => (
+                                <div key={item.id} className="animate-fade-in p-4 rounded-2xl bg-slate-900/60 border border-white/5 flex flex-col gap-2 relative overflow-hidden group hover:border-white/10 transition">
+                                    <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${item.type === 'danger' ? 'bg-rose-500' : item.type === 'success' ? 'bg-emerald-500' : item.type === 'warning' ? 'bg-amber-500' : item.type === 'night' ? 'bg-indigo-500' : 'bg-slate-500'}`} />
+                                    <div className="flex justify-between items-center text-[10px] font-tech text-slate-400 uppercase tracking-widest pl-2">
+                                        <span>D:{item.day}</span>
+                                        <span>{item.time}</span>
+                                    </div>
+                                    <div className={`font-semibold text-sm pl-2 leading-relaxed ${
+                                        item.type === 'danger' ? 'text-rose-200' :
+                                        item.type === 'success' ? 'text-emerald-200' :
+                                        item.type === 'warning' ? 'text-amber-200' :
+                                        item.type === 'night' ? 'text-indigo-200' : 'text-slate-200'
+                                    }`}>
+                                        {item.text}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                      </div>
-                    )
-                 })}
-               </div>
-            </div>
-          )}
-        </div>
-      );
-    };
+                    </div>
+                    {showLog && <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[190] transition-opacity" onClick={() => setShowLog(false)} />}
 
-    const SettingsView = () => (
-      <div className="animate-fade-in pb-32 sm:pb-10 max-w-2xl"><h1 className="text-2xl font-bold text-textMain mb-6">Настройки</h1><div className="glass-panel p-6 bg-surface/80 border-glassBorder">
-        <TaskContext.Consumer>
-          {({ isDark, setIsDark }) => (
-            <div className="flex items-center justify-between">
-              <div><h3 className="font-bold text-textMain text-lg">Оформление</h3><p className="text-textMuted text-sm mt-1">Переключение между светлой и темной темой.</p></div>
-              <button onClick={() => setIsDark(!isDark)} className="p-4 bg-surface rounded-2xl border border-glassBorder shadow-md hover:border-primary hover:text-primary transition-colors text-textMain"><IconSun /></button>
-            </div>
-          )}
-        </TaskContext.Consumer>
-      </div></div>
-    );
+                    <div className="max-w-[1300px] mx-auto p-3 sm:p-6 h-full flex flex-col relative z-10">
+                        
+                        {/* 1. SETUP PHASE */}
+                        {phase === PHASES.SETUP && (
+                            <div className="max-w-3xl mx-auto w-full space-y-8 pt-8 sm:pt-16 animate-fade-in">
+                                <div className="text-center space-y-4 animate-slide-up">
+                                    <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-indigo-500/15 border border-indigo-500/40 text-indigo-300 text-xs font-black tracking-[0.2em] uppercase shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+                                        <Icon name="Sparkles" size={14} /> OS Grand Edition
+                                    </div>
+                                    <h1 className="text-6xl sm:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-100 to-slate-400 drop-shadow-2xl">
+                                        MAFIA <span className="text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-rose-400">OS</span>
+                                    </h1>
+                                </div>
 
-    // --- Скелет ---
-    const App = () => {
-      const [currentView, setCurrentView] = useState('dashboard');
-      const [modalConfig, setModalConfig] = useState(null); 
-      
-      const navItems = [
-        { id: 'dashboard', icon: IconHome, label: 'Главная' }, { id: 'calendar', icon: IconCalendar, label: 'Календарь' }, { id: 'settings', icon: IconSettings, label: 'Настройки' }
-      ];
+                                <div className="omni-glass rounded-[2.5rem] p-6 sm:p-10 space-y-10 relative overflow-hidden animate-scale-up border-t-2 border-t-indigo-500/20">
+                                    <div className="absolute -top-32 -right-32 w-80 h-80 bg-indigo-500/20 rounded-full blur-[80px]" />
+                                    
+                                    <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 border-b border-white/10">
+                                        <div>
+                                            <div className="text-[11px] text-indigo-400 font-black uppercase tracking-[0.2em] mb-2">Размер пула матриц</div>
+                                            <div className="text-4xl font-black text-white font-tech drop-shadow-md">{deck.total} ИГРОКОВ</div>
+                                        </div>
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex items-center gap-2 bg-slate-900/80 p-2 rounded-2xl border border-white/10 shadow-inner">
+                                                <button onClick={() => {haptic(); triggerSound('click'); setDeck(p => ({...p, total: Math.max(5, p.total - 1)}))}} className="w-14 h-14 rounded-[1.2rem] bg-white/5 hover:bg-white/20 flex items-center justify-center text-2xl font-bold transition text-slate-300 hover:text-white">-</button>
+                                                <button onClick={() => {haptic(); triggerSound('click'); setDeck(p => ({...p, total: Math.min(30, p.total + 1)}))}} className="w-14 h-14 rounded-[1.2rem] bg-white/5 hover:bg-white/20 flex items-center justify-center text-2xl font-bold transition text-slate-300 hover:text-white">+</button>
+                                            </div>
+                                            <button onClick={autoBalance} className="h-18 px-6 rounded-2xl bg-indigo-600/20 hover:bg-indigo-500/40 border border-indigo-500/40 text-indigo-300 font-black transition text-xs uppercase tracking-widest flex items-center gap-3 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
+                                                <Icon name="Wand2" size={18} /> Авто-баланс
+                                            </button>
+                                        </div>
+                                    </div>
 
-      return (
-        <div className="flex h-screen w-full relative">
-          <aside className="hidden md:flex w-64 h-full border-r border-glassBorder bg-surface/80 backdrop-blur-2xl flex-col p-6 z-10 shadow-2xl">
-            <div className="flex items-center gap-3 mb-10 text-textMain cursor-pointer" onClick={() => setCurrentView('dashboard')}>
-              <div className="w-10 h-10 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/30"><span className="font-bold text-xl text-white">S</span></div>
-              <span className="text-xl font-bold tracking-wide">StudyFlow</span>
-            </div>
-            <nav className="flex flex-col gap-2">
-              {navItems.map(item => (
-                 <button key={item.id} onClick={() => setCurrentView(item.id)} className={`flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all w-full text-left font-medium ${currentView === item.id ? 'bg-primary text-white shadow-md shadow-primary/20' : 'text-textMuted hover:bg-black/5 dark:hover:bg-white/5 hover:text-textMain'}`}>
-                  <item.icon /> <span>{item.label}</span>
-                </button>
-              ))}
-            </nav>
-          </aside>
+                                    <div className="relative z-10 grid sm:grid-cols-2 gap-8">
+                                        <div className="space-y-3">
+                                            <div className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
+                                                <div className="w-2 h-2 rounded-full bg-slate-400 shadow-[0_0_10px_rgba(148,163,184,0.8)]"/> Основа
+                                            </div>
+                                            {['MAFIA', 'DON', 'SHERIFF', 'CITIZEN'].map(rKey => (
+                                                <div key={rKey} className="flex items-center justify-between p-4 rounded-[1.5rem] bg-slate-900/60 border border-white/5 hover:border-white/10 transition shadow-inner">
+                                                    <span className={`font-bold text-base ${ROLES[rKey].color}`}>{ROLES[rKey].name}</span>
+                                                    <span className="font-tech font-black text-xl bg-slate-950 px-4 py-1.5 rounded-xl border border-white/10 shadow-lg text-white">{deck.roles[rKey]}</span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                        <div className="space-y-3">
+                                            <div className="text-[11px] font-black text-rose-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
+                                                <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-[0_0_10px_rgba(225,29,72,0.8)]"/> Активные роли
+                                            </div>
+                                            {['DOCTOR', 'MANIAC', 'BEAUTY'].map(rKey => (
+                                                <div key={rKey} className="flex items-center justify-between p-4 rounded-[1.5rem] bg-slate-900/60 border border-white/5 shadow-inner">
+                                                    <span className={`font-bold text-base ${ROLES[rKey].color}`}>{ROLES[rKey].name}</span>
+                                                    <button onClick={() => {haptic('medium'); triggerSound('hologram'); setDeck(p => ({...p, roles: {...p.roles, [rKey]: p.roles[rKey] === 0 ? 1 : 0}}))}} 
+                                                        className={`w-16 h-9 rounded-full relative transition-all duration-400 border border-white/10 ${deck.roles[rKey] > 0 ? 'bg-indigo-600 shadow-[0_0_25px_rgba(79,70,229,0.6)]' : 'bg-slate-800'}`}>
+                                                        <div className={`absolute top-1 left-1 w-7 h-7 bg-white rounded-full transition-transform duration-400 shadow-md ${deck.roles[rKey] > 0 ? 'translate-x-7' : ''}`} />
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
 
-          <nav className="md:hidden fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-xl border-t border-glassBorder flex justify-around items-center p-2 z-[90] pb-safe shadow-[0_-10px_20px_rgba(0,0,0,0.05)]">
-            {navItems.map(item => (
-              <button key={item.id} onClick={() => setCurrentView(item.id)} className={`flex flex-col items-center gap-1 p-2 w-20 rounded-xl transition-all ${currentView === item.id ? 'text-primary' : 'text-textMuted'}`}>
-                <item.icon /> <span className="text-[10px] font-bold">{item.label}</span>
-              </button>
-            ))}
-          </nav>
+                                    <button onClick={startGame} className="relative z-10 w-full py-6 rounded-3xl bg-white text-slate-950 font-black text-xl sm:text-2xl tracking-[0.3em] uppercase transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_50px_rgba(255,255,255,0.25)] flex items-center justify-center gap-4 overflow-hidden group">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-indigo-200 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                                        <span className="relative z-10">Сгенерировать Матрицу</span>
+                                        <Icon name="Play" size={28} className="relative z-10"/>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
 
-          <main className="flex-1 h-full overflow-y-auto p-4 sm:p-8 relative no-scrollbar">
-            {currentView === 'dashboard' && <Dashboard onOpenModal={setModalConfig} />}
-            {currentView === 'calendar' && <CalendarView onOpenModal={setModalConfig} />}
-            {currentView === 'settings' && <SettingsView />}
-          </main>
-          
-          <TaskModal isOpen={!!modalConfig} onClose={() => setModalConfig(null)} config={modalConfig || {}} />
-        </div>
-      );
-    }
+                        {/* DISTRIBUTION PHASE (CINEMATIC) */}
+                        {phase === PHASES.DISTRIBUTION && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center z-50 bg-slate-950/90 backdrop-blur-md">
+                                <Icon name="Database" size={80} className="text-indigo-500 animate-bounce mb-8 drop-shadow-[0_0_30px_rgba(99,102,241,0.8)]" />
+                                <h2 className="text-5xl font-black text-white tracking-widest uppercase animate-pulse drop-shadow-lg">Распределение Ролей</h2>
+                                <div className="mt-8 flex gap-3">
+                                    {[1,2,3,4,5].map(i => (
+                                        <div key={i} className={`w-12 h-16 rounded-lg bg-indigo-500/20 border border-indigo-400/50 shadow-[0_0_20px_rgba(99,102,241,0.5)] animate-deal-cards`} style={{animationDelay: `${i * 0.15}s`}}></div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
-    const Root = () => <AppProvider><App /></AppProvider>;
-    ReactDOM.createRoot(document.getElementById('root')).render(<Root />);
-  </script>
+                        {/* 2. IN-GAME HEADER / HUD */}
+                        {phase !== PHASES.SETUP && phase !== PHASES.DISTRIBUTION && (
+                            <div className="space-y-4 mb-8 animate-fade-in">
+                                <div className="omni-glass rounded-[2rem] p-5 flex flex-col sm:flex-row items-center justify-between gap-4 border-t-2 border-indigo-500/20">
+                                    
+                                    <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
+                                        <button onClick={undo} disabled={history.length === 0} className={`p-4 rounded-2xl transition-all ${history.length > 0 ? 'bg-white/10 hover:bg-white/20 text-white shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/10' : 'bg-slate-900/50 text-slate-700 border border-transparent'}`}>
+                                            <Icon name="RotateCcw" size={22} />
+                                        </button>
+                                        <button onClick={() => {haptic('light'); setSoundEnabled(!soundEnabled)}} className={`p-4 rounded-2xl transition-all ${soundEnabled ? 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.2)]' : 'bg-slate-900/50 text-slate-600 border border-transparent'}`}>
+                                            <Icon name={soundEnabled ? "Volume2" : "VolumeX"} size={22} />
+                                        </button>
+                                        <button onClick={() => setShowLog(true)} className="p-4 rounded-2xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition-all border border-white/5 shadow-inner hidden sm:block">
+                                            <Icon name="Terminal" size={22} />
+                                        </button>
+                                    </div>
+
+                                    <div className="text-center flex-1">
+                                        <div className="text-[11px] font-black tracking-[0.3em] uppercase text-indigo-400 mb-2 flex items-center justify-center gap-2 drop-shadow-md">
+                                            <Icon name={phase === PHASES.NIGHT ? "Moon" : "Sun"} size={16} />
+                                            {phase === PHASES.DAY ? `День ${dayCount}` : phase === PHASES.NIGHT ? `Ночь ${dayCount}` : phase === PHASES.VOTING ? 'Судебное заседание' : phase === PHASES.GAME_OVER ? 'Завершение симуляции' : 'Утренний отчет'}
+                                        </div>
+                                        <div className="text-3xl font-black text-white tracking-wide drop-shadow-lg">
+                                            {phase === PHASES.NIGHT ? `Цель: ${nightOrder[nightStep]?.action}` : phase === PHASES.VOTING ? 'Голосование' : phase === PHASES.DAY ? 'Свободное обсуждение' : phase === PHASES.GAME_OVER ? 'Итог' : 'Брифинг'}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-3 bg-slate-950 p-2.5 rounded-2xl border border-white/10 text-sm font-tech w-full sm:w-auto justify-center shadow-inner">
+                                        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500/15 text-emerald-400 font-black border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
+                                            <Icon name="Shield" size={16}/> {stats.city}
+                                        </div>
+                                        <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-rose-500/15 text-rose-400 font-black border border-rose-500/30 shadow-[0_0_15px_rgba(225,29,72,0.2)]">
+                                            <Icon name="Flame" size={16}/> {stats.mafia}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Timer HUD */}
+                                {phase === PHASES.DAY && (
+                                    <div className="omni-card rounded-[2rem] p-5 sm:p-6 relative overflow-hidden border-t border-indigo-500/10">
+                                        <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-transparent to-rose-500/10 opacity-60" />
+                                        <div className="flex flex-col sm:flex-row justify-between items-center relative z-10 mb-5 gap-4">
+                                            <div className="flex gap-3 bg-slate-900/60 p-2 rounded-2xl border border-white/5">
+                                                {[60, 30, 10].map(s => (
+                                                    <button key={s} onClick={() => startTimer(s, speakerId)} className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-sm font-black tracking-wider text-slate-300 hover:text-white transition border border-white/5 shadow-inner">
+                                                        {s}с
+                                                    </button>
+                                                ))}
+                                            </div>
+
+                                            <div className="flex items-center gap-6">
+                                                <div className={`font-tech text-6xl sm:text-7xl font-black tracking-tighter transition-colors duration-300 ${timeLeft <= 10 && timeLeft > 0 ? 'text-rose-500 animate-heartbeat drop-shadow-[0_0_30px_rgba(225,29,72,0.8)]' : 'text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]'}`}>
+                                                    {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}
+                                                </div>
+                                                <div className="flex flex-col gap-3">
+                                                    <button onClick={() => {haptic('light'); triggerSound('click'); setIsTimerRunning(!isTimerRunning)}} className={`p-3.5 rounded-2xl transition backdrop-blur-md shadow-lg ${isTimerRunning ? 'bg-amber-500/20 text-amber-400 border border-amber-500/40' : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'}`}>
+                                                        <Icon name={isTimerRunning ? "Pause" : "Play"} size={22} />
+                                                    </button>
+                                                    <button onClick={() => {haptic('light'); triggerSound('click'); setIsTimerRunning(false); setTimeLeft(0); setSpeakerId(null);}} className="p-3.5 rounded-2xl bg-rose-500/15 text-rose-400 hover:bg-rose-500/30 transition border border-rose-500/30 shadow-lg">
+                                                        <Icon name="Square" size={22} />
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="h-3 w-full bg-slate-950 rounded-full overflow-hidden shadow-inner relative z-10 border border-white/10">
+                                            <div className={`h-full transition-all duration-1000 ease-linear rounded-full ${timeLeft <= 10 ? 'bg-gradient-to-r from-rose-600 to-rose-400 shadow-[0_0_20px_rgba(225,29,72,0.9)]' : 'bg-gradient-to-r from-indigo-600 to-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.9)]'}`} style={{ width: `${(timeLeft / maxTimeRef.current) * 100}%` }} />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* 3. DAY GRID WITH 3D FLIP CARDS */}
+                        {phase === PHASES.DAY && (
+                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-5 animate-fade-in flex-1">
+                                {players.map(p => (
+                                    <div key={p.id} className="player-card-container h-[220px]">
+                                        <div className={`player-card-flipper ${p.isExposed ? 'flipped' : ''}`}>
+                                            
+                                            {/* FRONT OF CARD (Hidden Role) */}
+                                            <div className={`card-front flex flex-col justify-between p-4 transition-all duration-300 ${
+                                                !p.isAlive ? 'opacity-40 grayscale bg-slate-900/50 border border-slate-800' :
+                                                speakerId === p.id ? 'omni-glass ring-2 ring-indigo-500 shadow-[0_0_40px_rgba(99,102,241,0.4)] transform scale-[1.05] z-10' :
+                                                nominations.includes(p.id) ? 'omni-glass ring-2 ring-rose-500 shadow-[0_0_30px_rgba(225,29,72,0.3)]' : 'omni-card hover:bg-white/5'
+                                            }`}>
+                                                
+                                                <div>
+                                                    <div className="flex justify-between items-start mb-4">
+                                                        <span className="font-tech text-[11px] font-black text-slate-400 bg-slate-950 px-3 py-1.5 rounded-xl border border-white/10 shadow-inner">
+                                                            #{p.id.toString().padStart(2, '0')}
+                                                        </span>
+                                                        <div className="flex items-center gap-1.5">
+                                                            {p.isAlive && (
+                                                                <button onClick={() => toggleSpeaker(p.id)} className={`p-2.5 rounded-xl transition ${speakerId === p.id ? 'bg-indigo-500 text-white shadow-[0_0_15px_rgba(99,102,241,0.6)]' : 'text-slate-500 hover:bg-white/10 hover:text-white'}`}>
+                                                                    <Icon name="Mic" size={18} />
+                                                                </button>
+                                                            )}
+                                                            <button onClick={() => cyclePlayerStatus(p.id)} className="p-2.5 rounded-xl text-slate-500 hover:bg-white/10 hover:text-rose-400 transition">
+                                                                <Icon name="Skull" size={18} />
+                                                            </button>
+                                                            <button onClick={() => {haptic('medium'); triggerSound('flip'); setPlayers(players.map(pl => pl.id === p.id ? {...pl, isExposed: true} : pl))}} className="p-2.5 rounded-xl text-slate-500 hover:bg-white/10 hover:text-indigo-300 transition">
+                                                                <Icon name="Eye" size={18} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    <input 
+                                                        value={p.name} 
+                                                        onChange={(e) => handleNameChange(p.id, e.target.value)}
+                                                        onFocus={(e) => e.target.select()}
+                                                        disabled={!p.isAlive}
+                                                        className="w-full bg-transparent font-black text-xl text-center text-white outline-none py-1 border-b-2 border-transparent focus:border-indigo-500/50 mb-4 truncate transition-colors drop-shadow-md"
+                                                    />
+
+                                                    <div className="h-8 flex items-center justify-center gap-2">
+                                                        {p.isAlive && (p.knownToSheriff || p.knownToDon) && (
+                                                            <div className="flex gap-2">
+                                                                {p.knownToSheriff && <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/50 flex items-center justify-center shadow-[0_0_10px_rgba(245,158,11,0.3)]"><Icon name="Shield" size={14} className="text-amber-400" /></div>}
+                                                                {p.knownToDon && <div className="w-8 h-8 rounded-xl bg-red-600/20 border border-red-600/50 flex items-center justify-center font-tech text-xs font-black text-red-400 shadow-[0_0_10px_rgba(220,38,38,0.3)]">D</div>}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {p.isAlive && (
+                                                    <button onClick={() => toggleNomination(p.id)} className={`w-full py-4 rounded-2xl text-[12px] font-black uppercase tracking-[0.2em] transition-all duration-300 shadow-md ${
+                                                        nominations.includes(p.id) ? 'bg-rose-600/90 text-white shadow-[0_0_25px_rgba(225,29,72,0.6)] border border-rose-400' : 'bg-slate-900/80 text-slate-400 hover:bg-slate-800 hover:text-white border border-white/5'
+                                                    }`}>
+                                                        {nominations.includes(p.id) ? 'Снять' : 'Выставить'}
+                                                    </button>
+                                                )}
+                                            </div>
+
+                                            {/* BACK OF CARD (Exposed Role) */}
+                                            <div className={`card-back flex flex-col justify-center items-center p-4 border-2 shadow-2xl ${ROLES[p.role].bg} ${ROLES[p.role].border} ${ROLES[p.role].glow} backdrop-blur-xl`}>
+                                                <div className="absolute top-4 right-4">
+                                                    <button onClick={() => {haptic('light'); triggerSound('flip'); setPlayers(players.map(pl => pl.id === p.id ? {...pl, isExposed: false} : pl))}} className="p-2 rounded-xl text-white/50 hover:text-white transition bg-black/20">
+                                                        <Icon name="EyeOff" size={18} />
+                                                    </button>
+                                                </div>
+                                                <div className="text-center space-y-4">
+                                                    <div className="font-tech text-sm text-white/50 bg-black/30 px-3 py-1 rounded-lg inline-block border border-white/10">#{p.id.toString().padStart(2, '0')}</div>
+                                                    <div className="font-black text-2xl text-white truncate px-2 w-full max-w-[150px]">{p.name}</div>
+                                                    <div className={`text-xl font-black uppercase tracking-widest px-4 py-2 rounded-xl border shadow-2xl bg-black/40 ${ROLES[p.role].color} ${ROLES[p.role].border}`}>
+                                                        {ROLES[p.role].name}
+                                                    </div>
+                                                    {!p.isAlive && <div className="text-rose-500 font-bold text-sm tracking-widest uppercase mt-2 drop-shadow-[0_0_10px_rgba(225,29,72,0.8)]"><Icon name="Skull" size={16} className="inline mr-1" /> Мертв</div>}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* 4. VOTING PHASE WITH PROGRESS BARS */}
+                        {phase === PHASES.VOTING && (
+                            <div className="max-w-3xl mx-auto w-full space-y-5 animate-slide-up pt-4 flex-1">
+                                <div className="text-center text-[12px] text-indigo-400 font-black uppercase tracking-[0.2em] mb-8 bg-indigo-900/30 py-3 rounded-2xl border border-indigo-500/20">Распределение голосов стола (Живых: {stats.alive})</div>
+                                {nominations.map(id => {
+                                    const p = players.find(x => x.id === id);
+                                    const votePercentage = stats.alive > 0 ? (votes[id] / stats.alive) * 100 : 0;
+                                    return (
+                                        <div key={id} className="p-5 sm:p-6 rounded-[2rem] omni-glass relative overflow-hidden border border-white/10 hover:border-indigo-500/50 transition-colors">
+                                            <div className="absolute top-0 left-0 bottom-0 bg-gradient-to-r from-rose-600/20 to-transparent vote-bar-fill border-r border-rose-500/50" style={{ width: `${votePercentage}%` }} />
+                                            <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6">
+                                                <div className="flex items-center gap-5 w-full sm:w-auto">
+                                                    <div className="w-16 h-16 bg-slate-950 rounded-2xl flex items-center justify-center font-tech font-black text-slate-300 border border-white/10 shadow-inner text-xl">#{p?.id}</div>
+                                                    <div>
+                                                        <span className="text-white font-black text-3xl truncate drop-shadow-md block">{p?.name}</span>
+                                                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{votePercentage.toFixed(0)}% Голосов</span>
+                                                    </div>
+                                                </div>
+                                                <div className="flex items-center justify-between w-full sm:w-auto gap-4 bg-slate-900/80 rounded-3xl p-2 border border-white/5 shadow-inner">
+                                                    <button onClick={() => addVote(id, -1)} className="w-16 h-16 rounded-[1.25rem] bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition font-black text-3xl flex items-center justify-center border border-white/5 shadow-md">-</button>
+                                                    <span className="font-tech text-5xl font-black text-rose-500 w-16 text-center drop-shadow-[0_0_20px_rgba(225,29,72,0.8)]">{votes[id]}</span>
+                                                    <button onClick={() => addVote(id, 1)} className="w-16 h-16 rounded-[1.25rem] bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white transition font-black text-3xl flex items-center justify-center border border-white/5 shadow-md">+</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        )}
+
+                        {/* 5. NIGHT PHASE */}
+                        {phase === PHASES.NIGHT && nightOrder.length > 0 && (
+                            <div className="max-w-5xl mx-auto w-full animate-fade-in pt-8 flex-1">
+                                <div className="text-center mb-14 space-y-6 relative">
+                                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-indigo-600/20 rounded-full blur-[80px] pointer-events-none" />
+                                    <div className="inline-flex p-6 rounded-[2.5rem] bg-indigo-900/40 border border-indigo-500/50 text-indigo-400 shadow-[0_0_60px_rgba(99,102,241,0.3)] animate-float relative z-10">
+                                        <Icon name="Moon" size={56} />
+                                    </div>
+                                    <h2 className="text-5xl sm:text-7xl font-black text-white tracking-tight drop-shadow-[0_0_20px_rgba(0,0,0,0.8)] relative z-10">{nightOrder[nightStep].action}</h2>
+                                    <p className="text-indigo-300 font-black tracking-[0.2em] uppercase text-sm bg-indigo-950/50 inline-block px-6 py-2 rounded-full border border-indigo-500/30 relative z-10 shadow-lg">{nightOrder[nightStep].desc}</p>
+                                </div>
+
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
+                                    {players.filter(p => p.isAlive).map(p => (
+                                        <button key={p.id} onClick={() => handleNightAction(p.id)} className="p-6 rounded-[2rem] omni-glass hover:bg-indigo-600/30 border border-white/5 hover:border-indigo-400/80 text-left transition-all duration-300 transform hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[0_20px_50px_rgba(99,102,241,0.4)] group relative overflow-hidden">
+                                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 to-indigo-500/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                            <div className="flex justify-between items-start mb-5 relative z-10">
+                                                <div className="font-tech text-xs font-black text-slate-300 bg-slate-950 px-3 py-1.5 rounded-xl border border-white/10 shadow-inner">#{p.id.toString().padStart(2, '0')}</div>
+                                                <div className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border shadow-lg ${ROLES[p.role].bg} ${ROLES[p.role].color} ${ROLES[p.role].border}`}>
+                                                    {ROLES[p.role].name}
+                                                </div>
+                                            </div>
+                                            <div className="font-black text-2xl text-white truncate relative z-10 group-hover:text-indigo-100 transition-colors drop-shadow-md">{p.name}</div>
+                                            <Icon name="Crosshair" size={90} className="absolute -bottom-6 -right-6 opacity-0 group-hover:opacity-30 text-indigo-300 transition-all transform scale-50 group-hover:scale-110 duration-500 rotate-45 group-hover:rotate-0" />
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* EMPTY NIGHT */}
+                        {phase === PHASES.NIGHT && nightOrder.length === 0 && (
+                            <div className="flex flex-col items-center justify-center flex-1 animate-slide-up">
+                                <div className="relative mb-10">
+                                    <div className="absolute inset-0 bg-indigo-500/30 rounded-full blur-[60px] animate-pulse-glow-indigo" />
+                                    <Icon name="AlertCircle" size={120} className="text-indigo-400 relative z-10" />
+                                </div>
+                                <h2 className="text-4xl font-black text-white tracking-wide mb-12 drop-shadow-lg">Нет активных ролей</h2>
+                            </div>
+                        )}
+
+                        {/* 6. BRIEFING PHASE */}
+                        {phase === PHASES.BRIEFING && (
+                            <div className="max-w-3xl mx-auto w-full animate-slide-up pt-8 flex-1">
+                                <div className="omni-glass rounded-[3rem] p-8 sm:p-12 relative overflow-hidden border border-amber-500/20 shadow-[0_30px_60px_rgba(0,0,0,0.8)]">
+                                    <div className="absolute -top-20 -right-20 opacity-10 transform rotate-12 pointer-events-none">
+                                        <Icon name="Sun" size={400} />
+                                    </div>
+                                    
+                                    <div className="relative z-10">
+                                        <div className="inline-flex items-center gap-3 bg-amber-500/15 border border-amber-500/40 px-6 py-3 rounded-full mb-10 shadow-[0_0_40px_rgba(245,158,11,0.2)]">
+                                            <Icon name="Sun" size={24} className="text-amber-400" />
+                                            <span className="text-[12px] font-black text-amber-300 uppercase tracking-[0.2em]">Официальный отчет</span>
+                                        </div>
+                                        
+                                        <div className="text-white text-3xl sm:text-4xl font-black leading-tight mb-12 border-l-8 border-amber-500 pl-8 bg-gradient-to-r from-slate-900/80 to-transparent py-8 rounded-r-[2rem] shadow-inner">
+                                            Город просыпается.<br/>
+                                            <span className={`block mt-4 ${briefingData?.killedNames?.length > 0 ? 'text-rose-400 drop-shadow-[0_0_20px_rgba(225,29,72,0.6)]' : 'text-emerald-400 drop-shadow-[0_0_20px_rgba(16,185,129,0.6)]'}`}>
+                                                {briefingData?.killedNames?.length > 0 ? `Потери этой ночи: ${briefingData.killedNames.join(', ')}.` : 'Идеальная тишина. Жертв нет.'}
+                                            </span>
+                                        </div>
+
+                                        {briefingData?.reports?.length > 0 && (
+                                            <div className="pt-10 border-t border-white/10 space-y-5">
+                                                <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-900/40 border border-indigo-500/30 rounded-full shadow-lg">
+                                                    <Icon name="Shield" size={16} className="text-indigo-400"/>
+                                                    <span className="text-[10px] font-black text-indigo-300 uppercase tracking-[0.2em]">Шифровка / Только для ведущего</span>
+                                                </div>
+                                                <div className="grid gap-4">
+                                                    {briefingData.reports.map((report, idx) => {
+                                                        const isMafia = report.includes('ЧЕРНЫЙ') || report.includes('ШЕРИФ');
+                                                        return (
+                                                            <div key={idx} className={`p-6 rounded-2xl border backdrop-blur-xl font-black text-base sm:text-lg flex items-center gap-5 shadow-2xl ${isMafia ? 'bg-rose-950/60 border-rose-500/50 text-rose-200' : 'bg-indigo-950/60 border-indigo-500/50 text-indigo-200'}`}>
+                                                                <div className={`p-3 rounded-xl shadow-inner ${isMafia ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'}`}>
+                                                                    <Icon name="Eye" size={24} />
+                                                                </div>
+                                                                {report}
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* 7. GAME OVER */}
+                        {phase === PHASES.GAME_OVER && (
+                            <div className="max-w-4xl mx-auto w-full flex flex-col items-center justify-center animate-fade-in pt-16 flex-1 text-center">
+                                <div className="relative mb-14 animate-float">
+                                    <div className={`absolute inset-0 rounded-full blur-[100px] animate-pulse-glow ${winner === 'Победа Мафии' ? 'bg-rose-600/50' : 'bg-emerald-600/50'}`} />
+                                    <div className={`p-12 rounded-[4rem] omni-glass border shadow-[0_40px_80px_rgba(0,0,0,0.8)] relative z-10 ${winner === 'Победа Мафии' ? 'border-rose-500/60' : 'border-emerald-500/60'}`}>
+                                        <Icon name="Trophy" size={150} className={winner === 'Победа Мафии' ? 'text-rose-500 drop-shadow-[0_0_40px_rgba(225,29,72,0.9)]' : 'text-emerald-500 drop-shadow-[0_0_40px_rgba(16,185,129,0.9)]'} />
+                                    </div>
+                                </div>
+                                
+                                <h1 className={`text-6xl sm:text-8xl font-black mb-16 uppercase tracking-tighter drop-shadow-[0_0_50px_rgba(0,0,0,0.9)] ${
+                                    winner === 'Победа Мафии' ? 'text-transparent bg-clip-text bg-gradient-to-b from-rose-400 to-rose-700' : 
+                                    winner === 'Победа Мирных' ? 'text-transparent bg-clip-text bg-gradient-to-b from-emerald-400 to-emerald-700' : 'text-white'
+                                }`}>
+                                    {winner}
+                                </h1>
+
+                                <div className="w-full omni-glass rounded-[3rem] p-10 shadow-2xl border border-white/10">
+                                    <h3 className="text-left text-[12px] font-black text-slate-400 uppercase tracking-[0.2em] mb-8 flex items-center gap-3"><Icon name="Database" size={18} className="text-slate-500" /> Итоговая Матрица</h3>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        {players.map(p => (
+                                            <div key={p.id} className="bg-slate-900/80 p-5 rounded-[1.5rem] flex items-center justify-between border border-white/5 shadow-inner">
+                                                <div className="flex items-center gap-4">
+                                                    <span className="font-tech text-sm text-slate-500 bg-black/30 px-2 py-1 rounded-md">#{p.id}</span>
+                                                    <span className={`font-black text-lg ${p.isAlive ? 'text-white' : 'text-slate-600 line-through decoration-rose-500/50 decoration-2'}`}>{p.name}</span>
+                                                </div>
+                                                <span className={`text-[10px] font-black uppercase px-3 py-1.5 rounded-lg border shadow-lg ${ROLES[p.role].bg} ${ROLES[p.role].color} ${ROLES[p.role].border} ${ROLES[p.role].glow}`}>
+                                                    {ROLES[p.role].name}
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                        
+                    </div>
+
+                    {/* ULTRA-DOCK (FLOATING BOTTOM BAR) */}
+                    {phase !== PHASES.SETUP && phase !== PHASES.DISTRIBUTION && (
+                        <div className="fixed bottom-0 inset-x-0 pb-8 pt-12 px-4 bg-gradient-to-t from-black via-black/90 to-transparent z-[100] pointer-events-none flex justify-center">
+                            <div className="pointer-events-auto max-w-3xl w-full">
+                                
+                                {phase === PHASES.DAY && (
+                                    <button onClick={endDay} className={`w-full py-6 rounded-full font-black text-xl sm:text-2xl tracking-[0.2em] uppercase transition-all duration-400 transform active:scale-[0.98] shadow-2xl border-2 relative overflow-hidden group flex items-center justify-center gap-4 ${
+                                        nominations.length > 0 ? 'bg-gradient-to-r from-rose-700 to-rose-500 text-white shadow-[0_20px_50px_rgba(225,29,72,0.5)] border-rose-400' : 'bg-white text-slate-950 shadow-[0_20px_50px_rgba(255,255,255,0.3)] border-white'
+                                    }`}>
+                                        <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
+                                        <Icon name={nominations.length > 0 ? "Crosshair" : "Moon"} size={28} className="relative z-10" />
+                                        <span className="relative z-10 drop-shadow-sm">{nominations.length > 0 ? 'Перейти к голосованию' : 'Объявить Ночь'}</span>
+                                    </button>
+                                )}
+
+                                {phase === PHASES.VOTING && (
+                                    <button onClick={calculateVoting} className="w-full py-6 rounded-full bg-gradient-to-r from-rose-700 to-rose-500 text-white font-black text-xl sm:text-2xl tracking-[0.2em] uppercase transition-all duration-400 transform active:scale-[0.98] shadow-[0_20px_50px_rgba(225,29,72,0.6)] border-2 border-rose-400 relative overflow-hidden group flex items-center justify-center gap-4">
+                                        <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity" />
+                                        <Icon name="Check" size={28} className="relative z-10" />
+                                        <span className="relative z-10 drop-shadow-sm">Фиксировать вердикт</span>
+                                    </button>
+                                )}
+
+                                {phase === PHASES.NIGHT && (
+                                    <button onClick={() => handleNightAction(null)} className="w-full py-6 rounded-full bg-slate-900/90 backdrop-blur-xl hover:bg-slate-800 text-white font-black text-xl sm:text-2xl tracking-[0.2em] uppercase transition-all duration-400 transform active:scale-[0.98] shadow-2xl border-2 border-white/20">
+                                        Действие не требуется (Пропуск)
+                                    </button>
+                                )}
+
+                                {phase === PHASES.BRIEFING && (
+                                    <button onClick={() => {
+                                        saveToHistory();
+                                        haptic('success');
+                                        triggerSound('select');
+                                        if (briefingData?.gameOver) { setWinner(briefingData.gameOver); setPhase(PHASES.GAME_OVER); } 
+                                        else { setDayCount(d => d + 1); setPhase(PHASES.DAY); }
+                                    }} className="w-full py-6 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400 text-slate-950 font-black text-xl sm:text-2xl tracking-[0.2em] uppercase transition-all duration-400 transform active:scale-[0.98] shadow-[0_20px_50px_rgba(16,185,129,0.5)] border-2 border-emerald-300 relative overflow-hidden group flex items-center justify-center gap-4">
+                                        <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-30 transition-opacity" />
+                                        <Icon name={briefingData?.gameOver ? "Trophy" : "Sun"} size={28} className="relative z-10" />
+                                        <span className="relative z-10 drop-shadow-sm">{briefingData?.gameOver ? 'Показать Итоги' : `Начать День ${dayCount + 1}`}</span>
+                                    </button>
+                                )}
+
+                                {phase === PHASES.GAME_OVER && (
+                                    <button onClick={() => {haptic('light'); triggerSound('select'); setPhase(PHASES.SETUP);}} className="w-full py-6 rounded-full bg-white text-slate-950 font-black text-xl sm:text-2xl tracking-[0.2em] uppercase transition-all duration-400 transform active:scale-[0.98] shadow-[0_20px_50px_rgba(255,255,255,0.3)] border-2 border-white relative overflow-hidden group flex items-center justify-center gap-4">
+                                        <div className="absolute inset-0 bg-indigo-100 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <Icon name="RotateCcw" size={28} className="relative z-10 text-indigo-600" />
+                                        <span className="relative z-10 drop-shadow-sm">Новая Симуляция</span>
+                                    </button>
+                                )}
+
+                            </div>
+                        </div>
+                    )}
+
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<MafiaOS />);
+    </script>
 </body>
 </html>
