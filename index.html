@@ -256,10 +256,14 @@
             const [phase, setPhase] = useState(PHASES.SETUP);
             const [dayCount, setDayCount] = useState(1);
             const [players, setPlayers] = useState([]);
-            const [deck, setDeck] = useState({
-                total: 10,
-                roles: { MAFIA: 2, DON: 1, SHERIFF: 1, DOCTOR: 0, MANIAC: 0, BEAUTY: 0, CITIZEN: 6 }
+            
+            // Роли теперь хранятся на одном уровне для удобства работы с ними
+            const [deck, setDeck] = useState({ 
+                MAFIA: 2, CITIZEN: 6, 
+                DON: 1, SHERIFF: 1, DOCTOR: 0, MANIAC: 0, BEAUTY: 0 
             });
+
+            const totalPlayers = Object.values(deck).reduce((a, b) => a + b, 0);
 
             const [nominations, setNominations] = useState([]);
             const [votes, setVotes] = useState({});
@@ -323,24 +327,26 @@
             const autoBalance = () => {
                 haptic('hologram');
                 triggerSound('hologram');
-                const total = deck.total;
+                const total = totalPlayers;
                 const mafiaCount = Math.floor(total / 3);
-                const don = deck.roles.DON > 0 ? 1 : 0;
+                
+                const don = deck.DON > 0 ? 1 : 0;
+                const sheriff = deck.SHERIFF > 0 ? 1 : 0;
+                const doctor = deck.DOCTOR > 0 ? 1 : 0;
+                const maniac = deck.MANIAC > 0 ? 1 : 0;
+                const beauty = deck.BEAUTY > 0 ? 1 : 0;
+                
                 const mafia = Math.max(0, mafiaCount - don);
-                const sheriff = deck.roles.SHERIFF > 0 ? 1 : 0;
-                const doctor = deck.roles.DOCTOR > 0 ? 1 : 0;
-                const maniac = deck.roles.MANIAC > 0 ? 1 : 0;
-                const beauty = deck.roles.BEAUTY > 0 ? 1 : 0;
                 const citizens = Math.max(0, total - (mafia + don + sheriff + doctor + maniac + beauty));
                 
-                setDeck({ total, roles: { MAFIA: mafia, DON: don, SHERIFF: sheriff, DOCTOR: doctor, MANIAC: maniac, BEAUTY: beauty, CITIZEN: citizens } });
+                setDeck({ MAFIA: mafia, CITIZEN: citizens, DON: don, SHERIFF: sheriff, DOCTOR: doctor, MANIAC: maniac, BEAUTY: beauty });
             };
 
             const startGame = () => {
                 haptic('distribute');
                 triggerSound('distribute');
                 const rolePool = [];
-                Object.entries(deck.roles).forEach(([role, count]) => {
+                Object.entries(deck).forEach(([role, count]) => {
                     for (let i = 0; i < count; i++) rolePool.push(role);
                 });
                 
@@ -460,7 +466,7 @@
                 
                 setVotes(prev => {
                     const newVal = Math.max(0, (prev[playerId] || 0) + delta);
-                    if (delta > 0 && currentTotal >= aliveCount) return prev; // Cannot exceed alive players
+                    if (delta > 0 && currentTotal >= aliveCount) return prev; 
                     return { ...prev, [playerId]: newVal };
                 });
             };
@@ -659,13 +665,13 @@
                                     
                                     <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-8 border-b border-white/10">
                                         <div>
-                                            <div className="text-[11px] text-indigo-400 font-black uppercase tracking-[0.2em] mb-2">Размер пула матриц</div>
-                                            <div className="text-4xl font-black text-white font-tech drop-shadow-md">{deck.total} ИГРОКОВ</div>
+                                            <div className="text-[11px] text-indigo-400 font-black uppercase tracking-[0.2em] mb-2">Общий пул игроков</div>
+                                            <div className="text-4xl font-black text-white font-tech drop-shadow-md">{totalPlayers} ИГРОКОВ</div>
                                         </div>
                                         <div className="flex items-center gap-3">
                                             <div className="flex items-center gap-2 bg-slate-900/80 p-2 rounded-2xl border border-white/10 shadow-inner">
-                                                <button onClick={() => {haptic(); triggerSound('click'); setDeck(p => ({...p, total: Math.max(5, p.total - 1)}))}} className="w-14 h-14 rounded-[1.2rem] bg-white/5 hover:bg-white/20 flex items-center justify-center text-2xl font-bold transition text-slate-300 hover:text-white">-</button>
-                                                <button onClick={() => {haptic(); triggerSound('click'); setDeck(p => ({...p, total: Math.min(30, p.total + 1)}))}} className="w-14 h-14 rounded-[1.2rem] bg-white/5 hover:bg-white/20 flex items-center justify-center text-2xl font-bold transition text-slate-300 hover:text-white">+</button>
+                                                <button onClick={() => {haptic(); triggerSound('click'); setDeck(p => ({...p, CITIZEN: Math.max(0, p.CITIZEN - 1)}))}} className="w-14 h-14 rounded-[1.2rem] bg-white/5 hover:bg-white/20 flex items-center justify-center text-2xl font-bold transition text-slate-300 hover:text-white">-</button>
+                                                <button onClick={() => {haptic(); triggerSound('click'); setDeck(p => ({...p, CITIZEN: p.CITIZEN + 1}))}} className="w-14 h-14 rounded-[1.2rem] bg-white/5 hover:bg-white/20 flex items-center justify-center text-2xl font-bold transition text-slate-300 hover:text-white">+</button>
                                             </div>
                                             <button onClick={autoBalance} className="h-18 px-6 rounded-2xl bg-indigo-600/20 hover:bg-indigo-500/40 border border-indigo-500/40 text-indigo-300 font-black transition text-xs uppercase tracking-widest flex items-center gap-3 shadow-[0_0_20px_rgba(99,102,241,0.2)]">
                                                 <Icon name="Wand2" size={18} /> Авто-баланс
@@ -676,25 +682,30 @@
                                     <div className="relative z-10 grid sm:grid-cols-2 gap-8">
                                         <div className="space-y-3">
                                             <div className="text-[11px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
-                                                <div className="w-2 h-2 rounded-full bg-slate-400 shadow-[0_0_10px_rgba(148,163,184,0.8)]"/> Основа
+                                                <div className="w-2 h-2 rounded-full bg-slate-400 shadow-[0_0_10px_rgba(148,163,184,0.8)]"/> Базовые роли
                                             </div>
-                                            {['MAFIA', 'DON', 'SHERIFF', 'CITIZEN'].map(rKey => (
+                                            {['MAFIA', 'CITIZEN'].map(rKey => (
                                                 <div key={rKey} className="flex items-center justify-between p-4 rounded-[1.5rem] bg-slate-900/60 border border-white/5 hover:border-white/10 transition shadow-inner">
                                                     <span className={`font-bold text-base ${ROLES[rKey].color}`}>{ROLES[rKey].name}</span>
-                                                    <span className="font-tech font-black text-xl bg-slate-950 px-4 py-1.5 rounded-xl border border-white/10 shadow-lg text-white">{deck.roles[rKey]}</span>
+                                                    
+                                                    <div className="flex items-center gap-2">
+                                                        <button onClick={() => {haptic('light'); triggerSound('click'); setDeck(p => ({...p, [rKey]: Math.max(0, p[rKey] - 1)}))}} className="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/20 flex items-center justify-center text-xl font-bold transition text-slate-300 hover:text-white">-</button>
+                                                        <span className="font-tech font-black text-xl bg-slate-950 w-12 text-center py-1.5 rounded-xl border border-white/10 shadow-lg text-white">{deck[rKey]}</span>
+                                                        <button onClick={() => {haptic('light'); triggerSound('click'); setDeck(p => ({...p, [rKey]: p[rKey] + 1}))}} className="w-9 h-9 rounded-xl bg-white/5 hover:bg-white/20 flex items-center justify-center text-xl font-bold transition text-slate-300 hover:text-white">+</button>
+                                                    </div>
                                                 </div>
                                             ))}
                                         </div>
                                         <div className="space-y-3">
                                             <div className="text-[11px] font-black text-rose-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-3">
-                                                <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-[0_0_10px_rgba(225,29,72,0.8)]"/> Активные роли
+                                                <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-[0_0_10px_rgba(225,29,72,0.8)]"/> Дополнительные (Активные)
                                             </div>
-                                            {['DOCTOR', 'MANIAC', 'BEAUTY'].map(rKey => (
+                                            {['DON', 'SHERIFF', 'DOCTOR', 'MANIAC', 'BEAUTY'].map(rKey => (
                                                 <div key={rKey} className="flex items-center justify-between p-4 rounded-[1.5rem] bg-slate-900/60 border border-white/5 shadow-inner">
                                                     <span className={`font-bold text-base ${ROLES[rKey].color}`}>{ROLES[rKey].name}</span>
-                                                    <button onClick={() => {haptic('medium'); triggerSound('hologram'); setDeck(p => ({...p, roles: {...p.roles, [rKey]: p.roles[rKey] === 0 ? 1 : 0}}))}} 
-                                                        className={`w-16 h-9 rounded-full relative transition-all duration-400 border border-white/10 ${deck.roles[rKey] > 0 ? 'bg-indigo-600 shadow-[0_0_25px_rgba(79,70,229,0.6)]' : 'bg-slate-800'}`}>
-                                                        <div className={`absolute top-1 left-1 w-7 h-7 bg-white rounded-full transition-transform duration-400 shadow-md ${deck.roles[rKey] > 0 ? 'translate-x-7' : ''}`} />
+                                                    <button onClick={() => {haptic('medium'); triggerSound('hologram'); setDeck(p => ({...p, [rKey]: p[rKey] === 0 ? 1 : 0}))}} 
+                                                        className={`w-16 h-9 rounded-full relative transition-all duration-400 border border-white/10 ${deck[rKey] > 0 ? 'bg-indigo-600 shadow-[0_0_25px_rgba(79,70,229,0.6)]' : 'bg-slate-800'}`}>
+                                                        <div className={`absolute top-1 left-1 w-7 h-7 bg-white rounded-full transition-transform duration-400 shadow-md ${deck[rKey] > 0 ? 'translate-x-7' : ''}`} />
                                                     </button>
                                                 </div>
                                             ))}
