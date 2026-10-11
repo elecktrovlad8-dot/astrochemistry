@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Mafia — host</title>
+    <title>Mafia Omni OS - Ultimate Edition</title>
     
     <!-- React & Babel -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
@@ -179,8 +179,14 @@
                         createOsc('sine', 600, 0.05, 0.001, 0.4);
                         break;
                     case 'danger':
+                    case 'no':
                         createOsc('sawtooth', 100, 0.15, 0.001, 0.4);
                         createOsc('square', 50, 0.15, 0.001, 0.5);
+                        break;
+                    case 'success':
+                    case 'yes':
+                        createOsc('sine', 600, 0.1, 0.001, 0.3);
+                        createOsc('sine', 800, 0.1, 0.001, 0.4);
                         break;
                     case 'night_start':
                         createOsc('sine', 150, 0.1, 0.001, 3);
@@ -233,7 +239,11 @@
             Check: '<polyline points="20 6 9 17 4 12"/>',
             Clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
             Flame: '<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>',
-            Database: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>'
+            Database: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/>',
+            ThumbsUp: '<path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/>',
+            ThumbsDown: '<path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"/>',
+            Lock: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+            UserCheck: '<path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><polyline points="17 11 19 13 23 9"/>'
         };
 
         const Icon = ({ name, size = 20, className = "" }) => (
@@ -250,14 +260,13 @@
             BEAUTY: { id: 'BEAUTY', name: 'Красотка', color: 'text-fuchsia-400', bg: 'bg-fuchsia-900/40', border: 'border-fuchsia-500/50', glow: 'shadow-fuchsia-500/40' },
         };
 
-        const PHASES = { SETUP: 'SETUP', DISTRIBUTION: 'DISTRIBUTION', DAY: 'DAY', VOTING: 'VOTING', NIGHT: 'NIGHT', BRIEFING: 'BRIEFING', GAME_OVER: 'GAME_OVER' };
+        const PHASES = { SETUP: 'SETUP', DISTRIBUTION: 'DISTRIBUTION', NAME_SETUP: 'NAME_SETUP', DAY: 'DAY', VOTING: 'VOTING', NIGHT: 'NIGHT', BRIEFING: 'BRIEFING', GAME_OVER: 'GAME_OVER' };
 
         function MafiaOS() {
             const [phase, setPhase] = useState(PHASES.SETUP);
             const [dayCount, setDayCount] = useState(1);
             const [players, setPlayers] = useState([]);
             
-            // Роли теперь хранятся на одном уровне для удобства работы с ними
             const [deck, setDeck] = useState({ 
                 MAFIA: 2, CITIZEN: 6, 
                 DON: 1, SHERIFF: 1, DOCTOR: 0, MANIAC: 0, BEAUTY: 0 
@@ -272,6 +281,9 @@
             const [briefingData, setBriefingData] = useState(null);
             const [winner, setWinner] = useState(null);
             const [speakerId, setSpeakerId] = useState(null);
+            
+            // Стейт для временной анимации ночью (Yes, No, Blocked, Selected)
+            const [nightAnim, setNightAnim] = useState(null); 
             
             const [soundEnabled, setSoundEnabled] = useState(true);
             const [showLog, setShowLog] = useState(false);
@@ -366,12 +378,18 @@
                 logEvent('Генерация ролей завершена. Матрица загружена.', 'system');
 
                 setTimeout(() => {
-                    setPhase(PHASES.DAY);
-                    setDayCount(1);
-                    setWinner(null);
-                    triggerSound('night_start');
-                    logEvent('День 1. Город просыпается.', 'info');
+                    setPhase(PHASES.NAME_SETUP);
+                    haptic('success');
                 }, 4000);
+            };
+            
+            const beginDayOne = () => {
+                haptic('heavy');
+                setPhase(PHASES.DAY);
+                setDayCount(1);
+                setWinner(null);
+                triggerSound('night_start');
+                logEvent('День 1. Город просыпается.', 'info');
             };
 
             const handleNameChange = (id, newName) => {
@@ -511,12 +529,12 @@
                 const active = [];
                 const hasAlive = (roleId) => players.some(p => p.role === roleId && p.isAlive);
                 
-                if (hasAlive('BEAUTY')) active.push({ role: 'BEAUTY', action: 'Путана / Красотка', desc: 'Блокировка и алиби для игрока' });
+                if (hasAlive('BEAUTY')) active.push({ role: 'BEAUTY', action: 'Путана / Красотка', desc: 'Блокирует действие игрока (алиби не дает)' });
                 if (hasAlive('MAFIA') || hasAlive('DON')) active.push({ role: 'MAFIA_GROUP', action: 'Мафия стреляет', desc: 'Единый заказ клана' });
                 if (hasAlive('MANIAC')) active.push({ role: 'MANIAC', action: 'Маньяк', desc: 'Слепая жажда убийства' });
                 if (hasAlive('DOCTOR')) active.push({ role: 'DOCTOR', action: 'Доктор', desc: 'Спасение от смертельного выстрела' });
                 if (hasAlive('SHERIFF')) active.push({ role: 'SHERIFF', action: 'Шериф', desc: 'Поиск представителей мафии' });
-                if (hasAlive('DON')) active.push({ role: 'DON', action: 'Дон мафии', desc: 'Поиск комиссара / шерифа' });
+                if (hasAlive('DON')) active.push({ role: 'DON', action: 'Дон мафии', desc: 'Поиск шерифа' });
                 return active;
             };
 
@@ -531,49 +549,152 @@
                 logEvent(`Город погрузился в сон. Ночь ${dayCount}`, 'night');
             };
 
+            // === ОБНОВЛЕННАЯ ЛОГИКА АНИМАЦИИ ВЫБОРА НОЧЬЮ ===
             const handleNightAction = (targetId) => {
-                haptic('medium');
-                triggerSound('select');
-                const currentRole = nightOrder[nightStep].role;
-                const newActions = { ...nightActions, [currentRole]: targetId };
-                setNightActions(newActions);
+                if (nightAnim) return; // Игнорируем клики, пока идет анимация показа роли
                 
+                haptic('medium');
+                
+                const currentRoleKey = nightOrder[nightStep].role;
+                const newActions = { ...nightActions, [currentRoleKey]: targetId };
+                
+                // Пропускаем ход
+                if (!targetId) {
+                    triggerSound('select');
+                    proceedNextNightStep(newActions);
+                    return;
+                }
+
+                const actor = players.find(p => p.role === currentRoleKey && p.isAlive);
+                const targetPlayer = players.find(p => p.id === targetId);
+
+                // Если проверяет Шериф или Дон
+                if (currentRoleKey === 'SHERIFF' || currentRoleKey === 'DON') {
+                    // Проверяем, заблокировала ли его красотка (если она есть и сходила к нему)
+                    const isBlocked = newActions['BEAUTY'] === actor?.id;
+                    
+                    let resultStatus = '';
+                    if (isBlocked) {
+                        resultStatus = 'BLOCKED';
+                        triggerSound('danger');
+                    } else {
+                        if (currentRoleKey === 'SHERIFF') {
+                            resultStatus = (targetPlayer.role === 'MAFIA' || targetPlayer.role === 'DON') ? 'YES' : 'NO';
+                        } else { // DON
+                            resultStatus = (targetPlayer.role === 'SHERIFF') ? 'YES' : 'NO';
+                        }
+                        triggerSound(resultStatus === 'YES' ? 'yes' : 'no');
+                    }
+                    
+                    setNightAnim({ targetId, status: resultStatus });
+                    
+                    setTimeout(() => {
+                        setNightAnim(null);
+                        proceedNextNightStep(newActions);
+                    }, 2500); // 2.5 секунды показываем ответ (Да/Нет/Блок)
+                    
+                } else {
+                    // Для остальных ролей просто короткая анимация подтверждения выбора
+                    triggerSound('select');
+                    setNightAnim({ targetId, status: 'SELECTED' });
+                    
+                    setTimeout(() => {
+                        setNightAnim(null);
+                        proceedNextNightStep(newActions);
+                    }, 800); // 0.8 секунды мигание кнопки
+                }
+            };
+
+            const proceedNextNightStep = (newActions) => {
+                setNightActions(newActions);
                 if (nightStep + 1 < nightOrder.length) setNightStep(prev => prev + 1);
                 else finishNight(newActions);
             };
 
+            // === ОБНОВЛЕННАЯ ЛОГИКА КРАСОТКИ И ИТОГОВ НОЧИ ===
             const finishNight = (actions) => {
                 saveToHistory();
                 haptic('heavy');
                 let killed = [];
                 let saved = [];
                 let reports = [];
+                let blockedRoles = [];
 
-                if (actions['BEAUTY']) saved.push(actions['BEAUTY']);
-                if (actions['DOCTOR']) saved.push(actions['DOCTOR']);
+                const beautyTargetId = actions['BEAUTY'];
+                const beautyPlayer = players.find(p => p.role === 'BEAUTY' && p.isAlive);
+
+                // 1. Красотка: Блокирует роли. БОЛЬШЕ НЕ ЛЕЧИТ.
+                if (beautyTargetId) {
+                    const target = players.find(p => p.id === beautyTargetId);
+                    if (target) {
+                        if (target.role === 'MAFIA' || target.role === 'DON') blockedRoles.push('MAFIA_GROUP');
+                        if (target.role === 'DON') blockedRoles.push('DON');
+                        if (target.role === 'SHERIFF') blockedRoles.push('SHERIFF');
+                        if (target.role === 'DOCTOR') blockedRoles.push('DOCTOR');
+                        if (target.role === 'MANIAC') blockedRoles.push('MANIAC');
+                    }
+                }
+
+                // 2. Доктор: Лечит.
+                if (actions['DOCTOR'] && !blockedRoles.includes('DOCTOR')) {
+                    saved.push(actions['DOCTOR']);
+                }
                 
-                if (actions['MAFIA_GROUP'] && !saved.includes(actions['MAFIA_GROUP'])) killed.push(actions['MAFIA_GROUP']);
-                if (actions['MANIAC'] && !saved.includes(actions['MANIAC'])) killed.push(actions['MANIAC']);
+                // 3. Выстрелы:
+                if (actions['MAFIA_GROUP']) {
+                    if (blockedRoles.includes('MAFIA_GROUP')) {
+                        reports.push(`СИСТЕМА: Выстрел мафии был заблокирован Красоткой!`);
+                    } else if (!saved.includes(actions['MAFIA_GROUP'])) {
+                        killed.push(actions['MAFIA_GROUP']);
+                    }
+                }
+
+                if (actions['MANIAC']) {
+                    if (blockedRoles.includes('MANIAC')) {
+                        reports.push(`СИСТЕМА: Выстрел маньяка был заблокирован Красоткой!`);
+                    } else if (!saved.includes(actions['MANIAC'])) {
+                        killed.push(actions['MANIAC']);
+                    }
+                }
+
+                // 4. Смерть Красотки от связи (если ее клиент убит, и она сама еще не убита)
+                if (beautyTargetId && beautyPlayer) {
+                    if (killed.includes(beautyTargetId) && !killed.includes(beautyPlayer.id)) {
+                        killed.push(beautyPlayer.id);
+                        reports.push(`СИСТЕМА: Красотка убита вместе с игроком, которого посещала!`);
+                    }
+                }
 
                 let nextPlayers = [...players];
 
+                // 5. Проверки:
                 if (actions['SHERIFF']) {
-                    const p = nextPlayers.find(p => p.id === actions['SHERIFF']);
-                    if(p) {
-                        const isMafia = p.role === 'MAFIA' || p.role === 'DON';
-                        reports.push(`ШЕРИФ: [${p.id}] ${p.name} — ${isMafia ? 'ЧЕРНЫЙ' : 'КРАСНЫЙ'}`);
-                        nextPlayers = nextPlayers.map(pl => pl.id === p.id ? { ...pl, knownToSheriff: true } : pl);
+                    if (blockedRoles.includes('SHERIFF')) {
+                        reports.push(`ШЕРИФ: [БЛОКИРОВКА] Красотка помешала проверке.`);
+                    } else {
+                        const p = nextPlayers.find(p => p.id === actions['SHERIFF']);
+                        if(p) {
+                            const isMafia = p.role === 'MAFIA' || p.role === 'DON';
+                            reports.push(`ШЕРИФ: [${p.id}] ${p.name} — ${isMafia ? 'ЧЕРНЫЙ' : 'КРАСНЫЙ'}`);
+                            nextPlayers = nextPlayers.map(pl => pl.id === p.id ? { ...pl, knownToSheriff: true } : pl);
+                        }
                     }
                 }
+                
                 if (actions['DON']) {
-                    const p = nextPlayers.find(p => p.id === actions['DON']);
-                    if(p) {
-                        const isSheriff = p.role === 'SHERIFF';
-                        reports.push(`ДОН: [${p.id}] ${p.name} — ${isSheriff ? 'ШЕРИФ' : 'МИРНЫЙ'}`);
-                        nextPlayers = nextPlayers.map(pl => pl.id === p.id ? { ...pl, knownToDon: true } : pl);
+                    if (blockedRoles.includes('DON')) {
+                        reports.push(`ДОН: [БЛОКИРОВКА] Красотка помешала проверке.`);
+                    } else {
+                        const p = nextPlayers.find(p => p.id === actions['DON']);
+                        if(p) {
+                            const isSheriff = p.role === 'SHERIFF';
+                            reports.push(`ДОН: [${p.id}] ${p.name} — ${isSheriff ? 'ШЕРИФ' : 'МИРНЫЙ'}`);
+                            nextPlayers = nextPlayers.map(pl => pl.id === p.id ? { ...pl, knownToDon: true } : pl);
+                        }
                     }
                 }
 
+                // Финал смерти
                 const uniqueKilled = [...new Set(killed)];
                 nextPlayers = nextPlayers.map(p => uniqueKilled.includes(p.id) ? { ...p, isAlive: false, isExposed: true } : p);
                 setPlayers(nextPlayers);
@@ -653,7 +774,7 @@
                             <div className="max-w-3xl mx-auto w-full space-y-8 pt-8 sm:pt-16 animate-fade-in">
                                 <div className="text-center space-y-4 animate-slide-up">
                                     <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-indigo-500/15 border border-indigo-500/40 text-indigo-300 text-xs font-black tracking-[0.2em] uppercase shadow-[0_0_20px_rgba(99,102,241,0.2)]">
-                                        <Icon name="Sparkles" size={14} /> OS Grand Edition
+                                        <Icon name="Sparkles" size={14} /> OS Ultimate Edition
                                     </div>
                                     <h1 className="text-6xl sm:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-100 to-slate-400 drop-shadow-2xl">
                                         MAFIA <span className="text-transparent bg-clip-text bg-gradient-to-br from-indigo-400 to-rose-400">OS</span>
@@ -734,8 +855,50 @@
                             </div>
                         )}
 
+                        {/* НОВАЯ ФАЗА: ПОДГОТОВКА ПРОФИЛЕЙ (ВВОД ИМЕН) */}
+                        {phase === PHASES.NAME_SETUP && (
+                            <div className="max-w-4xl mx-auto w-full space-y-6 pt-8 sm:pt-12 animate-fade-in flex-1">
+                                <div className="text-center space-y-3 mb-10">
+                                    <div className="inline-flex p-4 rounded-full bg-indigo-500/20 border border-indigo-500/50 shadow-[0_0_30px_rgba(99,102,241,0.4)] text-indigo-400 mb-4">
+                                        <Icon name="UserCheck" size={32} />
+                                    </div>
+                                    <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tight drop-shadow-lg uppercase">Подготовка профилей</h2>
+                                    <p className="text-indigo-300 font-bold tracking-widest uppercase text-xs">Введите реальные имена игроков за столом</p>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 pb-24">
+                                    {players.map(p => (
+                                        <div key={p.id} className="p-5 rounded-[2rem] omni-glass border border-white/5 relative overflow-hidden group">
+                                            <div className="absolute inset-0 bg-gradient-to-br from-white/0 to-white/5 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                            <div className="flex justify-between items-center mb-4 relative z-10">
+                                                <span className="font-tech text-xs font-black text-slate-400 bg-slate-950 px-3 py-1.5 rounded-xl border border-white/10">#{p.id.toString().padStart(2, '0')}</span>
+                                                <span className={`text-[9px] font-black uppercase px-2.5 py-1 rounded-lg border shadow-md ${ROLES[p.role].bg} ${ROLES[p.role].color} ${ROLES[p.role].border}`}>
+                                                    {ROLES[p.role].name}
+                                                </span>
+                                            </div>
+                                            <input 
+                                                value={p.name} 
+                                                onChange={(e) => handleNameChange(p.id, e.target.value)}
+                                                onFocus={(e) => { e.target.select(); haptic('light'); }}
+                                                className="w-full bg-slate-900/80 font-black text-lg text-white outline-none px-4 py-3 rounded-xl border border-white/10 focus:border-indigo-500/70 focus:bg-slate-800 transition-all shadow-inner relative z-10"
+                                                placeholder={`Игрок ${p.id}`}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+                                
+                                <div className="fixed bottom-0 inset-x-0 pb-8 pt-12 px-4 bg-gradient-to-t from-black via-black/90 to-transparent z-[100] flex justify-center pointer-events-none">
+                                    <button onClick={beginDayOne} className="pointer-events-auto max-w-xl w-full py-6 rounded-full bg-gradient-to-r from-indigo-600 to-indigo-500 text-white font-black text-xl sm:text-2xl tracking-[0.2em] uppercase transition-all duration-400 transform active:scale-[0.98] shadow-[0_20px_50px_rgba(99,102,241,0.5)] border-2 border-indigo-400 relative overflow-hidden flex items-center justify-center gap-4">
+                                        <div className="absolute inset-0 bg-white opacity-0 hover:opacity-20 transition-opacity" />
+                                        <Icon name="Play" size={28} className="relative z-10" />
+                                        <span className="relative z-10 drop-shadow-sm">Начать игру</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
                         {/* 2. IN-GAME HEADER / HUD */}
-                        {phase !== PHASES.SETUP && phase !== PHASES.DISTRIBUTION && (
+                        {phase !== PHASES.SETUP && phase !== PHASES.DISTRIBUTION && phase !== PHASES.NAME_SETUP && (
                             <div className="space-y-4 mb-8 animate-fade-in">
                                 <div className="omni-glass rounded-[2rem] p-5 flex flex-col sm:flex-row items-center justify-between gap-4 border-t-2 border-indigo-500/20">
                                     
@@ -919,7 +1082,7 @@
                             </div>
                         )}
 
-                        {/* 5. NIGHT PHASE */}
+                        {/* 5. NIGHT PHASE - ОБНОВЛЕННАЯ С АНИМАЦИЕЙ ВЫБОРА */}
                         {phase === PHASES.NIGHT && nightOrder.length > 0 && (
                             <div className="max-w-5xl mx-auto w-full animate-fade-in pt-8 flex-1">
                                 <div className="text-center mb-14 space-y-6 relative">
@@ -932,19 +1095,48 @@
                                 </div>
 
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-                                    {players.filter(p => p.isAlive).map(p => (
-                                        <button key={p.id} onClick={() => handleNightAction(p.id)} className="p-6 rounded-[2rem] omni-glass hover:bg-indigo-600/30 border border-white/5 hover:border-indigo-400/80 text-left transition-all duration-300 transform hover:-translate-y-2 hover:scale-[1.02] hover:shadow-[0_20px_50px_rgba(99,102,241,0.4)] group relative overflow-hidden">
-                                            <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 to-indigo-500/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                            <div className="flex justify-between items-start mb-5 relative z-10">
-                                                <div className="font-tech text-xs font-black text-slate-300 bg-slate-950 px-3 py-1.5 rounded-xl border border-white/10 shadow-inner">#{p.id.toString().padStart(2, '0')}</div>
-                                                <div className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border shadow-lg ${ROLES[p.role].bg} ${ROLES[p.role].color} ${ROLES[p.role].border}`}>
-                                                    {ROLES[p.role].name}
+                                    {players.filter(p => p.isAlive).map(p => {
+                                        // Определение стилей анимации ночного выбора
+                                        const isAnimating = nightAnim && nightAnim.targetId === p.id;
+                                        let animClass = 'omni-glass hover:bg-indigo-600/30 border-white/5 hover:border-indigo-400/80';
+                                        let animIcon = null;
+                                        
+                                        if (isAnimating) {
+                                            if (nightAnim.status === 'YES') {
+                                                animClass = 'bg-emerald-600/80 border-emerald-400 shadow-[0_0_40px_rgba(16,185,129,0.8)] scale-[1.05] z-10';
+                                                animIcon = <Icon name="ThumbsUp" size={80} className="absolute -bottom-4 -right-4 opacity-40 text-white" />;
+                                            } else if (nightAnim.status === 'NO') {
+                                                animClass = 'bg-rose-600/80 border-rose-400 shadow-[0_0_40px_rgba(225,29,72,0.8)] scale-[1.05] z-10';
+                                                animIcon = <Icon name="ThumbsDown" size={80} className="absolute -bottom-4 -right-4 opacity-40 text-white" />;
+                                            } else if (nightAnim.status === 'BLOCKED') {
+                                                animClass = 'bg-amber-500/80 border-amber-300 shadow-[0_0_40px_rgba(245,158,11,0.8)] scale-[1.05] z-10';
+                                                animIcon = <Icon name="Lock" size={80} className="absolute -bottom-4 -right-4 opacity-40 text-white" />;
+                                            } else if (nightAnim.status === 'SELECTED') {
+                                                animClass = 'bg-indigo-500/80 border-indigo-300 shadow-[0_0_40px_rgba(99,102,241,0.8)] scale-[1.05] z-10';
+                                            }
+                                        }
+
+                                        return (
+                                            <button 
+                                                key={p.id} 
+                                                onClick={() => handleNightAction(p.id)} 
+                                                disabled={!!nightAnim} 
+                                                className={`p-6 rounded-[2rem] border text-left transition-all duration-300 transform group relative overflow-hidden ${animClass}`}
+                                            >
+                                                {!isAnimating && <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/0 to-indigo-500/30 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />}
+                                                
+                                                <div className="flex justify-between items-start mb-5 relative z-10">
+                                                    <div className="font-tech text-xs font-black text-slate-300 bg-slate-950 px-3 py-1.5 rounded-xl border border-white/10 shadow-inner">#{p.id.toString().padStart(2, '0')}</div>
+                                                    <div className={`text-[9px] font-black uppercase tracking-widest px-3 py-1.5 rounded-lg border shadow-lg ${isAnimating ? 'bg-black/50 text-white border-white/20' : `${ROLES[p.role].bg} ${ROLES[p.role].color}${ROLES[p.role].border}`}`}>
+                                                        {ROLES[p.role].name}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="font-black text-2xl text-white truncate relative z-10 group-hover:text-indigo-100 transition-colors drop-shadow-md">{p.name}</div>
-                                            <Icon name="Crosshair" size={90} className="absolute -bottom-6 -right-6 opacity-0 group-hover:opacity-30 text-indigo-300 transition-all transform scale-50 group-hover:scale-110 duration-500 rotate-45 group-hover:rotate-0" />
-                                        </button>
-                                    ))}
+                                                <div className={`font-black text-2xl truncate relative z-10 transition-colors drop-shadow-md ${isAnimating ? 'text-white' : 'text-white group-hover:text-indigo-100'}`}>{p.name}</div>
+                                                
+                                                {animIcon || (!isAnimating && <Icon name="Crosshair" size={90} className="absolute -bottom-6 -right-6 opacity-0 group-hover:opacity-30 text-indigo-300 transition-all transform scale-50 group-hover:scale-110 duration-500 rotate-45 group-hover:rotate-0" />)}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}
@@ -990,10 +1182,11 @@
                                                 <div className="grid gap-4">
                                                     {briefingData.reports.map((report, idx) => {
                                                         const isMafia = report.includes('ЧЕРНЫЙ') || report.includes('ШЕРИФ');
+                                                        const isBlock = report.includes('[БЛОКИРОВКА]') || report.includes('заблокирован Красоткой');
                                                         return (
-                                                            <div key={idx} className={`p-6 rounded-2xl border backdrop-blur-xl font-black text-base sm:text-lg flex items-center gap-5 shadow-2xl ${isMafia ? 'bg-rose-950/60 border-rose-500/50 text-rose-200' : 'bg-indigo-950/60 border-indigo-500/50 text-indigo-200'}`}>
-                                                                <div className={`p-3 rounded-xl shadow-inner ${isMafia ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'}`}>
-                                                                    <Icon name="Eye" size={24} />
+                                                            <div key={idx} className={`p-6 rounded-2xl border backdrop-blur-xl font-black text-base sm:text-lg flex items-center gap-5 shadow-2xl ${isMafia || isBlock ? 'bg-rose-950/60 border-rose-500/50 text-rose-200' : 'bg-indigo-950/60 border-indigo-500/50 text-indigo-200'}`}>
+                                                                <div className={`p-3 rounded-xl shadow-inner ${isMafia || isBlock ? 'bg-rose-500/20 text-rose-400 border border-rose-500/30' : 'bg-indigo-500/20 text-indigo-400 border border-indigo-500/30'}`}>
+                                                                    <Icon name={isBlock ? "X" : "Eye"} size={24} />
                                                                 </div>
                                                                 {report}
                                                             </div>
@@ -1046,7 +1239,7 @@
                     </div>
 
                     {/* ULTRA-DOCK (FLOATING BOTTOM BAR) */}
-                    {phase !== PHASES.SETUP && phase !== PHASES.DISTRIBUTION && (
+                    {phase !== PHASES.SETUP && phase !== PHASES.DISTRIBUTION && phase !== PHASES.NAME_SETUP && (
                         <div className="fixed bottom-0 inset-x-0 pb-8 pt-12 px-4 bg-gradient-to-t from-black via-black/90 to-transparent z-[100] pointer-events-none flex justify-center">
                             <div className="pointer-events-auto max-w-3xl w-full">
                                 
@@ -1069,7 +1262,7 @@
                                 )}
 
                                 {phase === PHASES.NIGHT && (
-                                    <button onClick={() => handleNightAction(null)} className="w-full py-6 rounded-full bg-slate-900/90 backdrop-blur-xl hover:bg-slate-800 text-white font-black text-xl sm:text-2xl tracking-[0.2em] uppercase transition-all duration-400 transform active:scale-[0.98] shadow-2xl border-2 border-white/20">
+                                    <button onClick={() => handleNightAction(null)} disabled={!!nightAnim} className="w-full py-6 rounded-full bg-slate-900/90 backdrop-blur-xl hover:bg-slate-800 text-white font-black text-xl sm:text-2xl tracking-[0.2em] uppercase transition-all duration-400 transform active:scale-[0.98] shadow-2xl border-2 border-white/20 disabled:opacity-50 disabled:active:scale-100">
                                         Действие не требуется (Пропуск)
                                     </button>
                                 )}
