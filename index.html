@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Астрологическая Алхимия — PRO</title>
+    <title>Астрологическая Алхимия — STUDIO PRO</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-dark: #090a12;
-            --panel-bg: rgba(16, 18, 32, 0.92);
+            --panel-bg: rgba(16, 18, 32, 0.94);
             --border-color: rgba(129, 140, 248, 0.28);
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
@@ -28,9 +28,7 @@
             color: var(--text-main); height: 100vh; display: flex; overflow: hidden;
             user-select: none; -webkit-user-select: none;
         }
-        #starfield {
-            position: fixed; inset: 0; pointer-events: none; z-index: 1;
-        }
+        #starfield { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
         #menu-toggle {
             display: none; position: absolute; top: 15px; left: 15px;
             background: var(--item-bg); border: 1px solid var(--border-color);
@@ -40,58 +38,71 @@
         }
         #overlay {
             display: none; position: fixed; inset: 0;
-            background: rgba(5, 6, 12, 0.65); backdrop-filter: blur(4px); z-index: 1400;
+            background: rgba(5, 6, 12, 0.68); backdrop-filter: blur(4px); z-index: 1400;
         }
         #overlay.active { display: block; }
 
         .modal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: var(--panel-bg); border: 1px solid var(--accent); border-radius: 14px;
-            padding: 22px; z-index: 2500; width: 92%; max-width: 340px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.85), 0 0 25px rgba(129, 140, 248, 0.2);
-            backdrop-filter: blur(14px);
+            padding: 22px; z-index: 2500; width: 92%; max-width: 420px;
+            box-shadow: 0 15px 45px rgba(0,0,0,0.88), 0 0 25px rgba(129, 140, 248, 0.2);
+            backdrop-filter: blur(16px); max-height: 88vh; overflow-y: auto;
         }
         .modal.active { display: block; }
-        .modal input[type="text"] {
-            width: 100%; padding: 11px 12px; background: rgba(0,0,0,0.35);
+        .modal input[type="text"], .modal select {
+            width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.45);
             border: 1px solid var(--border-color); color: var(--text-main);
-            border-radius: 8px; font-family: inherit; font-size: 0.95rem; margin-bottom: 15px;
+            border-radius: 8px; font-family: inherit; font-size: 0.9rem; margin-bottom: 12px;
         }
-        .modal input[type="text"]:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 10px var(--accent-glow); }
-        .radio-group { display: flex; gap: 10px; margin-bottom: 18px; }
+        .modal select option { background: #121526; color: #fff; }
+        .modal input[type="text"]:focus, .modal select:focus { outline: none; border-color: var(--accent); }
+        .radio-group { display: flex; gap: 10px; margin-bottom: 16px; }
         .radio-label {
             flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            gap: 6px; font-size: 0.9rem; padding: 8px; border-radius: 8px;
+            gap: 6px; font-size: 0.88rem; padding: 8px; border-radius: 8px;
             background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
         }
 
+        .preset-card {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(129, 140, 248, 0.25);
+            border-radius: 9px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer;
+            transition: all 0.2s; display: flex; justify-content: space-between; align-items: center;
+        }
+        .preset-card:hover { background: rgba(129, 140, 248, 0.15); border-color: var(--accent); transform: translateX(3px); }
+        .preset-card-title { font-weight: 600; font-size: 0.86rem; color: #e2e8f0; }
+        .preset-card-sub { font-size: 0.74rem; color: var(--text-muted); margin-top: 2px; }
+
         #sidebar {
-            width: 380px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
+            width: 390px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
             backdrop-filter: blur(14px); display: flex; flex-direction: column; z-index: 1500;
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .sidebar-header {
-            padding: 16px 18px; border-bottom: 1px solid var(--border-color);
-            font-weight: 700; font-size: 0.95rem; letter-spacing: 1.5px; color: var(--accent);
+            padding: 15px 16px; border-bottom: 1px solid var(--border-color);
+            font-weight: 700; font-size: 0.92rem; letter-spacing: 1.4px; color: var(--accent);
             display: flex; justify-content: space-between; align-items: center;
         }
         #close-menu { display: none; background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; }
-        
-        .sidebar-actions {
-            display: flex; gap: 8px; padding: 10px 10px 4px 10px;
-        }
+
+        .sidebar-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; padding: 10px 10px 4px 10px; }
         .action-btn {
-            flex: 1; background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(96, 165, 250, 0.45);
-            color: #93c5fd; padding: 9px 10px; border-radius: 9px; font-family: inherit;
-            font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(96, 165, 250, 0.45);
+            color: #93c5fd; padding: 8px 9px; border-radius: 8px; font-family: inherit;
+            font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            text-align: center;
         }
         .action-btn:hover { background: rgba(59, 130, 246, 0.24); transform: translateY(-1px); }
+        .action-btn.purple {
+            background: rgba(168, 85, 247, 0.14); border-color: rgba(192, 132, 252, 0.45); color: #d8b4fe;
+        }
+        .action-btn.purple:hover { background: rgba(168, 85, 247, 0.28); }
 
-        .search-wrap { padding: 6px 10px 10px 10px; }
+        .search-wrap { padding: 6px 10px 8px 10px; }
         #element-search {
             width: 100%; padding: 8px 11px; border-radius: 8px;
-            background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-main); font-family: inherit; font-size: 0.8rem;
+            background: rgba(0, 0, 0, 0.32); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main); font-family: inherit; font-size: 0.78rem;
         }
         #element-search:focus { outline: none; border-color: var(--accent); }
 
@@ -99,30 +110,34 @@
         .column { flex: 1; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); }
         .column:last-child { border-right: none; }
         .column-title {
-            text-align: center; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.8px;
-            padding: 9px 2px; background: rgba(0,0,0,0.28); color: var(--text-muted);
+            text-align: center; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.8px;
+            padding: 8px 2px; background: rgba(0,0,0,0.28); color: var(--text-muted);
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .column-list { flex: 1; overflow-y: auto; padding: 8px 5px; display: flex; flex-direction: column; gap: 6px; }
+        .column-list { flex: 1; overflow-y: auto; padding: 7px 5px; display: flex; flex-direction: column; gap: 6px; }
         .spawn-btn {
             background: var(--item-bg); border: 1px solid var(--item-border); color: var(--text-main);
-            padding: 8px 4px; border-radius: 8px; cursor: pointer; transition: all 0.18s;
+            padding: 7px 4px; border-radius: 8px; cursor: pointer; transition: all 0.18s;
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
         }
-        .spawn-btn .sym { font-size: 1.25rem; line-height: 1.1; }
-        .spawn-btn .lbl { font-size: 0.65rem; color: var(--text-muted); font-weight: 500; }
-        .spawn-btn:hover { background: #282d4d; border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+        .spawn-btn .sym { font-size: 1.2rem; line-height: 1.1; }
+        .spawn-btn .lbl { font-size: 0.64rem; color: var(--text-muted); font-weight: 500; }
+        .spawn-btn:hover { background: #282d4d; border-color: var(--accent); transform: translateY(-2px); }
         .spawn-btn[data-element="fire"] { border-left: 3px solid var(--fire); }
         .spawn-btn[data-element="earth"] { border-left: 3px solid var(--earth); }
         .spawn-btn[data-element="air"] { border-left: 3px solid var(--air); }
         .spawn-btn[data-element="water"] { border-left: 3px solid var(--water); }
 
+        .sidebar-footer {
+            padding: 9px 10px; display: flex; gap: 6px; border-top: 1px solid rgba(255,255,255,0.06);
+        }
+
         #board { flex: 1; position: relative; overflow: hidden; z-index: 2; }
         .instruction {
-            position: absolute; top: 18px; left: 22px; color: rgba(226, 232, 240, 0.35);
-            pointer-events: none; line-height: 1.55; font-size: 0.82rem; z-index: 5;
-            background: rgba(9, 10, 18, 0.45); padding: 10px 14px; border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.05);
+            position: absolute; top: 16px; left: 20px; color: rgba(226, 232, 240, 0.42);
+            pointer-events: none; line-height: 1.5; font-size: 0.8rem; z-index: 5;
+            background: rgba(9, 10, 18, 0.5); padding: 10px 14px; border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.06);
         }
         #trash-can {
             position: absolute; bottom: 22px; right: 22px; width: 62px; height: 62px;
@@ -136,24 +151,52 @@
         }
 
         #description-panel {
-            position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 86%; max-width: 720px; max-height: 64vh;
-            background: rgba(12, 14, 24, 0.96); border: 1px solid var(--accent); border-radius: 14px;
-            padding: 16px 18px; box-shadow: 0 15px 45px rgba(0,0,0,0.75), 0 0 25px rgba(129, 140, 248, 0.15);
+            position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
+            width: 88%; max-width: 780px; max-height: 68vh;
+            background: rgba(11, 13, 23, 0.96); border: 1px solid var(--accent); border-radius: 14px;
+            padding: 15px 18px; box-shadow: 0 15px 50px rgba(0,0,0,0.82), 0 0 30px rgba(129, 140, 248, 0.16);
             display: none; flex-direction: column; z-index: 25; pointer-events: auto;
-            backdrop-filter: blur(16px);
+            backdrop-filter: blur(18px);
         }
         .desc-header {
             display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;
         }
-        #desc-title { color: var(--accent); margin: 0; font-size: 1.05rem; font-weight: 700; }
+        #desc-title { color: var(--accent); margin: 0; font-size: 1.02rem; font-weight: 700; }
         #desc-close {
-            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-muted); border-radius: 6px; padding: 4px 9px; cursor: pointer; font-size: 0.85rem;
+            background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+            color: var(--text-muted); border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 0.82rem;
         }
         #desc-close:hover { color: #fff; border-color: var(--accent); }
-        #desc-text { color: var(--text-main); font-size: 0.92rem; line-height: 1.48; margin: 0; overflow-y: auto; padding-right: 6px; }
+        #desc-text { color: var(--text-main); font-size: 0.9rem; line-height: 1.48; margin: 0; overflow-y: auto; padding-right: 6px; }
+
+        .tabs-bar {
+            display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted); border-radius: 7px; padding: 6px 12px;
+            font-family: inherit; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+        }
+        .tab-btn.active {
+            background: rgba(129, 140, 248, 0.22); border-color: var(--accent); color: #fff;
+        }
+
+        .wheel-container {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: radial-gradient(circle at center, rgba(30, 35, 68, 0.5) 0%, rgba(10, 12, 22, 0.8) 100%);
+            border: 1px solid rgba(129, 140, 248, 0.22); border-radius: 12px; padding: 12px; margin-bottom: 14px;
+        }
+        .synastry-score-banner {
+            display: flex; align-items: center; justify-content: space-between;
+            background: linear-gradient(90deg, rgba(236, 72, 153, 0.16) 0%, rgba(129, 140, 248, 0.16) 100%);
+            border: 1px solid rgba(244, 114, 182, 0.45); border-radius: 10px;
+            padding: 10px 14px; margin-bottom: 12px;
+        }
+        .score-badge {
+            font-size: 1.45rem; font-weight: 700; color: #f9a8d4;
+            text-shadow: 0 0 12px rgba(236, 72, 153, 0.6);
+        }
 
         .info-block {
             background: rgba(255, 255, 255, 0.035); border-left: 3px solid var(--accent);
@@ -166,15 +209,14 @@
         .info-block.harmonic { border-left-color: #10b981; background: rgba(16, 185, 129, 0.06); }
         .info-block.tense { border-left-color: #f97316; background: rgba(249, 115, 22, 0.06); }
         .info-block.karmic { border-left-color: #eab308; background: rgba(234, 179, 8, 0.07); }
-        .info-block.empty { border-left-color: #475569; background: rgba(0,0,0,0.2); }
-        .info-block-title { font-weight: 600; color: #c7d2fe; margin-bottom: 4px; font-size: 0.88rem; }
-        .info-block-text { font-size: 0.84rem; color: #cbd5e1; white-space: pre-wrap; }
+        .info-block-title { font-weight: 600; color: #c7d2fe; margin-bottom: 4px; font-size: 0.87rem; }
+        .info-block-text { font-size: 0.83rem; color: #cbd5e1; white-space: pre-wrap; }
 
         .element-bars {
             display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px;
             background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);
         }
-        .el-bar-item { font-size: 0.75rem; }
+        .el-bar-item { font-size: 0.74rem; }
         .el-bar-label { display: flex; justify-content: space-between; margin-bottom: 4px; font-weight: 600; }
         .el-bar-track { height: 6px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
         .el-bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
@@ -182,31 +224,31 @@
         .inventory-item {
             display: flex; justify-content: space-between; align-items: center;
             background: rgba(255,255,255,0.05); padding: 7px 11px; margin-bottom: 6px;
-            border-radius: 7px; border: 1px solid rgba(255,255,255,0.09); font-size: 0.86rem;
+            border-radius: 7px; border: 1px solid rgba(255,255,255,0.09); font-size: 0.84rem;
         }
         .remove-btn {
             background: rgba(239, 68, 68, 0.8); color: white; border: none; border-radius: 5px;
-            padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: 0.76rem; font-weight: 600; transition: 0.2s;
+            padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: 0.75rem; font-weight: 600;
         }
-        .remove-btn:hover { background: #ef4444; transform: scale(1.04); }
+        .remove-btn:hover { background: #ef4444; }
         .split-btn {
             background: rgba(129, 140, 248, 0.2); color: #c7d2fe; border: 1px solid var(--accent);
             border-radius: 6px; padding: 5px 11px; cursor: pointer; font-family: inherit;
-            font-size: 0.78rem; font-weight: 600; transition: 0.2s;
+            font-size: 0.76rem; font-weight: 600; transition: 0.2s;
         }
         .split-btn:hover { background: var(--accent); color: #fff; }
 
         .section-header {
-            font-weight: 700; color: var(--text-muted); font-size: 0.76rem;
+            font-weight: 700; color: var(--text-muted); font-size: 0.75rem;
             text-transform: uppercase; margin: 14px 0 8px 0; letter-spacing: 1px;
             display: flex; justify-content: space-between; align-items: center;
         }
 
         .board-item {
-            position: absolute; background: rgba(18, 21, 38, 0.78);
+            position: absolute; background: rgba(18, 21, 38, 0.8);
             border: 1px solid rgba(129, 140, 248, 0.35); border-radius: 11px; padding: 8px 14px;
-            font-size: 1.45rem; font-weight: 700; cursor: grab;
-            transition: transform 0.18s, filter 0.18s, border-color 0.18s, box-shadow 0.18s;
+            font-size: 1.42rem; font-weight: 700; cursor: grab;
+            transition: transform 0.18s, filter 0.18s, border-color 0.18s;
             touch-action: none; display: flex; flex-direction: column; align-items: center;
             justify-content: center; white-space: nowrap; text-align: center; line-height: 1.2;
             color: #f8fafc; text-shadow: 0 0 10px rgba(129, 140, 248, 0.6);
@@ -223,11 +265,11 @@
             filter: drop-shadow(0 0 16px rgba(250, 204, 21, 0.8));
         }
         .board-item.person {
-            color: #93c5fd; font-size: 1.55rem; border-color: rgba(59, 130, 246, 0.5);
+            color: #93c5fd; font-size: 1.5rem; border-color: rgba(59, 130, 246, 0.5);
             text-shadow: 0 0 12px rgba(59, 130, 246, 0.75); padding: 10px 16px;
         }
         .board-item.couple {
-            color: #f9a8d4; font-size: 1.65rem; border-color: rgba(236, 72, 153, 0.6);
+            color: #f9a8d4; font-size: 1.6rem; border-color: rgba(236, 72, 153, 0.6);
             text-shadow: 0 0 14px rgba(236, 72, 153, 0.85); padding: 10px 18px;
         }
         .board-item.bounce {
@@ -249,11 +291,11 @@
 
         @media (max-width: 768px) {
             #menu-toggle { display: flex; }
-            #sidebar { position: absolute; top: 0; left: 0; height: 100%; width: 330px; transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
+            #sidebar { position: absolute; top: 0; left: 0; height: 100%; width: 335px; transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
             #sidebar.open { transform: translateX(0); }
             #close-menu { display: block; }
             .instruction { display: none; }
-            #description-panel { bottom: 90px; width: 94%; max-height: 58vh; }
+            #description-panel { bottom: 88px; width: 95%; max-height: 62vh; }
             .element-bars { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
@@ -272,9 +314,28 @@
             <label class="radio-label"><input type="radio" name="person-gender" value="female"> 👩 Жен</label>
         </div>
         <div style="display:flex; gap:10px;">
-            <button id="person-save" class="action-btn" style="background:var(--accent); color:#fff; border:none;">Создать</button>
-            <button id="person-cancel" class="action-btn" style="background:transparent; color:var(--text-muted); border-color:var(--border-color);">Отмена</button>
+            <button id="person-save" class="action-btn" style="flex:1; background:var(--accent); color:#fff; border:none;">Создать</button>
+            <button id="person-cancel" class="action-btn" style="flex:1; background:transparent; color:var(--text-muted); border-color:var(--border-color);">Отмена</button>
         </div>
+    </div>
+
+    <!-- Модальное окно: Алхимическая Кузница и Пресеты -->
+    <div id="forge-modal" class="modal">
+        <h3 style="margin-top:0; color:#d8b4fe;">⚡ Кузница и Быстрые Пресеты</h3>
+        <div class="section-header" style="margin-top:4px;">Собрать полную формулу в 1 клик</div>
+        <select id="forge-planet"></select>
+        <select id="forge-sign"></select>
+        <select id="forge-house"></select>
+        <button id="forge-spawn-btn" class="action-btn purple" style="width:100%; padding:10px; margin-bottom:14px;">
+            ✨ Выковать формулу на доску
+        </button>
+
+        <div class="section-header">Готовые архетипы и пары (1 клик)</div>
+        <div id="presets-list"></div>
+
+        <button id="forge-close" class="action-btn" style="width:100%; margin-top:10px; background:transparent; color:var(--text-muted);">
+            Закрыть
+        </button>
     </div>
 
     <div id="menu-toggle">☰</div>
@@ -282,14 +343,15 @@
 
     <div id="sidebar">
         <div class="sidebar-header">
-            <span>✨ АСТРО-АЛХИМИЯ</span>
+            <span>✨ АСТРО-АЛХИМИЯ PRO</span>
             <button id="close-menu">✖</button>
         </div>
         <div class="sidebar-actions">
-            <button id="add-person-btn" class="action-btn">➕ 🧑 Создать Человека</button>
+            <button id="add-person-btn" class="action-btn">➕ 🧑 Человек</button>
+            <button id="open-forge-btn" class="action-btn purple">⚡ Кузница / Пресеты</button>
         </div>
         <div class="search-wrap">
-            <input type="text" id="element-search" placeholder="🔍 Поиск (Овен, Луна, 7 Дом...)">
+            <input type="text" id="element-search" placeholder="🔍 Поиск (Овен, Козерог, Луна, 8 Дом...)">
         </div>
         <div class="columns-container">
             <div class="column">
@@ -305,19 +367,22 @@
                 <div class="column-list" id="list-houses"></div>
             </div>
         </div>
-        <div style="padding: 10px;">
-            <button id="reset-board-btn" class="action-btn" style="width:100%; color:#f87171; border-color:rgba(248,113,113,0.4); background:rgba(239,68,68,0.08);">
-                🗑️ Очистить доску
+        <div class="sidebar-footer">
+            <button id="export-btn" class="action-btn" style="flex:1;" title="Скачать JSON-файл доски">📤 Экспорт</button>
+            <button id="import-btn" class="action-btn" style="flex:1;" title="Загрузить JSON-файл доски">📥 Импорт</button>
+            <input type="file" id="import-file" accept=".json" style="display:none;">
+            <button id="reset-board-btn" class="action-btn" style="color:#f87171; border-color:rgba(248,113,113,0.4); background:rgba(239,68,68,0.08);" title="Очистить всё">
+                🗑️
             </button>
         </div>
     </div>
 
     <div id="board">
         <div class="instruction">
-            • Соединяй <b>Планету + Знак + Дом</b> в полную формулу.<br>
-            • Перетаскивай полные формулы в <b>Человека</b> (авто-расчет стихий и аспектов).<br>
-            • Соединяй двух людей в <b>Синастрию (💞)</b> с двусторонним анализом.<br>
-            • Любую связку или пару можно разобрать обратно в окне разбора.
+            • Соединяй <b>Планету + Знак + Дом</b> или используй <b>⚡ Кузницу</b>.<br>
+            • Перетаскивай формулы в <b>Человека</b> (откроются SVG-Колесо, Аспекты и 🌟 Соляр).<br>
+            • Соединяй двух людей в <b>Синастрию (💞)</b> для двойного колеса и индекса пары.<br>
+            • Кликни на любой элемент доски для глубокого синтеза.
         </div>
         <div id="trash-can" title="Перетащите сюда для удаления">🗑️</div>
     </div>
@@ -349,11 +414,244 @@
         }
     };
 
+    /**
+     * Генератор интерактивного SVG-Колеса (Натал и Двойное Кольцо Синастрии)
+     */
+    class NatalWheelSVG {
+        static #SVG_NS = 'http://www.w3.org/2000/svg';
+
+        constructor(elementsRepo, model) {
+            this.elementsRepo = elementsRepo;
+            this.model = model;
+        }
+
+        #svgEl(tag, attrs = {}) {
+            const el = document.createElementNS(NatalWheelSVG.#SVG_NS, tag);
+            for (const [k, v] of Object.entries(attrs)) {
+                el.setAttribute(k, String(v));
+            }
+            return el;
+        }
+
+        #polarToCartesian(cx, cy, r, angleDeg) {
+            const rad = ((angleDeg - 90) * Math.PI) / 180;
+            return {
+                x: cx + r * Math.cos(rad),
+                y: cy + r * Math.sin(rad)
+            };
+        }
+
+        #describeSector(cx, cy, rOuter, rInner, startAngle, endAngle) {
+            const startOuter = this.#polarToCartesian(cx, cy, rOuter, endAngle);
+            const endOuter = this.#polarToCartesian(cx, cy, rOuter, startAngle);
+            const startInner = this.#polarToCartesian(cx, cy, rInner, endAngle);
+            const endInner = this.#polarToCartesian(cx, cy, rInner, startAngle);
+            const largeArc = endAngle - startAngle <= 180 ? '0' : '1';
+
+            return [
+                'M', startOuter.x, startOuter.y,
+                'A', rOuter, rOuter, 0, largeArc, 0, endOuter.x, endOuter.y,
+                'L', endInner.x, endInner.y,
+                'A', rInner, rInner, 0, largeArc, 1, startInner.x, startInner.y,
+                'Z'
+            ].join(' ');
+        }
+
+        renderSingleWheel(inventory) {
+            const size = 290;
+            const cx = size / 2;
+            const cy = size / 2;
+            const rOuter = 134;
+            const rSignsInner = 104;
+            const rPlanets = 82;
+            const rAspectRing = 62;
+
+            const svg = this.#svgEl('svg', { width: size, height: size, viewBox: `0 0 ${size} ${size}` });
+            this.#drawZodiacRing(svg, cx, cy, rOuter, rSignsInner);
+
+            svg.appendChild(this.#svgEl('circle', {
+                cx, cy, r: rAspectRing,
+                fill: 'rgba(9, 11, 22, 0.85)',
+                stroke: 'rgba(129, 140, 248, 0.25)',
+                'stroke-width': 1
+            }));
+
+            const coordsMap = this.#computePlanetPositions(inventory, cx, cy, rPlanets, rAspectRing);
+
+            // Линии натальных аспектов
+            const aspects = this.model.calculateNatalAspects(inventory, null);
+            for (const asp of aspects) {
+                const p1 = coordsMap.get(asp.f1.planetId);
+                const p2 = coordsMap.get(asp.f2.planetId);
+                if (!p1 || !p2) continue;
+                svg.appendChild(this.#svgEl('line', {
+                    x1: p1.ax, y1: p1.ay, x2: p2.ax, y2: p2.ay,
+                    stroke: asp.color || '#818cf8',
+                    'stroke-width': asp.code === 'quinc' ? 1.3 : 1.7,
+                    'stroke-dasharray': asp.code === 'quinc' ? '4,3' : 'none',
+                    opacity: 0.8
+                }));
+            }
+
+            // Глифы планет
+            this.#drawPlanetNodes(svg, coordsMap, '#93c5fd');
+            return svg;
+        }
+
+        renderSynastryWheel(inv1 = [], inv2 = []) {
+            const size = 310;
+            const cx = size / 2;
+            const cy = size / 2;
+            const rOuter = 144;
+            const rSignsInner = 116;
+            const rPlanetsOuter = 98; // Партнер 2
+            const rPlanetsInner = 74; // Партнер 1
+            const rAspectRing = 54;
+
+            const svg = this.#svgEl('svg', { width: size, height: size, viewBox: `0 0 ${size} ${size}` });
+            this.#drawZodiacRing(svg, cx, cy, rOuter, rSignsInner);
+
+            svg.appendChild(this.#svgEl('circle', {
+                cx, cy, r: (rPlanetsOuter + rPlanetsInner) / 2,
+                fill: 'none',
+                stroke: 'rgba(255, 255, 255, 0.1)',
+                'stroke-dasharray': '3,3'
+            }));
+
+            svg.appendChild(this.#svgEl('circle', {
+                cx, cy, r: rAspectRing,
+                fill: 'rgba(9, 11, 22, 0.9)',
+                stroke: 'rgba(236, 72, 153, 0.35)',
+                'stroke-width': 1
+            }));
+
+            const map1 = this.#computePlanetPositions(inv1, cx, cy, rPlanetsInner, rAspectRing);
+            const map2 = this.#computePlanetPositions(inv2, cx, cy, rPlanetsOuter, rAspectRing);
+
+            // Межкарточные аспекты
+            for (const f1 of inv1) {
+                for (const f2 of inv2) {
+                    if (!f1.signId || !f2.signId) continue;
+                    const dist = this.model.getSignDistance(f1.signId, f2.signId);
+                    const asp = this.model.getAspectMeta(dist);
+                    if (!asp) continue;
+                    const c1 = map1.get(f1.planetId);
+                    const c2 = map2.get(f2.planetId);
+                    if (!c1 || !c2) continue;
+
+                    svg.appendChild(this.#svgEl('line', {
+                        x1: c1.ax, y1: c1.ay, x2: c2.ax, y2: c2.ay,
+                        stroke: asp.color,
+                        'stroke-width': 1.4,
+                        opacity: 0.72
+                    }));
+                }
+            }
+
+            this.#drawPlanetNodes(svg, map1, '#93c5fd');
+            this.#drawPlanetNodes(svg, map2, '#f9a8d4');
+            return svg;
+        }
+
+        #drawZodiacRing(svg, cx, cy, rOuter, rInner) {
+            const signs = this.elementsRepo.getSigns();
+            const elColors = {
+                fire: 'rgba(249, 115, 22, 0.22)',
+                earth: 'rgba(16, 185, 129, 0.22)',
+                air: 'rgba(56, 189, 248, 0.22)',
+                water: 'rgba(168, 85, 247, 0.22)'
+            };
+
+            signs.forEach((s, i) => {
+                const startAngle = i * 30;
+                const endAngle = (i + 1) * 30;
+                const pathData = this.#describeSector(cx, cy, rOuter, rInner, startAngle, endAngle);
+                svg.appendChild(this.#svgEl('path', {
+                    d: pathData,
+                    fill: elColors[s.element] || 'rgba(255,255,255,0.05)',
+                    stroke: 'rgba(129, 140, 248, 0.3)',
+                    'stroke-width': 1
+                }));
+
+                const midAngle = startAngle + 15;
+                const labelPos = this.#polarToCartesian(cx, cy, (rOuter + rInner) / 2, midAngle);
+                const text = this.#svgEl('text', {
+                    x: labelPos.x,
+                    y: labelPos.y,
+                    fill: '#e2e8f0',
+                    'font-size': '13px',
+                    'text-anchor': 'middle',
+                    'dominant-baseline': 'central'
+                });
+                text.textContent = s.name;
+                svg.appendChild(text);
+            });
+        }
+
+        #computePlanetPositions(inventory, cx, cy, rPlanet, rAspect) {
+            const bySign = new Map();
+            const result = new Map();
+
+            inventory.forEach((f) => {
+                if (!f.planetId || !f.signId) return;
+                const list = bySign.get(f.signId) || [];
+                list.push(f);
+                bySign.set(f.signId, list);
+            });
+
+            bySign.forEach((list, signId) => {
+                const sign = this.elementsRepo.get(signId);
+                if (!sign) return;
+                const baseAngle = sign.index * 30;
+                const step = 30 / (list.length + 1);
+
+                list.forEach((f, idx) => {
+                    const angle = baseAngle + step * (idx + 1);
+                    const pPos = this.#polarToCartesian(cx, cy, rPlanet, angle);
+                    const aPos = this.#polarToCartesian(cx, cy, rAspect, angle);
+                    result.set(f.planetId, {
+                        px: pPos.x, py: pPos.y,
+                        ax: aPos.x, ay: aPos.y,
+                        formula: f
+                    });
+                });
+            });
+
+            return result;
+        }
+
+        #drawPlanetNodes(svg, coordsMap, color) {
+            coordsMap.forEach((pos, planetId) => {
+                const pObj = this.elementsRepo.get(planetId);
+                if (!pObj) return;
+
+                svg.appendChild(this.#svgEl('circle', {
+                    cx: pos.px, cy: pos.py, r: 9,
+                    fill: '#0f1326',
+                    stroke: color,
+                    'stroke-width': 1.4
+                }));
+
+                const txt = this.#svgEl('text', {
+                    x: pos.px, y: pos.py,
+                    fill: color,
+                    'font-size': '11px',
+                    'font-weight': 'bold',
+                    'text-anchor': 'middle',
+                    'dominant-baseline': 'central'
+                });
+                txt.textContent = pObj.name;
+                svg.appendChild(txt);
+            });
+        }
+    }
+
     class InterpretationRenderer {
         constructor(elementsRepo, descriptionsRepo, model) {
             this.elementsRepo = elementsRepo;
             this.descriptionsRepo = descriptionsRepo;
             this.model = model;
+            this.wheelSvg = new NatalWheelSVG(elementsRepo, model);
         }
 
         createInfoBlock(key, title, extraClass = '') {
@@ -386,7 +684,6 @@
 
             const parts = [f.planetId, f.signId, f.houseId].filter(Boolean);
 
-            // 1. Если это тройная или парная комбинация — строим многослойный синтез!
             if (parts.length > 1) {
                 const exactKey = parts.join('_');
                 const exactBlock = this.createInfoBlock(exactKey, '✨ Полный синтез формулы', 'synthesis');
@@ -416,15 +713,10 @@
                 if (!f.planetId && f.signId && f.houseId) {
                     const s = this.elementsRepo.get(f.signId);
                     const h = this.elementsRepo.get(f.houseId);
-                    const shText = `Куспид или энергия ${h.label} окрашена качествами знака ${s.label} (${s.name}): сфера ${h.sphere} развивается по сценарию этого зодиакального архетипа.`;
+                    const shText = `Энергия ${h.label} окрашена качествами знака ${s.label} (${s.name}): сфера ${h.sphere} развивается по сценарию этого зодиакального архетипа.`;
                     wrapper.appendChild(this.createCustomBlock(`🌌 ${s.label} в ${h.label}`, shText, 'synthesis'));
-                    const sBlock = this.createInfoBlock(f.signId, `🌌 ${s.label}`);
-                    const hBlock = this.createInfoBlock(f.houseId, `🏠 ${h.label}`);
-                    if (sBlock) wrapper.appendChild(sBlock);
-                    if (hBlock) wrapper.appendChild(hBlock);
                 }
             } else {
-                // Одиночный элемент
                 if (f.planetId) {
                     const p = this.elementsRepo.get(f.planetId);
                     const b = this.createInfoBlock(f.planetId, `🪐 ${p.label} (Планета / Точка)`);
@@ -464,7 +756,7 @@
                 ? ' Планета находится в своей обители, поэтому действует в полную силу и максимально автономно.'
                 : '';
 
-            return `Принцип «${p.label}» проявляется через стихию ${elName} (знак ${s.label}) и напрямую фокусируется в сфере ${h.sphere} (${h.label}).${rulerNote} Качества знака ${s.label} задают характер и стиль действия, а ${h.label} указывает главную арену, где эта энергия приносит конкретные события и результаты.`;
+            return `Принцип «${p.label}» проявляется через стихию ${elName} (знак ${s.label}) и напрямую фокусируется в сфере ${h.sphere} (${h.label}).${rulerNote} Качества знака ${s.label} задают характер и стиль действия, а ${h.label} указывает главную арену реализации.`;
         }
 
         renderElementalBalance(inventory, container) {
@@ -545,14 +837,14 @@
 
         #computeSpawnPosition() {
             const boardRect = this.boardEl.getBoundingClientRect();
-            const x = (boardRect.width / 2) - 45 + (Math.random() * 80 - 40);
+            const x = (boardRect.width / 2) - 45 + (Math.random() * 90 - 45);
             const descPanel = document.getElementById('description-panel');
             let y;
             if (descPanel.style.display === 'flex') {
                 const descRect = descPanel.getBoundingClientRect();
                 y = (descRect.top - boardRect.top) - 80 + (Math.random() * 30 - 15);
             } else {
-                y = (boardRect.height * 0.34) - 30 + (Math.random() * 60 - 30);
+                y = (boardRect.height * 0.32) - 30 + (Math.random() * 60 - 30);
             }
             return { x: Math.max(20, x), y: Math.max(20, y) };
         }
@@ -567,7 +859,7 @@
                 const nameText = itemData.name || 'Человек';
 
                 const nameEl = SafeDOM.el('div', '', `${icon} ${nameText}`);
-                nameEl.style.maxWidth = '130px';
+                nameEl.style.maxWidth = '135px';
                 nameEl.style.overflow = 'hidden';
                 nameEl.style.textOverflow = 'ellipsis';
                 el.appendChild(nameEl);
@@ -593,7 +885,7 @@
                 const textEl = SafeDOM.el('span', '', `${p1Name} + ${p2Name}`);
                 textEl.style.fontSize = '0.7rem';
                 textEl.style.marginTop = '4px';
-                textEl.style.maxWidth = '150px';
+                textEl.style.maxWidth = '155px';
                 textEl.style.overflow = 'hidden';
                 textEl.style.textOverflow = 'ellipsis';
                 el.appendChild(textEl);
@@ -612,13 +904,14 @@
             this.createNode('astro', [formula], null, null);
         }
 
-        spawnPerson(name = 'Человек', gender = 'male') {
-            this.createNode('person', null, null, null, { inventory: [], name, gender });
+        spawnPerson(name = 'Человек', gender = 'male', inventory = []) {
+            this.model.sortFormulas(inventory);
+            return this.createNode('person', null, null, null, { inventory, name, gender });
         }
 
         spawnCouple(p1, p2, targetNode) {
-            const x = parseFloat(targetNode.style.left);
-            const y = parseFloat(targetNode.style.top);
+            const x = targetNode ? parseFloat(targetNode.style.left) : null;
+            const y = targetNode ? parseFloat(targetNode.style.top) : null;
             return this.createNode('couple', null, x, y, { person1: p1, person2: p2 });
         }
 
@@ -630,12 +923,12 @@
             const baseX = coupleEl ? parseFloat(coupleEl.style.left) : 140;
             const baseY = coupleEl ? parseFloat(coupleEl.style.top) : 140;
 
-            this.createNode('person', null, Math.max(20, baseX - 75), baseY, {
+            this.createNode('person', null, Math.max(20, baseX - 80), baseY, {
                 inventory: couple.person1.inventory || [],
                 name: couple.person1.name,
                 gender: couple.person1.gender
             });
-            this.createNode('person', null, baseX + 75, baseY, {
+            this.createNode('person', null, baseX + 80, baseY, {
                 inventory: couple.person2.inventory || [],
                 name: couple.person2.name,
                 gender: couple.person2.gender
@@ -964,56 +1257,113 @@
                 descText.appendChild(
                     this.interpretationRenderer.createCustomBlock(
                         'Карта пока пуста',
-                        'Соберите на доске полную комбинацию (Планета + Знак + Дом) и перетащите её на фигуру человека.'
+                        'Соберите на доске полную комбинацию (Планета + Знак + Дом) или выберите пресет в «⚡ Кузнице» и перетащите на фигуру человека.'
                     )
                 );
                 return;
             }
 
-            // 1. Баланс стихий
-            descText.appendChild(SafeDOM.el('div', 'section-header', 'Баланс стихий карты'));
-            this.interpretationRenderer.renderElementalBalance(item.inventory, descText);
+            // Вкладки внутри карты человека
+            const tabsBar = SafeDOM.el('div', 'tabs-bar');
+            const tabNatalBtn = SafeDOM.el('button', 'tab-btn active', '🪐 Натальная карта и Колесо');
+            const tabSolarBtn = SafeDOM.el('button', 'tab-btn', '🌟 Соляр (Прогноз на год)');
+            tabsBar.appendChild(tabNatalBtn);
+            tabsBar.appendChild(tabSolarBtn);
+            descText.appendChild(tabsBar);
 
-            // 2. Инвентарь
-            const editSection = SafeDOM.el('div');
-            editSection.appendChild(SafeDOM.el('div', 'section-header', `Планеты в карте (${item.inventory.length})`));
-            item.inventory.forEach((f, index) => {
-                const row = SafeDOM.el('div', 'inventory-item');
-                const pName = this.interpretationRenderer.elementsRepo.get(f.planetId)?.label || '';
-                const sName = this.interpretationRenderer.elementsRepo.get(f.signId)?.label || '';
-                const hName = this.interpretationRenderer.elementsRepo.get(f.houseId)?.label || '';
-                row.appendChild(SafeDOM.el('span', '', `${f.text}  (${pName} в ${sName}, ${hName})`));
-                const btn = SafeDOM.el('button', 'remove-btn', 'Извлечь');
-                btn.addEventListener('click', () => this.boardController.extractFromPerson(uid, index));
-                row.appendChild(btn);
-                editSection.appendChild(row);
-            });
-            descText.appendChild(editSection);
+            const contentArea = SafeDOM.el('div');
+            descText.appendChild(contentArea);
 
-            // 3. Автоматические натальные аспекты между планетами
-            const natalAspects = this.model.calculateNatalAspects(
-                item.inventory,
-                this.interpretationRenderer.descriptionsRepo
-            );
-            if (natalAspects.length > 0) {
-                const aspHeader = SafeDOM.el('div', 'section-header', `⚡ Внутренние аспекты карты (${natalAspects.length})`);
-                aspHeader.style.color = '#fde047';
-                descText.appendChild(aspHeader);
+            const renderNatalTab = () => {
+                SafeDOM.clear(contentArea);
 
-                natalAspects.forEach((asp) => {
-                    descText.appendChild(
-                        this.interpretationRenderer.createCustomBlock(asp.title, asp.text, asp.harmony)
+                // 1. SVG Космограмма
+                const wheelWrap = SafeDOM.el('div', 'wheel-container');
+                wheelWrap.appendChild(this.interpretationRenderer.wheelSvg.renderSingleWheel(item.inventory));
+                contentArea.appendChild(wheelWrap);
+
+                // 2. Баланс стихий
+                contentArea.appendChild(SafeDOM.el('div', 'section-header', 'Баланс стихий карты'));
+                this.interpretationRenderer.renderElementalBalance(item.inventory, contentArea);
+
+                // 3. Инвентарь
+                const editSection = SafeDOM.el('div');
+                editSection.appendChild(SafeDOM.el('div', 'section-header', `Планеты в карте (${item.inventory.length})`));
+                item.inventory.forEach((f, index) => {
+                    const row = SafeDOM.el('div', 'inventory-item');
+                    const pName = this.interpretationRenderer.elementsRepo.get(f.planetId)?.label || '';
+                    const sName = this.interpretationRenderer.elementsRepo.get(f.signId)?.label || '';
+                    const hName = this.interpretationRenderer.elementsRepo.get(f.houseId)?.label || '';
+                    row.appendChild(SafeDOM.el('span', '', `${f.text}  (${pName} в ${sName}, ${hName})`));
+                    const btn = SafeDOM.el('button', 'remove-btn', 'Извлечь');
+                    btn.addEventListener('click', () => this.boardController.extractFromPerson(uid, index));
+                    row.appendChild(btn);
+                    editSection.appendChild(row);
+                });
+                contentArea.appendChild(editSection);
+
+                // 4. Внутренние аспекты
+                const natalAspects = this.model.calculateNatalAspects(
+                    item.inventory,
+                    this.interpretationRenderer.descriptionsRepo
+                );
+                if (natalAspects.length > 0) {
+                    const aspHeader = SafeDOM.el('div', 'section-header', `⚡ Аспекты и геометрия карты (${natalAspects.length})`);
+                    aspHeader.style.color = '#fde047';
+                    contentArea.appendChild(aspHeader);
+
+                    natalAspects.forEach((asp) => {
+                        contentArea.appendChild(
+                            this.interpretationRenderer.createCustomBlock(asp.title, asp.text, asp.harmony)
+                        );
+                    });
+                }
+
+                // 5. Детальный разбор позиций
+                const analysisSection = SafeDOM.el('div');
+                const header = SafeDOM.el('div', 'section-header', 'Детальный разбор формул');
+                header.style.marginTop = '20px';
+                analysisSection.appendChild(header);
+                item.inventory.forEach((f) => this.interpretationRenderer.appendFormulaInterpretation(f, analysisSection));
+                contentArea.appendChild(analysisSection);
+            };
+
+            const renderSolarTab = () => {
+                SafeDOM.clear(contentArea);
+                contentArea.appendChild(
+                    this.interpretationRenderer.createCustomBlock(
+                        '🌟 Годовой Солярный Прогноз',
+                        'Трактовка включения домов натальной карты солярными планетами на предстоящий личный год (раздел 17 базы данных).',
+                        'synthesis'
+                    )
+                );
+                const solarItems = this.model.calculateSolarForecast(
+                    item.inventory,
+                    this.interpretationRenderer.descriptionsRepo
+                );
+                solarItems.forEach((sItem) => {
+                    contentArea.appendChild(
+                        this.interpretationRenderer.createCustomBlock(
+                            sItem.title,
+                            sItem.text,
+                            sItem.isExactDbMatch ? 'harmonic' : ''
+                        )
                     );
                 });
-            }
+            };
 
-            // 4. Послойная трактовка каждой формулы
-            const analysisSection = SafeDOM.el('div');
-            const header = SafeDOM.el('div', 'section-header', 'Детальный разбор позиций');
-            header.style.marginTop = '20px';
-            analysisSection.appendChild(header);
-            item.inventory.forEach((f) => this.interpretationRenderer.appendFormulaInterpretation(f, analysisSection));
-            descText.appendChild(analysisSection);
+            tabNatalBtn.addEventListener('click', () => {
+                tabNatalBtn.classList.add('active');
+                tabSolarBtn.classList.remove('active');
+                renderNatalTab();
+            });
+            tabSolarBtn.addEventListener('click', () => {
+                tabSolarBtn.classList.add('active');
+                tabNatalBtn.classList.remove('active');
+                renderSolarTab();
+            });
+
+            renderNatalTab();
         }
 
         #renderCouple(uid, item, descTitle, descText) {
@@ -1021,11 +1371,9 @@
             const n1 = p1.name || 'Партнер 1';
             const n2 = p2.name || 'Партнер 2';
             const elementsRepo = this.interpretationRenderer.elementsRepo;
-            const descRepo = this.interpretationRenderer.descriptionsRepo;
 
             descTitle.textContent = `💞 Синастрия: ${n1} и ${n2}`;
 
-            // Кнопка разъединения пары обратно в двух людей
             const topBar = SafeDOM.el('div');
             topBar.style.display = 'flex';
             topBar.style.justifyContent = 'flex-end';
@@ -1045,8 +1393,31 @@
                 return;
             }
 
+            // Индекс совместимости
+            const scoreData = this.model.calculateSynastryScore(
+                p1.inventory,
+                p2.inventory,
+                this.interpretationRenderer.descriptionsRepo
+            );
+            const banner = SafeDOM.el('div', 'synastry-score-banner');
+            const leftInfo = SafeDOM.el('div');
+            leftInfo.appendChild(SafeDOM.el('div', 'info-block-title', scoreData.label));
+            leftInfo.appendChild(SafeDOM.el('div', 'info-block-text', scoreData.summary));
+            banner.appendChild(leftInfo);
+            banner.appendChild(SafeDOM.el('div', 'score-badge', `${scoreData.score}%`));
+            descText.appendChild(banner);
+
+            // Двойное SVG-Колесо синастрии
+            const wheelWrap = SafeDOM.el('div', 'wheel-container');
+            wheelWrap.appendChild(this.interpretationRenderer.wheelSvg.renderSynastryWheel(p1.inventory, p2.inventory));
+            const legend = SafeDOM.el('div', 'info-block-text', `🔵 Внутренний круг: ${n1}   •   🌸 Внешний круг: ${n2}`);
+            legend.style.marginTop = '6px';
+            legend.style.fontSize = '0.76rem';
+            wheelWrap.appendChild(legend);
+            descText.appendChild(wheelWrap);
+
             const synastrySection = SafeDOM.el('div');
-            const synHeader = SafeDOM.el('div', 'section-header', '🔥 Межкарточный резонанс и совместимость');
+            const synHeader = SafeDOM.el('div', 'section-header', '🔥 Межкарточный резонанс и связки');
             synHeader.style.color = '#f9a8d4';
             synastrySection.appendChild(synHeader);
 
@@ -1069,7 +1440,6 @@
                         header.style.color = '#c7d2fe';
                         wrapper.appendChild(header);
 
-                        // 1. Зодиакальная совместимость знаков (если есть в БД)
                         if (f1.signId && f2.signId) {
                             const compBlock =
                                 this.interpretationRenderer.createInfoBlock(`comp_${f1.signId}_${f2.signId}`, `🌌 Ось знаков: ${s1Obj.label} + ${s2Obj.label}`, 'synthesis') ||
@@ -1077,7 +1447,6 @@
                             if (compBlock) wrapper.appendChild(compBlock);
                         }
 
-                        // 2. Аспектная и базовая синастрия планет (в обе стороны)
                         if (f1.planetId && f2.planetId) {
                             const dist = this.model.getSignDistance(f1.signId, f2.signId);
                             const asp = this.model.getAspectMeta(dist);
@@ -1109,26 +1478,24 @@
                             }
                         }
 
-                        // 3. Попадание планеты П1 в дом П2
                         if (f1.planetId && f2.houseId) {
                             const hKey12 = `syn_${f1.planetId}_${f2.houseId}`;
                             const title12 = `🏠 ${p1Obj.label} (${n1}) в ${h2Obj.label} (${n2})`;
                             const block12 = this.interpretationRenderer.createInfoBlock(hKey12, title12) ||
                                 this.interpretationRenderer.createCustomBlock(
                                     title12,
-                                    `${n1} своей планетой (${p1Obj.label}) включает и активирует сферу ${h2Obj.sphere} в жизни партнера (${n2}).`
+                                    `${n1} своей планетой (${p1Obj.label}) включает сферу ${h2Obj.sphere} в карте партнера (${n2}).`
                                 );
                             wrapper.appendChild(block12);
                         }
 
-                        // 4. Попадание планеты П2 в дом П1 (двусторонняя синастрия!)
                         if (f2.planetId && f1.houseId) {
                             const hKey21 = `syn_${f2.planetId}_${f1.houseId}`;
                             const title21 = `🏠 ${p2Obj.label} (${n2}) в ${h1Obj.label} (${n1})`;
                             const block21 = this.interpretationRenderer.createInfoBlock(hKey21, title21) ||
                                 this.interpretationRenderer.createCustomBlock(
                                     title21,
-                                    `${n2} своей планетой (${p2Obj.label}) включает и активирует сферу ${h1Obj.sphere} в жизни партнера (${n1}).`
+                                    `${n2} своей планетой (${p2Obj.label}) включает сферу ${h1Obj.sphere} в карте партнера (${n1}).`
                                 );
                             wrapper.appendChild(block21);
                         }
@@ -1138,16 +1505,7 @@
                 });
             }
 
-            if (!hasInteractions) {
-                synastrySection.appendChild(
-                    this.interpretationRenderer.createCustomBlock(
-                        'Недостаточно данных для синастрии',
-                        'Добавьте хотя бы по одной полной комбинации каждому партнеру.'
-                    )
-                );
-            }
             descText.appendChild(synastrySection);
-
             this.#renderPersonCard(p1, `🧑 Карта: ${n1}`, '#93c5fd', descText);
             this.#renderPersonCard(p2, `🧑 Карта: ${n2}`, '#f9a8d4', descText);
         }
@@ -1157,7 +1515,7 @@
             section.style.marginTop = '22px';
             const header = SafeDOM.el('div', 'section-header', title);
             header.style.color = color;
-            header.style.fontSize = '0.9rem';
+            header.style.fontSize = '0.88rem';
             header.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
             header.style.paddingBottom = '5px';
             section.appendChild(header);
@@ -1196,7 +1554,17 @@
                 personNameInput: document.getElementById('person-name'),
                 personSaveBtn: document.getElementById('person-save'),
                 personCancelBtn: document.getElementById('person-cancel'),
-                searchInput: document.getElementById('element-search')
+                forgeModal: document.getElementById('forge-modal'),
+                forgePlanet: document.getElementById('forge-planet'),
+                forgeSign: document.getElementById('forge-sign'),
+                forgeHouse: document.getElementById('forge-house'),
+                forgeSpawnBtn: document.getElementById('forge-spawn-btn'),
+                forgeCloseBtn: document.getElementById('forge-close'),
+                presetsList: document.getElementById('presets-list'),
+                searchInput: document.getElementById('element-search'),
+                exportBtn: document.getElementById('export-btn'),
+                importBtn: document.getElementById('import-btn'),
+                importFile: document.getElementById('import-file')
             };
 
             this.boardController = new BoardController({
@@ -1257,9 +1625,117 @@
             });
         }
 
+        #initForgeAndPresets() {
+            this.elementsRepo.getPlanets().forEach((p) => {
+                this.dom.forgePlanet.appendChild(new Option(`${p.name} ${p.label}`, p.id));
+            });
+            this.elementsRepo.getSigns().forEach((s) => {
+                this.dom.forgeSign.appendChild(new Option(`${s.name} ${s.label}`, s.id));
+            });
+            this.elementsRepo.getHouses().forEach((h) => {
+                this.dom.forgeHouse.appendChild(new Option(`${h.name} ${h.label}`, h.id));
+            });
+
+            this.dom.forgeSpawnBtn.addEventListener('click', () => {
+                const f = this.model.createCompleteFormula(
+                    this.dom.forgePlanet.value,
+                    this.dom.forgeSign.value,
+                    this.dom.forgeHouse.value
+                );
+                if (f) {
+                    const node = this.boardController.createNode('astro', [f], null, null);
+                    this.uiController.showDescription(node.dataset.uid);
+                    this.#closeModals();
+                    if (window.innerWidth <= 768) this.#closeMenu();
+                }
+            });
+
+            const presets = [
+                {
+                    title: '🔥 Огненный Импульс и Глубина (♈ + ♏)',
+                    sub: 'Солнце в Овне (1 Дом) • Луна в Скорпионе (8 Дом) • Марс в Козероге (10 Дом)',
+                    action: () => {
+                        const inv = [
+                            this.model.createCompleteFormula('sun', 'aries', 'h1'),
+                            this.model.createCompleteFormula('moon', 'scorpio', 'h8'),
+                            this.model.createCompleteFormula('venus', 'pisces', 'h5'),
+                            this.model.createCompleteFormula('mars', 'capricorn', 'h10'),
+                            this.model.createCompleteFormula('pluto', 'scorpio', 'h8')
+                        ];
+                        const el = this.boardController.spawnPerson('Огненный Алхимик', 'male', inv);
+                        this.uiController.showDescription(el.dataset.uid);
+                    }
+                },
+                {
+                    title: '🌙 Архитектор Вершин (♑ + ♋)',
+                    sub: 'Солнце в Козероге (10 Дом) • Луна в Раке (4 Дом) • Венера в Весах (7 Дом)',
+                    action: () => {
+                        const inv = [
+                            this.model.createCompleteFormula('sun', 'capricorn', 'h10'),
+                            this.model.createCompleteFormula('moon', 'cancer', 'h4'),
+                            this.model.createCompleteFormula('venus', 'libra', 'h7'),
+                            this.model.createCompleteFormula('saturn', 'capricorn', 'h10'),
+                            this.model.createCompleteFormula('jupiter', 'taurus', 'h2')
+                        ];
+                        const el = this.boardController.spawnPerson('Лунная Хранительница', 'female', inv);
+                        this.uiController.showDescription(el.dataset.uid);
+                    }
+                },
+                {
+                    title: '💞 Готовая Синастрия: Овен ↔ Козерог',
+                    sub: 'Двойное колесо, квиконсы, ось Овен-Козерог и индекс совместимости',
+                    action: () => {
+                        const p1 = {
+                            type: 'person', name: 'Солнечный Воин', gender: 'male',
+                            inventory: [
+                                this.model.createCompleteFormula('sun', 'aries', 'h1'),
+                                this.model.createCompleteFormula('moon', 'scorpio', 'h8'),
+                                this.model.createCompleteFormula('mars', 'aries', 'h1'),
+                                this.model.createCompleteFormula('venus', 'pisces', 'h5')
+                            ]
+                        };
+                        const p2 = {
+                            type: 'person', name: 'Моя Луна', gender: 'female',
+                            inventory: [
+                                this.model.createCompleteFormula('sun', 'capricorn', 'h7'),
+                                this.model.createCompleteFormula('moon', 'taurus', 'h4'),
+                                this.model.createCompleteFormula('venus', 'capricorn', 'h5'),
+                                this.model.createCompleteFormula('jupiter', 'aries', 'h1')
+                            ]
+                        };
+                        const coupleEl = this.boardController.spawnCouple(p1, p2, null);
+                        this.uiController.showDescription(coupleEl.dataset.uid);
+                    }
+                }
+            ];
+
+            presets.forEach((pr) => {
+                const card = SafeDOM.el('div', 'preset-card');
+                const info = SafeDOM.el('div');
+                info.appendChild(SafeDOM.el('div', 'preset-card-title', pr.title));
+                info.appendChild(SafeDOM.el('div', 'preset-card-sub', pr.sub));
+                card.appendChild(info);
+                card.appendChild(SafeDOM.el('span', '', '➕'));
+                card.addEventListener('click', () => {
+                    pr.action();
+                    this.#closeModals();
+                    if (window.innerWidth <= 768) this.#closeMenu();
+                });
+                this.dom.presetsList.appendChild(card);
+            });
+        }
+
         #closeMenu() {
             this.dom.sidebar.classList.remove('open');
             this.dom.overlay.classList.remove('active');
+        }
+
+        #closeModals() {
+            this.dom.personModal.classList.remove('active');
+            this.dom.forgeModal.classList.remove('active');
+            if (!this.dom.sidebar.classList.contains('open')) {
+                this.dom.overlay.classList.remove('active');
+            }
         }
 
         #bindGlobalUI() {
@@ -1272,7 +1748,6 @@
                 this.dom.descPanel.style.display = 'none';
             });
 
-            // Поиск по элементам
             this.dom.searchInput.addEventListener('input', (e) => {
                 const q = e.target.value.trim().toLowerCase();
                 document.querySelectorAll('.column-list .spawn-btn').forEach((btn) => {
@@ -1281,13 +1756,6 @@
                 });
             });
 
-            const closePersonModal = () => {
-                this.dom.personModal.classList.remove('active');
-                if (!this.dom.sidebar.classList.contains('open')) {
-                    this.dom.overlay.classList.remove('active');
-                }
-            };
-
             document.getElementById('add-person-btn').addEventListener('click', () => {
                 this.dom.personModal.classList.add('active');
                 this.dom.overlay.classList.add('active');
@@ -1295,14 +1763,20 @@
                 this.dom.personNameInput.focus();
             });
 
-            this.dom.personCancelBtn.addEventListener('click', closePersonModal);
+            document.getElementById('open-forge-btn').addEventListener('click', () => {
+                this.dom.forgeModal.classList.add('active');
+                this.dom.overlay.classList.add('active');
+            });
+
+            this.dom.personCancelBtn.addEventListener('click', () => this.#closeModals());
+            this.dom.forgeCloseBtn.addEventListener('click', () => this.#closeModals());
 
             const createPersonAction = () => {
                 const name = this.dom.personNameInput.value.trim() || 'Неизвестный';
                 const genderNode = document.querySelector('input[name="person-gender"]:checked');
                 const gender = genderNode ? genderNode.value : 'male';
                 this.boardController.spawnPerson(name, gender);
-                closePersonModal();
+                this.#closeModals();
                 if (window.innerWidth <= 768) this.#closeMenu();
             };
 
@@ -1313,7 +1787,43 @@
 
             this.dom.overlay.addEventListener('click', () => {
                 this.#closeMenu();
-                closePersonModal();
+                this.#closeModals();
+            });
+
+            // Экспорт и Импорт JSON
+            this.dom.exportBtn.addEventListener('click', () => {
+                const state = this.boardController.serializeState();
+                const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `astro-alchemy-${new Date().toISOString().slice(0, 10)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            this.dom.importBtn.addEventListener('click', () => this.dom.importFile.click());
+            this.dom.importFile.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    try {
+                        const parsed = JSON.parse(ev.target.result);
+                        if (this.storage.save(parsed)) {
+                            const validated = this.storage.load();
+                            if (validated) {
+                                this.boardController.clearAll();
+                                this.boardController.restoreState(validated);
+                                this.#flashSaveIndicator();
+                            }
+                        }
+                    } catch (err) {
+                        alert('Ошибка чтения файла JSON.');
+                    }
+                };
+                reader.readAsText(file);
+                e.target.value = '';
             });
 
             document.getElementById('reset-board-btn').addEventListener('click', () => {
@@ -1341,7 +1851,7 @@
             const resize = () => {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
-                stars = Array.from({ length: 90 }, () => ({
+                stars = Array.from({ length: 95 }, () => ({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
                     r: Math.random() * 1.4 + 0.3,
@@ -1371,6 +1881,7 @@
             this.#populateMenu(this.elementsRepo.getSigns(), 'list-signs');
             this.#populateMenu(this.elementsRepo.getPlanets(), 'list-planets');
             this.#populateMenu(this.elementsRepo.getHouses(), 'list-houses');
+            this.#initForgeAndPresets();
             this.#bindGlobalUI();
             this.#initStarfield();
             this.#restorePreviousSession();
