@@ -21,7 +21,6 @@ export class EphemerisEngine {
         'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'
     ];
 
-    // Орбитальные элементы планет на эпоху J2000.0 (T — юлианские столетия)
     static ORBITAL_ELEMENTS = {
         mercury: { a: 0.387098, e0: 0.205635, e1: 0.000020, i0: 7.0049,  L0: 252.2509, L1: 149472.6746, p0: 77.4561,  p1: 0.1594, O0: 48.3309,  O1: -0.1254 },
         venus:   { a: 0.723330, e0: 0.006773, e1: -0.000048, i0: 3.3947, L0: 181.9798, L1: 58517.8157,  p0: 131.5637, p1: 0.0048, O0: 76.6799,  O1: -0.2780 },
@@ -127,7 +126,6 @@ export class EphemerisEngine {
         const xh = r * (Math.cos(Orad) * Math.cos(u) - Math.sin(Orad) * Math.sin(u) * Math.cos(i));
         const yh = r * (Math.sin(Orad) * Math.cos(u) + Math.cos(Orad) * Math.sin(u) * Math.cos(i));
 
-        // Долготные возмущения для Юпитера и Сатурна (великое неравенство)
         let perturbDeg = 0;
         if (planetKey === 'jupiter' || planetKey === 'saturn') {
             const Mj = norm360(20.020 + 3034.69 * T) * DEG2RAD;
@@ -140,7 +138,6 @@ export class EphemerisEngine {
             }
         }
 
-        // Перевод из гелиоцентрических в геоцентрические координаты через вектор Солнца
         const sunRad = sunPos.lon * DEG2RAD;
         const xs = sunPos.R * Math.cos(sunRad);
         const ys = sunPos.R * Math.sin(sunRad);
@@ -174,9 +171,6 @@ export class EphemerisEngine {
         };
     }
 
-    /**
-     * Полный расчёт всех 15 точек карты по дате, времени и координатам
-     */
     static calculateAllPositions({
         dateStr,
         timeStr = '12:00',
@@ -197,7 +191,6 @@ export class EphemerisEngine {
         const sunPos = EphemerisEngine.computeSun(d, T);
         const moonLon = EphemerisEngine.computeMoon(d);
 
-        // Лунные узлы и Черная Луна (Лилит)
         const nodeNLon = norm360(125.04452 - 0.05295376 * d);
         const nodeSLon = norm360(nodeNLon + 180);
         const lilithLon = norm360(83.3532465 + 0.11140408 * d + 180);
@@ -219,7 +212,6 @@ export class EphemerisEngine {
             chiron: EphemerisEngine.computePlanetGeocentricLon('chiron', T, sunPos)
         };
 
-        // Если время известно — истинный Асцендент, иначе — равнодомная сетка от Солнца
         const ascLon = timeUnknown
             ? sunPos.lon
             : EphemerisEngine.computeAscendant(d, lat, lon);
@@ -235,7 +227,6 @@ export class EphemerisEngine {
             if (planetId === 'asc') {
                 houseNum = 1;
             } else {
-                // Равнодомная система от градуса Асцендента (или Солнца при космограмме)
                 houseNum = Math.floor(norm360(planetLon - ascLon) / 30) + 1;
             }
             results[planetId] = {
@@ -290,12 +281,9 @@ export class AstroModel {
         };
     }
 
-    /**
-     * Генерирует готовый массив формул для человека по дате и времени рождения
-     */
     calculateNatalChartFromBirthData(birthConfig) {
         const positions = EphemerisEngine.calculateAllPositions(birthConfig);
-        const scope = birthConfig.scope || 'full'; // 'full' | 'classic'
+        const scope = birthConfig.scope || 'full';
         const classicSet = new Set([
             'sun', 'moon', 'mercury', 'venus', 'mars',
             'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'asc'
@@ -513,7 +501,7 @@ export class AstroModel {
     }
 
     calculateSynastryScore(inv1 = [], inv2 = [], descriptionsRepo = null) {
-        if (inv1.length === 0 || inv2.length === 0) {
+        if (!inv1 || !inv2 || inv1.length === 0 || inv2.length === 0) {
             return { score: 0, label: 'Недостаточно данных', summary: 'Наполните обе карты для расчёта индекса.' };
         }
 
