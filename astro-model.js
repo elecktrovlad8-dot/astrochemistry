@@ -1,9 +1,255 @@
 /**
  * ============================================================
- * ДОМЕННАЯ МОДЕЛЬ АСТРОЛОГИЧЕСКОЙ АЛХИМИИ (Domain Layer — PRO)
+ * ДОМЕННАЯ МОДЕЛЬ И ЭФЕМЕРИДНЫЙ ДВИЖОК (Domain & Astronomy Layer)
  * ============================================================
  */
 import { PLANET_ORDER } from './astro-database.js';
+
+const DEG2RAD = Math.PI / 180;
+const RAD2DEG = 180 / Math.PI;
+
+function norm360(deg) {
+    return ((deg % 360) + 360) % 360;
+}
+
+/**
+ * Автономный астрономический вычислитель эфемерид (Meeus / JPL J2000.0)
+ */
+export class EphemerisEngine {
+    static SIGN_IDS = [
+        'aries', 'taurus', 'gemini', 'cancer', 'leo', 'virgo',
+        'libra', 'scorpio', 'sagittarius', 'capricorn', 'aquarius', 'pisces'
+    ];
+
+    // Орбитальные элементы планет на эпоху J2000.0 (T — юлианские столетия)
+    static ORBITAL_ELEMENTS = {
+        mercury: { a: 0.387098, e0: 0.205635, e1: 0.000020, i0: 7.0049,  L0: 252.2509, L1: 149472.6746, p0: 77.4561,  p1: 0.1594, O0: 48.3309,  O1: -0.1254 },
+        venus:   { a: 0.723330, e0: 0.006773, e1: -0.000048, i0: 3.3947, L0: 181.9798, L1: 58517.8157,  p0: 131.5637, p1: 0.0048, O0: 76.6799,  O1: -0.2780 },
+        mars:    { a: 1.523679, e0: 0.093405, e1: 0.000090, i0: 1.8497,  L0: 355.4330, L1: 19140.2993,  p0: 336.0602, p1: 0.4439, O0: 49.5581,  O1: -0.2950 },
+        jupiter: { a: 5.202603, e0: 0.048498, e1: 0.000163, i0: 1.3033,  L0: 34.3515,  L1: 3034.9057,   p0: 14.3312,  p1: 0.2155, O0: 100.4644, O1: 0.1767 },
+        saturn:  { a: 9.554909, e0: 0.055546, e1: -0.000346, i0: 2.4889, L0: 50.0774,  L1: 1222.1138,   p0: 93.0572,  p1: 0.5665, O0: 113.6655, O1: -0.2567 },
+        uranus:  { a: 19.21845, e0: 0.046381, e1: -0.000027, i0: 0.7732, L0: 314.0550, L1: 428.4677,    p0: 173.0053, p1: 0.0893, O0: 74.0060,  O1: 0.0424 },
+        neptune: { a: 30.11039, e0: 0.009456, e1: 0.000006, i0: 1.7700,  L0: 304.3487, L1: 218.4862,    p0: 48.1203,  p1: 0.0291, O0: 131.7841, O1: -0.0061 },
+        pluto:   { a: 39.48211, e0: 0.248827, e1: 0.000060, i0: 17.1400, L0: 238.9290, L1: 145.2078,    p0: 224.0689, p1: -0.040, O0: 110.3039, O1: -0.011 },
+        chiron:  { a: 13.69500, e0: 0.381500, e1: 0.000000, i0: 6.9300,  L0: 216.5000, L1: 710.2000,    p0: 188.9500, p1: 0.0000, O0: 209.3900, O1: 0.0000 }
+    };
+
+    static toJulianDay(year, month, day, utcHours = 12) {
+        let Y = year;
+        let M = month;
+        if (M <= 2) {
+            Y -= 1;
+            M += 12;
+        }
+        const A = Math.floor(Y / 100);
+        const B = 2 - A + Math.floor(A / 4);
+        return (
+            Math.floor(365.25 * (Y + 4716)) +
+            Math.floor(30.6001 * (M + 1)) +
+            day +
+            utcHours / 24 +
+            B -
+            1524.5
+        );
+    }
+
+    static solveKepler(M_deg, e) {
+        const M = norm360(M_deg) * DEG2RAD;
+        let E = M + e * Math.sin(M) * (1 + e * Math.cos(M));
+        for (let k = 0; k < 5; k++) {
+            const dE = (E - e * Math.sin(E) - M) / (1 - e * Math.cos(E));
+            E -= dE;
+            if (Math.abs(dE) < 1e-7) break;
+        }
+        return E;
+    }
+
+    static computeSun(d, T) {
+        const L0 = norm360(280.46646 + 0.98564736 * d);
+        const M = norm360(357.52911 + 0.98560028 * d);
+        const Mrad = M * DEG2RAD;
+        const e = 0.016708634 - 0.000042037 * T;
+
+        const C =
+            (1.914602 - 0.004817 * T) * Math.sin(Mrad) +
+            0.019993 * Math.sin(2 * Mrad) +
+            0.000289 * Math.sin(3 * Mrad);
+
+        const lon = norm360(L0 + C);
+        const v = (M + C) * DEG2RAD;
+        const R = (1.000001018 * (1 - e * e)) / (1 + e * Math.cos(v));
+        return { lon, R };
+    }
+
+    static computeMoon(d) {
+        const L = norm360(218.3164477 + 13.17639648 * d);
+        const D = norm360(297.8501921 + 12.19074912 * d) * DEG2RAD;
+        const M = norm360(357.5291092 + 0.98560028 * d) * DEG2RAD;
+        const Mp = norm360(134.9633964 + 13.06499295 * d) * DEG2RAD;
+        const F = norm360(93.2720950 + 13.22935024 * d) * DEG2RAD;
+
+        const dLon =
+            6.2888 * Math.sin(Mp) +
+            1.2740 * Math.sin(2 * D - Mp) +
+            0.6583 * Math.sin(2 * D) +
+            0.2136 * Math.sin(2 * Mp) -
+            0.1851 * Math.sin(M) -
+            0.1143 * Math.sin(2 * F) +
+            0.0588 * Math.sin(2 * D - 2 * Mp) +
+            0.0572 * Math.sin(2 * D - M - Mp) +
+            0.0533 * Math.sin(2 * D + Mp);
+
+        return norm360(L + dLon);
+    }
+
+    static computePlanetGeocentricLon(planetKey, T, sunPos) {
+        const el = EphemerisEngine.ORBITAL_ELEMENTS[planetKey];
+        if (!el) return 0;
+
+        const a = el.a;
+        const e = el.e0 + el.e1 * T;
+        const i = el.i0 * DEG2RAD;
+        const L = norm360(el.L0 + el.L1 * T);
+        const p = norm360(el.p0 + el.p1 * T);
+        const O = norm360(el.O0 + el.O1 * T);
+
+        const M = norm360(L - p);
+        const E = EphemerisEngine.solveKepler(M, e);
+
+        const xv = a * (Math.cos(E) - e);
+        const yv = a * Math.sqrt(1 - e * e) * Math.sin(E);
+        const v = Math.atan2(yv, xv) * RAD2DEG;
+        const r = Math.hypot(xv, yv);
+
+        const u = (v + p - O) * DEG2RAD;
+        const Orad = O * DEG2RAD;
+
+        const xh = r * (Math.cos(Orad) * Math.cos(u) - Math.sin(Orad) * Math.sin(u) * Math.cos(i));
+        const yh = r * (Math.sin(Orad) * Math.cos(u) + Math.cos(Orad) * Math.sin(u) * Math.cos(i));
+
+        // Долготные возмущения для Юпитера и Сатурна (великое неравенство)
+        let perturbDeg = 0;
+        if (planetKey === 'jupiter' || planetKey === 'saturn') {
+            const Mj = norm360(20.020 + 3034.69 * T) * DEG2RAD;
+            const Ms = norm360(317.020 + 1221.55 * T) * DEG2RAD;
+            const angle = 2 * Mj - 5 * Ms - 67.6 * DEG2RAD;
+            if (planetKey === 'jupiter') {
+                perturbDeg = -0.332 * Math.sin(angle) - 0.056 * Math.sin(2 * Mj - 2 * Ms + 21 * DEG2RAD);
+            } else {
+                perturbDeg = 0.812 * Math.sin(angle) - 0.229 * Math.cos(2 * Mj - 4 * Ms - 2 * DEG2RAD);
+            }
+        }
+
+        // Перевод из гелиоцентрических в геоцентрические координаты через вектор Солнца
+        const sunRad = sunPos.lon * DEG2RAD;
+        const xs = sunPos.R * Math.cos(sunRad);
+        const ys = sunPos.R * Math.sin(sunRad);
+
+        const xg = xh + xs;
+        const yg = yh + ys;
+
+        return norm360(Math.atan2(yg, xg) * RAD2DEG + perturbDeg);
+    }
+
+    static computeAscendant(d, latDeg, lonDeg) {
+        const gmst = norm360(280.46061837 + 360.98564736629 * d);
+        const lst = norm360(gmst + lonDeg) * DEG2RAD;
+        const eps = 23.439291 * DEG2RAD;
+        const lat = latDeg * DEG2RAD;
+
+        const y = Math.cos(lst);
+        const x = -Math.sin(lst) * Math.cos(eps) - Math.tan(lat) * Math.sin(eps);
+        return norm360(Math.atan2(y, x) * RAD2DEG);
+    }
+
+    static longitudeToSignAndDegree(lon) {
+        const normalized = norm360(lon);
+        const signIndex = Math.floor(normalized / 30);
+        const degreeInSign = Math.floor(normalized % 30);
+        return {
+            longitude: normalized,
+            signId: EphemerisEngine.SIGN_IDS[signIndex],
+            signIndex,
+            degree: degreeInSign
+        };
+    }
+
+    /**
+     * Полный расчёт всех 15 точек карты по дате, времени и координатам
+     */
+    static calculateAllPositions({
+        dateStr,
+        timeStr = '12:00',
+        tzOffset = 3,
+        lat = 55.7558,
+        lon = 37.6173,
+        timeUnknown = false
+    }) {
+        const [year, month, day] = dateStr.split('-').map(Number);
+        const [hours, minutes] = (timeUnknown ? '12:00' : timeStr).split(':').map(Number);
+        const localHours = (hours || 0) + (minutes || 0) / 60;
+        const utcHours = localHours - Number(tzOffset || 0);
+
+        const jd = EphemerisEngine.toJulianDay(year, month, day, utcHours);
+        const d = jd - 2451545.0;
+        const T = d / 36525.0;
+
+        const sunPos = EphemerisEngine.computeSun(d, T);
+        const moonLon = EphemerisEngine.computeMoon(d);
+
+        // Лунные узлы и Черная Луна (Лилит)
+        const nodeNLon = norm360(125.04452 - 0.05295376 * d);
+        const nodeSLon = norm360(nodeNLon + 180);
+        const lilithLon = norm360(83.3532465 + 0.11140408 * d + 180);
+
+        const rawLongitudes = {
+            sun: sunPos.lon,
+            moon: moonLon,
+            mercury: EphemerisEngine.computePlanetGeocentricLon('mercury', T, sunPos),
+            venus: EphemerisEngine.computePlanetGeocentricLon('venus', T, sunPos),
+            mars: EphemerisEngine.computePlanetGeocentricLon('mars', T, sunPos),
+            jupiter: EphemerisEngine.computePlanetGeocentricLon('jupiter', T, sunPos),
+            saturn: EphemerisEngine.computePlanetGeocentricLon('saturn', T, sunPos),
+            uranus: EphemerisEngine.computePlanetGeocentricLon('uranus', T, sunPos),
+            neptune: EphemerisEngine.computePlanetGeocentricLon('neptune', T, sunPos),
+            pluto: EphemerisEngine.computePlanetGeocentricLon('pluto', T, sunPos),
+            node_n: nodeNLon,
+            node_s: nodeSLon,
+            lilith: lilithLon,
+            chiron: EphemerisEngine.computePlanetGeocentricLon('chiron', T, sunPos)
+        };
+
+        // Если время известно — истинный Асцендент, иначе — равнодомная сетка от Солнца
+        const ascLon = timeUnknown
+            ? sunPos.lon
+            : EphemerisEngine.computeAscendant(d, lat, lon);
+
+        if (!timeUnknown) {
+            rawLongitudes.asc = ascLon;
+        }
+
+        const results = {};
+        for (const [planetId, planetLon] of Object.entries(rawLongitudes)) {
+            const meta = EphemerisEngine.longitudeToSignAndDegree(planetLon);
+            let houseNum;
+            if (planetId === 'asc') {
+                houseNum = 1;
+            } else {
+                // Равнодомная система от градуса Асцендента (или Солнца при космограмме)
+                houseNum = Math.floor(norm360(planetLon - ascLon) / 30) + 1;
+            }
+            results[planetId] = {
+                planetId,
+                signId: meta.signId,
+                houseId: `h${houseNum}`,
+                degree: meta.degree,
+                longitude: meta.longitude
+            };
+        }
+
+        return results;
+    }
+}
 
 export class AstroModel {
     constructor(elementsRepo, descriptionsRepo = null) {
@@ -29,18 +275,41 @@ export class AstroModel {
         };
     }
 
-    createCompleteFormula(planetId, signId, houseId) {
+    createCompleteFormula(planetId, signId, houseId, degree = null) {
         const p = this.elementsRepo.get(planetId);
         const s = this.elementsRepo.get(signId);
         const h = this.elementsRepo.get(houseId);
         if (!p || !s || !h) return null;
+        const degSuffix = typeof degree === 'number' ? ` ${degree}°` : '';
         return {
-            text: `${p.name} ${s.name} ${h.name}`,
+            text: `${p.name} ${s.name}${degSuffix} ${h.name}`,
             planetId,
             signId,
             houseId,
             isComplete: true
         };
+    }
+
+    /**
+     * Генерирует готовый массив формул для человека по дате и времени рождения
+     */
+    calculateNatalChartFromBirthData(birthConfig) {
+        const positions = EphemerisEngine.calculateAllPositions(birthConfig);
+        const scope = birthConfig.scope || 'full'; // 'full' | 'classic'
+        const classicSet = new Set([
+            'sun', 'moon', 'mercury', 'venus', 'mars',
+            'jupiter', 'saturn', 'uranus', 'neptune', 'pluto', 'asc'
+        ]);
+
+        const formulas = [];
+        for (const key of PLANET_ORDER) {
+            if (!positions[key]) continue;
+            if (scope === 'classic' && !classicSet.has(key)) continue;
+            const pos = positions[key];
+            const f = this.createCompleteFormula(pos.planetId, pos.signId, pos.houseId, pos.degree);
+            if (f) formulas.push(f);
+        }
+        return this.sortFormulas(formulas);
     }
 
     mergeTwoFormulas(f1, f2) {
@@ -217,9 +486,6 @@ export class AstroModel {
         return templates[aspect.code] || '';
     }
 
-    /**
-     * Вычисляет прогноз Соляра (Активация раздела 17 `solar_...` из astro-database.js)
-     */
     calculateSolarForecast(inventory, descriptionsRepo) {
         const items = [];
         for (const f of inventory) {
@@ -246,15 +512,12 @@ export class AstroModel {
         return items;
     }
 
-    /**
-     * Вычисляет индекс резонанса и совместимости в Синастрии (0..100%)
-     */
     calculateSynastryScore(inv1 = [], inv2 = [], descriptionsRepo = null) {
         if (inv1.length === 0 || inv2.length === 0) {
             return { score: 0, label: 'Недостаточно данных', summary: 'Наполните обе карты для расчёта индекса.' };
         }
 
-        let rawScore = 62; // Базовый потенциал притяжения
+        let rawScore = 62;
         let harmonicCount = 0;
         let tenseCount = 0;
         let karmicCount = 0;
