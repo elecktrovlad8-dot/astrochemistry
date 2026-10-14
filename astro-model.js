@@ -1,6 +1,6 @@
 /**
  * ============================================================
- * ДОМЕННАЯ МОДЕЛЬ АСТРОЛОГИЧЕСКОЙ АЛХИМИИ (Domain Layer)
+ * ДОМЕННАЯ МОДЕЛЬ АСТРОЛОГИЧЕСКОЙ АЛХИМИИ (Domain Layer — PRO)
  * ============================================================
  */
 import { PLANET_ORDER } from './astro-database.js';
@@ -26,6 +26,20 @@ export class AstroModel {
             signId: item.type === 'sign' ? item.id : null,
             houseId: item.type === 'house' ? item.id : null,
             isComplete: false
+        };
+    }
+
+    createCompleteFormula(planetId, signId, houseId) {
+        const p = this.elementsRepo.get(planetId);
+        const s = this.elementsRepo.get(signId);
+        const h = this.elementsRepo.get(houseId);
+        if (!p || !s || !h) return null;
+        return {
+            text: `${p.name} ${s.name} ${h.name}`,
+            planetId,
+            signId,
+            houseId,
+            isComplete: true
         };
     }
 
@@ -70,26 +84,14 @@ export class AstroModel {
         return true;
     }
 
-    /**
-     * Разбивает составную формулу обратно на одиночные элементы
-     */
     splitFormulaToAtoms(formula) {
         const atoms = [];
-        if (formula.planetId) {
-            atoms.push(this.createFormulaFromElement(this.elementsRepo.get(formula.planetId)));
-        }
-        if (formula.signId) {
-            atoms.push(this.createFormulaFromElement(this.elementsRepo.get(formula.signId)));
-        }
-        if (formula.houseId) {
-            atoms.push(this.createFormulaFromElement(this.elementsRepo.get(formula.houseId)));
-        }
+        if (formula.planetId) atoms.push(this.createFormulaFromElement(this.elementsRepo.get(formula.planetId)));
+        if (formula.signId) atoms.push(this.createFormulaFromElement(this.elementsRepo.get(formula.signId)));
+        if (formula.houseId) atoms.push(this.createFormulaFromElement(this.elementsRepo.get(formula.houseId)));
         return atoms;
     }
 
-    /**
-     * Вычисляет баланс стихий (Огонь, Земля, Воздух, Вода) по инвентарю человека
-     */
     calculateElementalBalance(inventory) {
         const counts = { fire: 0, earth: 0, air: 0, water: 0 };
         let total = 0;
@@ -127,9 +129,6 @@ export class AstroModel {
         return result;
     }
 
-    /**
-     * Геометрическое расстояние между двумя знаками (0..6)
-     */
     getSignDistance(signId1, signId2) {
         const s1 = this.elementsRepo.get(signId1);
         const s2 = this.elementsRepo.get(signId2);
@@ -138,24 +137,18 @@ export class AstroModel {
         return diff > 6 ? 12 - diff : diff;
     }
 
-    /**
-     * Определяет аспект по расстоянию между знаками
-     */
     getAspectMeta(distance) {
         const map = {
-            0: { code: 'conj', name: 'Соединение (0°)', symbol: '☌', harmony: 'neutral', score: 8 },
-            2: { code: 'sext', name: 'Секстиль (60°)', symbol: '✶', harmony: 'harmonic', score: 10 },
-            3: { code: 'sq',   name: 'Квадратура (90°)', symbol: '□', harmony: 'tense', score: -8 },
-            4: { code: 'tr',   name: 'Трин (120°)', symbol: '△', harmony: 'harmonic', score: 14 },
-            5: { code: 'quinc', name: 'Квиконс (150°)', symbol: '⚻', harmony: 'karmic', score: -3 },
-            6: { code: 'opp',  name: 'Оппозиция (180°)', symbol: '☍', harmony: 'tense', score: -6 }
+            0: { code: 'conj',  name: 'Соединение (0°)',  symbol: '☌', harmony: 'neutral',  color: '#facc15', score: 8 },
+            2: { code: 'sext',  name: 'Секстиль (60°)',   symbol: '✶', harmony: 'harmonic', color: '#38bdf8', score: 10 },
+            3: { code: 'sq',    name: 'Квадратура (90°)', symbol: '□', harmony: 'tense',    color: '#f97316', score: -6 },
+            4: { code: 'tr',    name: 'Трин (120°)',      symbol: '△', harmony: 'harmonic', color: '#10b981', score: 14 },
+            5: { code: 'quinc', name: 'Квиконс (150°)',   symbol: '⚻', harmony: 'karmic',   color: '#eab308', score: 4 },
+            6: { code: 'opp',   name: 'Оппозиция (180°)', symbol: '☍', harmony: 'tense',    color: '#ef4444', score: -4 }
         };
         return map[distance] || null;
     }
 
-    /**
-     * Вычисляет натальные аспекты внутри карты одного человека
-     */
     calculateNatalAspects(inventory, descriptionsRepo) {
         const aspects = [];
         for (let i = 0; i < inventory.length; i++) {
@@ -201,6 +194,10 @@ export class AstroModel {
                     title: `${aspect.symbol} ${aspect.name}: ${p1.label} (${s1.name}) — ${p2.label} (${s2.name})`,
                     text: dbText,
                     harmony: aspect.harmony,
+                    color: aspect.color,
+                    code: aspect.code,
+                    f1,
+                    f2,
                     key: matchedKey
                 });
             }
@@ -218,5 +215,86 @@ export class AstroModel {
             opp: `Ось полярности: противостояние «${p1.label} (${s1.label})» и «${p2.label} (${s2.label})». Задача — не подавлять один полюс ради другого, а найти точку равновесия и синтеза.`
         };
         return templates[aspect.code] || '';
+    }
+
+    /**
+     * Вычисляет прогноз Соляра (Активация раздела 17 `solar_...` из astro-database.js)
+     */
+    calculateSolarForecast(inventory, descriptionsRepo) {
+        const items = [];
+        for (const f of inventory) {
+            if (!f.planetId || !f.houseId) continue;
+            const p = this.elementsRepo.get(f.planetId);
+            const h = this.elementsRepo.get(f.houseId);
+            const s = f.signId ? this.elementsRepo.get(f.signId) : null;
+
+            const solarKey = `solar_${f.planetId}_${f.houseId}`;
+            let text = descriptionsRepo ? descriptionsRepo.find(solarKey) : null;
+            const isExactDbMatch = Boolean(text);
+
+            if (!text) {
+                text = `Солярная активация (${p.label} в ${h.label}): В течение года энергия планеты «${p.label}»${s ? ` через качества знака ${s.label}` : ''} выводит на первый план сферу ${h.sphere}. Это время активных перемен, принятия ключевых решений и закладки нового цикла именно в этом секторе карты.`;
+            }
+
+            items.push({
+                title: `🌟 ${p.label} в ${h.label} Соляра`,
+                text,
+                isExactDbMatch,
+                key: solarKey
+            });
+        }
+        return items;
+    }
+
+    /**
+     * Вычисляет индекс резонанса и совместимости в Синастрии (0..100%)
+     */
+    calculateSynastryScore(inv1 = [], inv2 = [], descriptionsRepo = null) {
+        if (inv1.length === 0 || inv2.length === 0) {
+            return { score: 0, label: 'Недостаточно данных', summary: 'Наполните обе карты для расчёта индекса.' };
+        }
+
+        let rawScore = 62; // Базовый потенциал притяжения
+        let harmonicCount = 0;
+        let tenseCount = 0;
+        let karmicCount = 0;
+
+        for (const f1 of inv1) {
+            for (const f2 of inv2) {
+                if (f1.signId && f2.signId) {
+                    const dist = this.getSignDistance(f1.signId, f2.signId);
+                    const asp = this.getAspectMeta(dist);
+                    if (asp) {
+                        rawScore += asp.score * 0.65;
+                        if (asp.harmony === 'harmonic') harmonicCount++;
+                        if (asp.harmony === 'tense') tenseCount++;
+                        if (asp.harmony === 'karmic') karmicCount++;
+                    }
+                }
+                if (descriptionsRepo && f1.planetId && f2.planetId) {
+                    if (
+                        descriptionsRepo.find(`syn_${f1.planetId}_${f2.planetId}`) ||
+                        descriptionsRepo.find(`syn_${f2.planetId}_${f1.planetId}`)
+                    ) {
+                        rawScore += 3;
+                    }
+                }
+                if (['h1', 'h4', 'h5', 'h7', 'h8'].includes(f2.houseId) && ['sun', 'moon', 'venus', 'mars', 'jupiter'].includes(f1.planetId)) {
+                    rawScore += 2.5;
+                }
+                if (['h1', 'h4', 'h5', 'h7', 'h8'].includes(f1.houseId) && ['sun', 'moon', 'venus', 'mars', 'jupiter'].includes(f2.planetId)) {
+                    rawScore += 2.5;
+                }
+            }
+        }
+
+        const score = Math.max(25, Math.min(99, Math.round(rawScore)));
+        let label = 'Сбалансированный союз';
+        if (score >= 85) label = '🔥 Высоковольтный кармический резонанс';
+        else if (score >= 72) label = '✨ Глубокая синергия и притяжение';
+        else if (score < 52) label = '⚡ Союз трансформации и роста через вызовы';
+
+        const summary = `Гармоничных узлов: ${harmonicCount} • Точек роста и страсти: ${tenseCount} • Кармических связок: ${karmicCount}`;
+        return { score, label, summary };
     }
 }
