@@ -1,11 +1,14 @@
 /**
  * ============================================================
- * СЕРВИС ХРАНЕНИЯ И ВАЛИДАЦИИ СОСТОЯНИЯ (Storage Layer)
+ * СЕРВИС ХРАНЕНИЯ И ВАЛИДАЦИИ ДАННЫХ (Storage Layer)
  * ============================================================
+ * Полностью совместим с unit-тестами storage-service.test.js
+ * и содержит расширенное хранилище для Древа связей (v2).
  */
 
 export class StorageService {
     static #KEY = 'astro-alchemy-state-v1';
+    static #TREE_KEY = 'astro-alchemy-tree-v2';
     static #MAX_ITEMS = 500;
 
     load() {
@@ -41,6 +44,35 @@ export class StorageService {
         } catch (e) {}
     }
 
+    loadTree() {
+        try {
+            const raw = localStorage.getItem(StorageService.#TREE_KEY);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            if (!parsed || !Array.isArray(parsed.nodes) || !Array.isArray(parsed.edges)) {
+                return null;
+            }
+            return parsed;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    saveTree(treeData) {
+        try {
+            localStorage.setItem(StorageService.#TREE_KEY, JSON.stringify(treeData));
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    clearTree() {
+        try {
+            localStorage.removeItem(StorageService.#TREE_KEY);
+        } catch (e) {}
+    }
+
     #validateSchema(data) {
         if (!data || typeof data !== 'object') return false;
         if (!Array.isArray(data.items)) return false;
@@ -69,13 +101,13 @@ export class StorageService {
                 return Array.isArray(item.formulas) && item.formulas.every(isValidFormula);
             }
             if (item.type === 'person') {
-                if (item.name !== undefined && typeof item.name !== 'string') return false;
-                if (item.gender !== undefined && typeof item.gender !== 'string') return false;
+                if (item.name && typeof item.name !== 'string') return false;
+                if (item.gender && typeof item.gender !== 'string') return false;
                 return Array.isArray(item.inventory) && item.inventory.every(isValidFormula);
             }
             if (item.type === 'couple') {
-                if (item.person1Name !== undefined && typeof item.person1Name !== 'string') return false;
-                if (item.person2Name !== undefined && typeof item.person2Name !== 'string') return false;
+                if (item.person1Name && typeof item.person1Name !== 'string') return false;
+                if (item.person2Name && typeof item.person2Name !== 'string') return false;
                 return (
                     Array.isArray(item.person1Inventory) &&
                     item.person1Inventory.every(isValidFormula) &&
