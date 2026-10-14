@@ -1,0 +1,19 @@
+{
+  "name": "astro-alchemy-cosmo-studio",
+  "version": "2.0.0",
+  "description": "Next-Level Astrology, Synastry, Family Tree & Tarot Studio",
+  "type": "module",
+  "scripts": {
+    "start": "npx serve .",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js"
+  },
+  "jest": {
+    "testEnvironment": "jsdom",
+    "transform": {}
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "serve": "^14.2.3"
+  }
+}
