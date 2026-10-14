@@ -3,127 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Астрологическая Алхимия — STUDIO PRO</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Астро-Алхимия — NEXT-LEVEL COSMO STUDIO</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #090a12;
-            --panel-bg: rgba(16, 18, 32, 0.94);
+            --bg-dark: #070810;
+            --panel-bg: rgba(14, 17, 30, 0.95);
             --border-color: rgba(129, 140, 248, 0.28);
-            --text-main: #f1f5f9;
+            --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --accent: #818cf8;
-            --accent-glow: rgba(129, 140, 248, 0.45);
-            --item-bg: rgba(28, 32, 56, 0.85);
-            --item-border: rgba(99, 102, 241, 0.35);
+            --accent-pink: #f472b6;
+            --accent-cyan: #38bdf8;
+            --item-bg: #181c32;
+            --item-border: rgba(99, 102, 241, 0.4);
             --fire: #f97316;
             --earth: #10b981;
             --air: #38bdf8;
             --water: #a855f7;
         }
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         body {
             margin: 0; padding: 0; font-family: 'Montserrat', sans-serif;
-            background: radial-gradient(circle at 60% 35%, #171a36 0%, var(--bg-dark) 75%);
-            color: var(--text-main); height: 100vh; display: flex; overflow: hidden;
-            user-select: none; -webkit-user-select: none;
+            background: radial-gradient(circle at 55% 30%, #161936 0%, var(--bg-dark) 80%);
+            color: var(--text-main); height: 100vh; display: flex; flex-direction: column;
+            overflow: hidden; user-select: none; -webkit-user-select: none;
         }
+
         #starfield { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+
+        /* Стартовая завораживающая анимация */
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translate3d(0, 16px, 0); }
+            to   { opacity: 1; transform: translate3d(0, 0, 0); }
+        }
+        @keyframes pulseAura {
+            0%, 100% { box-shadow: 0 0 18px rgba(129, 140, 248, 0.25); }
+            50%      { box-shadow: 0 0 28px rgba(192, 132, 252, 0.45); }
+        }
+
+        /* Верхняя навигационная панель (3 Глобальных Раздела) */
+        #top-navbar {
+            height: 56px; background: rgba(10, 12, 22, 0.94);
+            border-bottom: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 18px; z-index: 1800; position: relative;
+        }
+        .brand-logo {
+            display: flex; align-items: center; gap: 10px; font-weight: 800;
+            font-size: 0.98rem; letter-spacing: 1.5px;
+            background: linear-gradient(90deg, #818cf8, #f472b6, #38bdf8);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .nav-tabs { display: flex; gap: 8px; }
+        .nav-tab-btn {
+            background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-muted); padding: 8px 16px; border-radius: 10px;
+            font-family: inherit; font-size: 0.82rem; font-weight: 600; cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .nav-tab-btn:hover { color: #fff; background: rgba(129, 140, 248, 0.14); transform: translateY(-1px); }
+        .nav-tab-btn.active {
+            background: linear-gradient(135deg, rgba(129, 140, 248, 0.28), rgba(168, 85, 247, 0.22));
+            border-color: var(--accent); color: #fff;
+            box-shadow: 0 4px 15px rgba(129, 140, 248, 0.25);
+        }
+
+        #app-viewport {
+            flex: 1; display: flex; position: relative; overflow: hidden; z-index: 2;
+        }
+        .view-section {
+            display: none; width: 100%; height: 100%; position: relative; overflow: hidden;
+            animation: fadeSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .view-section.active { display: flex; }
+
+        /* Сайдбар и доска (Раздел 1) */
         #menu-toggle {
-            display: none; position: absolute; top: 15px; left: 15px;
-            background: var(--item-bg); border: 1px solid var(--border-color);
-            color: var(--text-main); width: 44px; height: 44px; border-radius: 10px;
-            font-size: 1.4rem; z-index: 2000; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.6); align-items: center; justify-content: center;
+            display: none; background: var(--item-bg); border: 1px solid var(--border-color);
+            color: var(--text-main); width: 38px; height: 38px; border-radius: 9px;
+            font-size: 1.2rem; cursor: pointer; align-items: center; justify-content: center;
         }
         #overlay {
             display: none; position: fixed; inset: 0;
-            background: rgba(5, 6, 12, 0.68); backdrop-filter: blur(4px); z-index: 1400;
+            background: rgba(5, 6, 12, 0.72); z-index: 2100;
         }
         #overlay.active { display: block; }
 
-        .modal {
-            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            background: var(--panel-bg); border: 1px solid var(--accent); border-radius: 14px;
-            padding: 20px; z-index: 2500; width: 94%; max-width: 460px;
-            box-shadow: 0 15px 45px rgba(0,0,0,0.88), 0 0 25px rgba(129, 140, 248, 0.2);
-            backdrop-filter: blur(16px); max-height: 90vh; overflow-y: auto;
-        }
-        .modal.active { display: block; }
-        .modal input[type="text"],
-        .modal input[type="date"],
-        .modal input[type="time"],
-        .modal input[type="number"],
-        .modal select {
-            width: 100%; padding: 9px 11px; background: rgba(0,0,0,0.45);
-            border: 1px solid var(--border-color); color: var(--text-main);
-            border-radius: 8px; font-family: inherit; font-size: 0.86rem; margin-bottom: 10px;
-            color-scheme: dark;
-        }
-        .modal select option { background: #121526; color: #fff; }
-        .modal input:focus, .modal select:focus { outline: none; border-color: var(--accent); }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .form-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; display: block; font-weight: 600; }
-
-        .radio-group { display: flex; gap: 8px; margin-bottom: 12px; }
-        .radio-label {
-            flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            gap: 6px; font-size: 0.84rem; padding: 8px; border-radius: 8px;
-            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .birth-preview-box {
-            background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(129, 140, 248, 0.25);
-            border-radius: 9px; padding: 9px 11px; margin: 8px 0 14px 0;
-            max-height: 135px; overflow-y: auto;
-        }
-        .birth-preview-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
-        }
-        .preview-chip {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 6px; padding: 4px 6px; font-size: 0.73rem; text-align: center;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        }
-
-        .preset-card {
-            background: rgba(255,255,255,0.04); border: 1px solid rgba(129, 140, 248, 0.25);
-            border-radius: 9px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer;
-            transition: all 0.2s; display: flex; justify-content: space-between; align-items: center;
-        }
-        .preset-card:hover { background: rgba(129, 140, 248, 0.15); border-color: var(--accent); transform: translateX(3px); }
-        .preset-card-title { font-weight: 600; font-size: 0.86rem; color: #e2e8f0; }
-        .preset-card-sub { font-size: 0.74rem; color: var(--text-muted); margin-top: 2px; }
-
         #sidebar {
-            width: 390px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
-            backdrop-filter: blur(14px); display: flex; flex-direction: column; z-index: 1500;
+            width: 380px; background: var(--panel-bg); border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; z-index: 1500;
             transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .sidebar-header {
-            padding: 15px 16px; border-bottom: 1px solid var(--border-color);
-            font-weight: 700; font-size: 0.92rem; letter-spacing: 1.4px; color: var(--accent);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        #close-menu { display: none; background: none; border: none; color: var(--text-muted); font-size: 1.4rem; cursor: pointer; }
-
         .sidebar-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; padding: 10px 10px 4px 10px; }
         .action-btn {
-            background: rgba(59, 130, 246, 0.12); border: 1px solid rgba(96, 165, 250, 0.45);
-            color: #93c5fd; padding: 8px 9px; border-radius: 8px; font-family: inherit;
-            font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s;
+            background: rgba(59, 130, 246, 0.14); border: 1px solid rgba(96, 165, 250, 0.45);
+            color: #93c5fd; padding: 9px 10px; border-radius: 9px; font-family: inherit;
+            font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: transform 0.18s, background 0.18s;
             text-align: center;
         }
-        .action-btn:hover { background: rgba(59, 130, 246, 0.24); transform: translateY(-1px); }
+        .action-btn:hover { background: rgba(59, 130, 246, 0.26); transform: translateY(-1px); }
+        .action-btn:active { transform: scale(0.97); }
         .action-btn.purple {
-            background: rgba(168, 85, 247, 0.14); border-color: rgba(192, 132, 252, 0.45); color: #d8b4fe;
+            background: rgba(168, 85, 247, 0.15); border-color: rgba(192, 132, 252, 0.45); color: #d8b4fe;
         }
         .action-btn.purple:hover { background: rgba(168, 85, 247, 0.28); }
 
         .search-wrap { padding: 6px 10px 8px 10px; }
         #element-search {
             width: 100%; padding: 8px 11px; border-radius: 8px;
-            background: rgba(0, 0, 0, 0.32); border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.38); border: 1px solid rgba(255, 255, 255, 0.12);
             color: var(--text-main); font-family: inherit; font-size: 0.78rem;
         }
         #element-search:focus { outline: none; border-color: var(--accent); }
@@ -132,93 +122,155 @@
         .column { flex: 1; display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); }
         .column:last-child { border-right: none; }
         .column-title {
-            text-align: center; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.8px;
-            padding: 8px 2px; background: rgba(0,0,0,0.28); color: var(--text-muted);
+            text-align: center; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.8px;
+            padding: 8px 2px; background: rgba(0,0,0,0.3); color: var(--text-muted);
             border-bottom: 1px solid rgba(255,255,255,0.05);
         }
         .column-list { flex: 1; overflow-y: auto; padding: 7px 5px; display: flex; flex-direction: column; gap: 6px; }
         .spawn-btn {
             background: var(--item-bg); border: 1px solid var(--item-border); color: var(--text-main);
-            padding: 7px 4px; border-radius: 8px; cursor: pointer; transition: all 0.18s;
+            padding: 7px 4px; border-radius: 8px; cursor: pointer;
+            transition: transform 0.16s ease, border-color 0.16s ease, background 0.16s ease;
             display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
         }
         .spawn-btn .sym { font-size: 1.2rem; line-height: 1.1; }
         .spawn-btn .lbl { font-size: 0.64rem; color: var(--text-muted); font-weight: 500; }
-        .spawn-btn:hover { background: #282d4d; border-color: var(--accent); transform: translateY(-2px); }
+        .spawn-btn:hover { background: #262b4a; border-color: var(--accent); transform: translateY(-2px); }
         .spawn-btn[data-element="fire"] { border-left: 3px solid var(--fire); }
         .spawn-btn[data-element="earth"] { border-left: 3px solid var(--earth); }
         .spawn-btn[data-element="air"] { border-left: 3px solid var(--air); }
         .spawn-btn[data-element="water"] { border-left: 3px solid var(--water); }
 
-        .sidebar-footer {
-            padding: 9px 10px; display: flex; gap: 6px; border-top: 1px solid rgba(255,255,255,0.06);
-        }
+        .sidebar-footer { padding: 9px 10px; display: flex; gap: 6px; border-top: 1px solid rgba(255,255,255,0.06); }
 
-        #board { flex: 1; position: relative; overflow: hidden; z-index: 2; }
+        #board { flex: 1; position: relative; overflow: hidden; }
         .instruction {
-            position: absolute; top: 16px; left: 20px; color: rgba(226, 232, 240, 0.42);
-            pointer-events: none; line-height: 1.5; font-size: 0.8rem; z-index: 5;
-            background: rgba(9, 10, 18, 0.5); padding: 10px 14px; border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.06);
+            position: absolute; top: 16px; left: 20px; color: rgba(226, 232, 240, 0.48);
+            pointer-events: none; line-height: 1.5; font-size: 0.79rem; z-index: 5;
+            background: rgba(11, 13, 24, 0.72); padding: 10px 14px; border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.07);
         }
         #trash-can {
             position: absolute; bottom: 22px; right: 22px; width: 62px; height: 62px;
-            background: rgba(22, 25, 43, 0.75); border: 2px dashed var(--item-border);
+            background: #14172b; border: 2px dashed var(--item-border);
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; color: var(--text-muted); z-index: 15; transition: all 0.2s;
+            font-size: 1.5rem; color: var(--text-muted); z-index: 15; transition: transform 0.2s, border-color 0.2s;
         }
         #trash-can.hovered {
             background: rgba(239, 68, 68, 0.25); border-color: #ef4444; color: #ef4444;
-            transform: scale(1.18); box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+            transform: scale(1.18);
         }
 
+        /* ИСПРАВЛЕНИЕ iOS WEBKIT GLOW TRAIL & ПОЛНЫЕ ИМЕНА */
+        /* Никаких filter: drop-shadow и backdrop-filter на перетаскиваемых объектах! Только аппаратный 3D-композитинг и чистый box-shadow */
+        .board-item {
+            position: absolute; background: #14182c;
+            border: 1.5px solid rgba(129, 140, 248, 0.45); border-radius: 12px;
+            padding: 9px 15px; font-size: 1.32rem; font-weight: 700; cursor: grab;
+            touch-action: none; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; text-align: center;
+            line-height: 1.25; color: #f8fafc;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.65), 0 0 12px rgba(129, 140, 248, 0.18);
+            transform: translate3d(0, 0, 0);
+            -webkit-transform: translate3d(0, 0, 0);
+            backface-visibility: hidden; -webkit-backface-visibility: hidden;
+            will-change: left, top, transform;
+            transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.16s ease, box-shadow 0.16s ease;
+        }
+        .board-item .item-full-name {
+            white-space: normal; word-break: break-word; overflow-wrap: anywhere;
+            max-width: 220px; min-width: 70px; font-size: 0.92rem; font-weight: 700;
+            line-height: 1.25; letter-spacing: 0.2px;
+        }
+        .board-item.complete-astro {
+            border-color: #c084fc;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.7), 0 0 16px rgba(192, 132, 252, 0.38);
+        }
+        .board-item:active { cursor: grabbing; }
+        .board-item:hover {
+            transform: translate3d(0, -2px, 0) scale(1.05);
+            border-color: #a5b4fc;
+            box-shadow: 0 8px 22px rgba(0,0,0,0.75), 0 0 18px rgba(129, 140, 248, 0.45);
+        }
+        .board-item.highlight {
+            color: #fde047; border-color: #fde047;
+            transform: translate3d(0, 0, 0) scale(1.12);
+            box-shadow: 0 0 22px rgba(250, 204, 21, 0.65);
+        }
+        .board-item.person {
+            color: #bae6fd; border-color: rgba(56, 189, 248, 0.65);
+            background: linear-gradient(160deg, #131b31 0%, #0f1526 100%);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.7), 0 0 15px rgba(56, 189, 248, 0.28);
+            padding: 10px 16px;
+        }
+        .board-item.couple {
+            color: #fbcfe8; border-color: rgba(244, 114, 182, 0.7);
+            background: linear-gradient(160deg, #27152c 0%, #141326 100%);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.7), 0 0 18px rgba(244, 114, 182, 0.35);
+            padding: 10px 18px;
+        }
+        .board-item.bounce {
+            transition: left 0.28s ease, top 0.28s ease;
+            color: #fca5a5 !important; border-color: #ef4444 !important;
+            box-shadow: 0 0 20px rgba(239, 68, 68, 0.65) !important;
+        }
+
+        /* Панель разбора и аналитики */
         #description-panel {
             position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%);
-            width: 88%; max-width: 780px; max-height: 68vh;
-            background: rgba(11, 13, 23, 0.96); border: 1px solid var(--accent); border-radius: 14px;
-            padding: 15px 18px; box-shadow: 0 15px 50px rgba(0,0,0,0.82), 0 0 30px rgba(129, 140, 248, 0.16);
+            width: 90%; max-width: 840px; max-height: 72vh;
+            background: rgba(11, 13, 24, 0.97); border: 1px solid var(--accent); border-radius: 16px;
+            padding: 16px 20px; box-shadow: 0 20px 55px rgba(0,0,0,0.88);
             display: none; flex-direction: column; z-index: 25; pointer-events: auto;
-            backdrop-filter: blur(18px);
         }
         .desc-header {
             display: flex; justify-content: space-between; align-items: center;
             border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px;
         }
-        #desc-title { color: var(--accent); margin: 0; font-size: 1.02rem; font-weight: 700; }
+        #desc-title { color: var(--accent); margin: 0; font-size: 1.04rem; font-weight: 700; }
         #desc-close {
             background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-            color: var(--text-muted); border-radius: 6px; padding: 4px 10px; cursor: pointer; font-size: 0.82rem;
+            color: var(--text-muted); border-radius: 7px; padding: 5px 11px; cursor: pointer; font-size: 0.82rem;
         }
         #desc-close:hover { color: #fff; border-color: var(--accent); }
-        #desc-text { color: var(--text-main); font-size: 0.9rem; line-height: 1.48; margin: 0; overflow-y: auto; padding-right: 6px; }
+        #desc-text { color: var(--text-main); font-size: 0.89rem; line-height: 1.5; margin: 0; overflow-y: auto; padding-right: 6px; }
 
-        .tabs-bar {
-            display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; align-items: center;
+        /* Разделение Синастрии (Split-View) */
+        .synastry-split-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;
         }
+        .partner-box {
+            border-radius: 11px; padding: 12px; background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .partner-box.p1 { border-top: 3px solid var(--accent-cyan); background: rgba(56, 189, 248, 0.04); }
+        .partner-box.p2 { border-top: 3px solid var(--accent-pink); background: rgba(244, 114, 182, 0.04); }
+        .partner-box-header {
+            font-weight: 700; font-size: 0.9rem; margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+
+        /* Карточки трактовок и элементы */
+        .tabs-bar { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
         .tab-btn {
             background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-muted); border-radius: 7px; padding: 6px 12px;
-            font-family: inherit; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: 0.2s;
+            color: var(--text-muted); border-radius: 8px; padding: 6px 12px;
+            font-family: inherit; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: 0.18s;
         }
-        .tab-btn.active {
-            background: rgba(129, 140, 248, 0.22); border-color: var(--accent); color: #fff;
-        }
+        .tab-btn.active { background: rgba(129, 140, 248, 0.24); border-color: var(--accent); color: #fff; }
 
         .wheel-container {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: radial-gradient(circle at center, rgba(30, 35, 68, 0.5) 0%, rgba(10, 12, 22, 0.8) 100%);
+            background: radial-gradient(circle at center, rgba(30, 35, 68, 0.45) 0%, rgba(10, 12, 22, 0.85) 100%);
             border: 1px solid rgba(129, 140, 248, 0.22); border-radius: 12px; padding: 12px; margin-bottom: 14px;
         }
         .synastry-score-banner {
             display: flex; align-items: center; justify-content: space-between;
-            background: linear-gradient(90deg, rgba(236, 72, 153, 0.16) 0%, rgba(129, 140, 248, 0.16) 100%);
-            border: 1px solid rgba(244, 114, 182, 0.45); border-radius: 10px;
-            padding: 10px 14px; margin-bottom: 12px;
+            background: linear-gradient(90deg, rgba(56, 189, 248, 0.14) 0%, rgba(244, 114, 182, 0.16) 100%);
+            border: 1px solid rgba(244, 114, 182, 0.45); border-radius: 11px;
+            padding: 11px 16px; margin-bottom: 12px;
         }
-        .score-badge {
-            font-size: 1.45rem; font-weight: 700; color: #f9a8d4;
-            text-shadow: 0 0 12px rgba(236, 72, 153, 0.6);
-        }
+        .score-badge { font-size: 1.5rem; font-weight: 800; color: #f472b6; }
 
         .info-block {
             background: rgba(255, 255, 255, 0.035); border-left: 3px solid var(--accent);
@@ -231,95 +283,211 @@
         .info-block.harmonic { border-left-color: #10b981; background: rgba(16, 185, 129, 0.06); }
         .info-block.tense { border-left-color: #f97316; background: rgba(249, 115, 22, 0.06); }
         .info-block.karmic { border-left-color: #eab308; background: rgba(234, 179, 8, 0.07); }
-        .info-block-title { font-weight: 600; color: #c7d2fe; margin-bottom: 4px; font-size: 0.87rem; }
+        .info-block-title { font-weight: 600; color: #c7d2fe; margin-bottom: 4px; font-size: 0.86rem; }
         .info-block-text { font-size: 0.83rem; color: #cbd5e1; white-space: pre-wrap; }
 
         .element-bars {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px;
-            background: rgba(0,0,0,0.25); padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px;
+            background: rgba(0,0,0,0.28); padding: 9px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.06);
         }
-        .el-bar-item { font-size: 0.74rem; }
+        .el-bar-item { font-size: 0.72rem; }
         .el-bar-label { display: flex; justify-content: space-between; margin-bottom: 4px; font-weight: 600; }
         .el-bar-track { height: 6px; background: rgba(255,255,255,0.08); border-radius: 4px; overflow: hidden; }
-        .el-bar-fill { height: 100%; border-radius: 4px; transition: width 0.3s ease; }
+        .el-bar-fill { height: 100%; border-radius: 4px; transition: width 0.35s ease; }
 
         .inventory-item {
             display: flex; justify-content: space-between; align-items: center;
-            background: rgba(255,255,255,0.05); padding: 7px 11px; margin-bottom: 6px;
-            border-radius: 7px; border: 1px solid rgba(255,255,255,0.09); font-size: 0.84rem;
+            background: rgba(255,255,255,0.045); padding: 7px 11px; margin-bottom: 6px;
+            border-radius: 7px; border: 1px solid rgba(255,255,255,0.09); font-size: 0.83rem;
         }
         .remove-btn {
-            background: rgba(239, 68, 68, 0.8); color: white; border: none; border-radius: 5px;
-            padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: 0.75rem; font-weight: 600;
+            background: rgba(239, 68, 68, 0.85); color: white; border: none; border-radius: 5px;
+            padding: 4px 10px; cursor: pointer; font-family: inherit; font-size: 0.74rem; font-weight: 600;
         }
-        .remove-btn:hover { background: #ef4444; }
         .split-btn {
             background: rgba(129, 140, 248, 0.2); color: #c7d2fe; border: 1px solid var(--accent);
             border-radius: 6px; padding: 5px 11px; cursor: pointer; font-family: inherit;
             font-size: 0.76rem; font-weight: 600; transition: 0.2s;
         }
         .split-btn:hover { background: var(--accent); color: #fff; }
-
         .section-header {
-            font-weight: 700; color: var(--text-muted); font-size: 0.75rem;
+            font-weight: 700; color: var(--text-muted); font-size: 0.74rem;
             text-transform: uppercase; margin: 14px 0 8px 0; letter-spacing: 1px;
             display: flex; justify-content: space-between; align-items: center;
         }
 
-        .board-item {
-            position: absolute; background: rgba(18, 21, 38, 0.8);
-            border: 1px solid rgba(129, 140, 248, 0.35); border-radius: 11px; padding: 8px 14px;
-            font-size: 1.42rem; font-weight: 700; cursor: grab;
-            transition: transform 0.18s, filter 0.18s, border-color 0.18s;
-            touch-action: none; display: flex; flex-direction: column; align-items: center;
-            justify-content: center; white-space: nowrap; text-align: center; line-height: 1.2;
-            color: #f8fafc; text-shadow: 0 0 10px rgba(129, 140, 248, 0.6);
-            backdrop-filter: blur(6px); box-shadow: 0 6px 18px rgba(0,0,0,0.45);
+        /* РАЗДЕЛ 2: ДРЕВО СВЯЗЕЙ И РОДА */
+        #tree-layout {
+            display: grid; grid-template-columns: 350px 1fr 390px; width: 100%; height: 100%;
         }
-        .board-item.complete-astro {
-            border-color: rgba(192, 132, 252, 0.75);
-            box-shadow: 0 0 18px rgba(168, 85, 247, 0.3), inset 0 0 10px rgba(168, 85, 247, 0.15);
+        .tree-panel {
+            background: var(--panel-bg); border-right: 1px solid var(--border-color);
+            padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;
         }
-        .board-item:active { cursor: grabbing; }
-        .board-item:hover { transform: scale(1.08); border-color: var(--accent); filter: drop-shadow(0 0 12px var(--accent)); }
-        .board-item.highlight {
-            color: #fde047; border-color: #fde047; transform: scale(1.18);
-            filter: drop-shadow(0 0 16px rgba(250, 204, 21, 0.8));
+        .tree-panel.right { border-right: none; border-left: 1px solid var(--border-color); }
+        #tree-canvas-wrap {
+            position: relative; flex: 1; height: 100%; overflow: hidden;
+            background: radial-gradient(circle at center, rgba(25, 30, 60, 0.4) 0%, rgba(7, 8, 16, 0.9) 100%);
         }
-        .board-item.person {
-            color: #93c5fd; font-size: 1.5rem; border-color: rgba(59, 130, 246, 0.5);
-            text-shadow: 0 0 12px rgba(59, 130, 246, 0.75); padding: 10px 16px;
+        #tree-svg { width: 100%; height: 100%; display: block; }
+
+        /* РАЗДЕЛ 3: ЭЗОТЕРИЧЕСКИЙ КОСМО-ХАБ */
+        #hub-layout {
+            width: 100%; height: 100%; overflow-y: auto; padding: 24px;
+            max-width: 1260px; margin: 0 auto;
         }
-        .board-item.couple {
-            color: #f9a8d4; font-size: 1.6rem; border-color: rgba(236, 72, 153, 0.6);
-            text-shadow: 0 0 14px rgba(236, 72, 153, 0.85); padding: 10px 18px;
+        .hub-nav-cards {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px;
         }
-        .board-item.bounce {
-            transition: left 0.3s ease, top 0.3s ease, color 0.3s ease;
-            color: #ef4444 !important; border-color: #ef4444 !important;
-            filter: drop-shadow(0 0 15px #ef4444);
+        .hub-card {
+            background: rgba(20, 24, 44, 0.88); border: 1px solid var(--border-color);
+            border-radius: 14px; padding: 16px; cursor: pointer;
+            transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+        }
+        .hub-card:hover, .hub-card.active {
+            transform: translateY(-3px); border-color: var(--accent);
+            box-shadow: 0 10px 28px rgba(129, 140, 248, 0.25);
+            background: linear-gradient(145deg, rgba(30, 35, 66, 0.95), rgba(20, 23, 42, 0.95));
+        }
+        .hub-card-icon { font-size: 1.8rem; margin-bottom: 8px; }
+        .hub-card-title { font-weight: 700; font-size: 0.92rem; color: #fff; margin-bottom: 4px; }
+        .hub-card-desc { font-size: 0.76rem; color: var(--text-muted); line-height: 1.4; }
+
+        /* 3D Карты Таро */
+        .tarot-stage {
+            display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin: 20px 0;
+        }
+        .tarot-card-3d {
+            width: 220px; height: 340px; perspective: 1000px; cursor: pointer;
+        }
+        .tarot-card-inner {
+            width: 100%; height: 100%; position: relative;
+            transform-style: preserve-3d; transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .tarot-card-3d.flipped .tarot-card-inner { transform: rotateY(180deg); }
+        .tarot-face {
+            position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden;
+            border-radius: 14px; padding: 16px; display: flex; flex-direction: column;
+            justify-content: space-between; border: 1.5px solid rgba(192, 132, 252, 0.55);
+        }
+        .tarot-back {
+            background: radial-gradient(circle, #2e1f47 0%, #111324 100%);
+            align-items: center; justify-content: center; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+        }
+        .tarot-front {
+            background: linear-gradient(165deg, #1b1f3a 0%, #0e1120 100%);
+            transform: rotateY(180deg); box-shadow: 0 10px 30px rgba(168, 85, 247, 0.28);
         }
 
-        ::-webkit-scrollbar { width: 5px; }
+        /* Модальные окна */
+        .modal {
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            background: var(--panel-bg); border: 1px solid var(--accent); border-radius: 15px;
+            padding: 20px; z-index: 2500; width: 94%; max-width: 460px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9); max-height: 90vh; overflow-y: auto;
+        }
+        .modal.active { display: block; animation: fadeSlideUp 0.22s ease; }
+        .modal input[type="text"], .modal input[type="date"], .modal input[type="time"],
+        .modal input[type="number"], .modal select, .tree-panel select, .tree-panel input {
+            width: 100%; padding: 9px 11px; background: rgba(0,0,0,0.45);
+            border: 1px solid var(--border-color); color: var(--text-main);
+            border-radius: 8px; font-family: inherit; font-size: 0.84rem; margin-bottom: 10px;
+            color-scheme: dark;
+        }
+        .modal select option, .tree-panel select option { background: #121526; color: #fff; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .form-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; display: block; font-weight: 600; }
+        .radio-group { display: flex; gap: 8px; margin-bottom: 10px; }
+        .radio-label {
+            flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            gap: 6px; font-size: 0.83rem; padding: 8px; border-radius: 8px;
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+        }
+        .birth-preview-box {
+            background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(129, 140, 248, 0.25);
+            border-radius: 9px; padding: 9px; margin: 6px 0 12px.birth-preview-box {
+            background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(129, 140, 248, 0.25);
+            border-radius: 9px; padding: 9px; margin: 6px 0 12px 0;
+            max-height: 135px; overflow-y: auto;
+        }
+        .birth-preview-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
+        }
+        .preview-chip {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px; padding: 4px 6px; font-size: 0.72rem; text-align: center;
+        }
+
+        .preset-card {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(129, 140, 248, 0.25);
+            border-radius: 9px; padding: 10px 12px; margin-bottom: 8px; cursor: pointer;
+            transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .preset-card:hover { background: rgba(129, 140, 248, 0.15); border-color: var(--accent); transform: translateX(3px); }
+        .preset-card-title { font-weight: 600; font-size: 0.85rem; color: #e2e8f0; }
+        .preset-card-sub { font-size: 0.73rem; color: var(--text-muted); margin-top: 2px; }
+
+        /* Элементы Древа и Матрицы */
+        .tree-member-card {
+            background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; padding: 10px 12px; margin-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: center; gap: 8px;
+        }
+        .tree-member-name {
+            font-weight: 700; font-size: 0.85rem; color: #f1f5f9;
+            word-break: break-word; overflow-wrap: anywhere;
+        }
+        .tree-badge {
+            display: inline-block; padding: 2px 7px; border-radius: 6px;
+            font-size: 0.68rem; font-weight: 600; background: rgba(129, 140, 248, 0.2); color: #c7d2fe;
+        }
+        .matrix-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0;
+        }
+        .matrix-node {
+            background: linear-gradient(145deg, rgba(30, 35, 66, 0.9), rgba(16, 19, 36, 0.9));
+            border: 1px solid rgba(192, 132, 252, 0.4); border-radius: 12px;
+            padding: 14px; text-align: center;
+        }
+        .matrix-num {
+            font-size: 1.7rem; font-weight: 800; color: #f472b6; margin-bottom: 4px;
+        }
+
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #3b4261; border-radius: 10px; }
 
         #save-indicator {
-            position: absolute; top: 15px; right: 18px; font-size: 0.75rem; color: #a5b4fc;
-            background: rgba(15, 17, 26, 0.8); border: 1px solid rgba(129, 140, 248, 0.3);
-            padding: 5px 12px; border-radius: 12px; opacity: 0; transition: opacity 0.3s; z-index: 30;
+            position: fixed; top: 66px; right: 18px; font-size: 0.74rem; color: #a5b4fc;
+            background: rgba(15, 17, 26, 0.9); border: 1px solid rgba(129, 140, 248, 0.35);
+            padding: 5px 12px; border-radius: 12px; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s; z-index: 2200;
         }
         #save-indicator.visible { opacity: 1; }
 
+        @media (max-width: 980px) {
+            #tree-layout { grid-template-columns: 1fr; overflow-y: auto; display: flex; flex-direction: column; }
+            #tree-canvas-wrap { min-height: 420px; }
+            .hub-nav-cards { grid-template-columns: repeat(2, 1fr); }
+            .synastry-split-grid { grid-template-columns: 1fr; }
+        }
         @media (max-width: 768px) {
             #menu-toggle { display: flex; }
-            #sidebar { position: absolute; top: 0; left: 0; height: 100%; width: 335px; transform: translateX(-100%); box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
-            #sidebar.open { transform: translateX(0); }
-            #close-menu { display: block; }
+            .brand-logo span { display: none; }
+            .nav-tab-btn { padding: 7px 10px; font-size: 0.75rem; }
+            #sidebar {
+                position: absolute; top: 0; left: 0; height: 100%; width: 330px;
+                transform: translate3d(-105%, 0, 0); box-shadow: 10px 0 30px rgba(0,0,0,0.85);
+            }
+            #sidebar.open { transform: translate3d(0, 0, 0); }
             .instruction { display: none; }
-            #description-panel { bottom: 88px; width: 95%; max-height: 62vh; }
+            #description-panel { bottom: 85px; width: 95%; max-height: 64vh; }
             .element-bars { grid-template-columns: repeat(2, 1fr); }
             .birth-preview-grid { grid-template-columns: repeat(2, 1fr); }
+            .hub-nav-cards { grid-template-columns: 1fr; }
+            .matrix-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
@@ -327,21 +495,175 @@
 
     <canvas id="starfield"></canvas>
     <div id="overlay"></div>
+    <div id="save-indicator">💾 Изменения сохранены</div>
 
-    <!-- Модальное окно создания человека с авто-расчётом по дате рождения -->
+    <!-- ВЕРХНЯЯ НАВИГАЦИЯ ПО 3 ГЛОБАЛЬНЫМ ВКЛАДКАМ -->
+    <header id="top-navbar">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <button id="menu-toggle" title="Меню элементов">☰</button>
+            <div class="brand-logo">✨ <span>АСТРО-АЛХИМИЯ STUDIO</span></div>
+        </div>
+        <nav class="nav-tabs">
+            <button class="nav-tab-btn active" data-view="view-board">⚗️ Алхимическая Доска</button>
+            <button class="nav-tab-btn" data-view="view-tree">🌳 Древо Людей и Рода</button>
+            <button class="nav-tab-btn" data-view="view-hub">🔮 Космо-Хаб & Таро</button>
+        </nav>
+    </header>
+
+    <!-- ГЛАВНЫЙ КОНТЕЙНЕР ВКЛАДОК -->
+    <main id="app-viewport">
+
+        <!-- =========================================================
+             ВКЛАДКА 1: АЛХИМИЧЕСКАЯ ДОСКА (НАТАЛ, СИНАСТРИЯ, СИНТЕЗ)
+             ========================================================= -->
+        <section id="view-board" class="view-section active">
+            <aside id="sidebar">
+                <div class="sidebar-actions">
+                    <button id="add-person-btn" class="action-btn">📅 🧑 Карта по дате</button>
+                    <button id="open-forge-btn" class="action-btn purple">⚡ Кузница / Пресеты</button>
+                </div>
+                <div class="search-wrap">
+                    <input type="text" id="element-search" placeholder="🔍 Поиск (Овен, Козерог, Луна, 8 Дом...)">
+                </div>
+                <div class="columns-container">
+                    <div class="column">
+                        <div class="column-title">ЗНАКИ</div>
+                        <div class="column-list" id="list-signs"></div>
+                    </div>
+                    <div class="column">
+                        <div class="column-title">ПЛАНЕТЫ</div>
+                        <div class="column-list" id="list-planets"></div>
+                    </div>
+                    <div class="column">
+                        <div class="column-title">ДОМА</div>
+                        <div class="column-list" id="list-houses"></div>
+                    </div>
+                </div>
+                <div class="sidebar-footer">
+                    <button id="sync-to-tree-btn" class="action-btn purple" style="flex:1.2;" title="Отправить всех людей с доски в Древо">🌳 В Древо</button>
+                    <button id="export-btn" class="action-btn" style="flex:1;" title="Скачать JSON">📤 Экспорт</button>
+                    <button id="import-btn" class="action-btn" style="flex:1;" title="Загрузить JSON">📥 Импорт</button>
+                    <input type="file" id="import-file" accept=".json" style="display:none;">
+                    <button id="reset-board-btn" class="action-btn" style="color:#f87171; border-color:rgba(248,113,113,0.4); background:rgba(239,68,68,0.08);" title="Очистить доску">🗑️</button>
+                </div>
+            </aside>
+
+            <div id="board">
+                <div class="instruction">
+                    • Нажми <b>«📅 Карта по дате»</b> — эфемериды сами рассчитают все планеты, знаки и дома.<br>
+                    • Имена отображаются полностью, а рендеринг оптимизирован под iOS без шлейфа.<br>
+                    • Соединяй любые комбинации (<b>100% связок</b> имеют подробное толкование).<br>
+                    • Перетащи одного человека на другого для <b>Раздельной Синастрии (💞)</b> или отправь их в <b>🌳 Древо</b>.
+                </div>
+                <div id="trash-can" title="Перетащите сюда для удаления">🗑️</div>
+
+                <div id="description-panel">
+                    <div class="desc-header">
+                        <h3 id="desc-title">Разбор</h3>
+                        <button id="desc-close">Закрыть ✖</button>
+                    </div>
+                    <div id="desc-text"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             ВКЛАДКА 2: ИНТЕРАКТИВНОЕ ДРЕВО ЛЮДЕЙ И ГЛУБОКАЯ АНАЛИТИКА
+             ========================================================= -->
+        <section id="view-tree" class="view-section">
+            <div id="tree-layout">
+                <!-- Левая колонка: управление профилями и связями -->
+                <div class="tree-panel">
+                    <div class="section-header" style="margin-top:0;">👥 Участники Древа</div>
+                    <div style="display:flex; gap:6px;">
+                        <button id="tree-import-board-btn" class="action-btn" style="flex:1;">📥 Импорт с Доски</button>
+                        <button id="tree-add-person-btn" class="action-btn purple" style="flex:1;">➕ По дате</button>
+                    </div>
+                    <div id="tree-members-list" style="margin-top:4px;"></div>
+
+                    <div class="section-header">🔗 Создать связь между людьми</div>
+                    <label class="form-label">Человек 1 (От кого)</label>
+                    <select id="tree-link-from"></select>
+                    <label class="form-label">Человек 2 (К кому)</label>
+                    <select id="tree-link-to"></select>
+                    <label class="form-label">Тип линии / связи</label>
+                    <select id="tree-link-type">
+                        <option value="parent">🧬 Родовая линия (Родитель ➔ Ребёнок)</option>
+                        <option value="partner">💞 Партнёрский союз (Любовь / Брак)</option>
+                        <option value="sibling">🤝 Братство / Родственная ветвь</option>
+                        <option value="friend">🌟 Дружба / Творческий альянс</option>
+                        <option value="karma">⚡ Кармический узел</option>
+                    </select>
+                    <button id="tree-add-link-btn" class="action-btn purple" style="width:100%; padding:10px;">
+                        🔗 Связать в Древе
+                    </button>
+
+                    <div class="section-header">Активные связи</div>
+                    <div id="tree-links-list"></div>
+                </div>
+
+                <!-- Центр: Интерактивный SVG-Граф Древа -->
+                <div id="tree-canvas-wrap">
+                    <div style="position:absolute; top:12px; left:14px; font-size:0.76rem; color:var(--text-muted); z-index:5; pointer-events:none;">
+                        Перетаскивайте узлы мышью/пальцем • Кликните на узел или линию связи для детального разбора
+                    </div>
+                    <svg id="tree-svg" viewBox="0 0 900 650" preserveAspectRatio="xMidYMid meet"></svg>
+                </div>
+
+                <!-- Правая колонка: Глубокая аналитика рода и синергии -->
+                <div class="tree-panel right">
+                    <div class="section-header" style="margin-top:0;">📊 Коллективная аналитика Древа</div>
+                    <div id="tree-analytics-content"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =========================================================
+             ВКЛАДКА 3: МАСШТАБНЫЙ КОСМО-ХАБ (ТАРО, МАТРИЦА, ТРАНЗИТЫ, ЛУНА)
+             ========================================================= -->
+        <section id="view-hub" class="view-section">
+            <div id="hub-layout">
+                <div class="hub-nav-cards">
+                    <div class="hub-card active" data-hub="tarot">
+                        <div class="hub-card-icon">🃏</div>
+                        <div class="hub-card-title">3D Таро-Оракул и Расклады</div>
+                        <div class="hub-card-desc">Карта Дня, Триплет Времени и Кельтский Вектор с астро-архетипами</div>
+                    </div>
+                    <div class="hub-card" data-hub="matrix">
+                        <div class="hub-card-icon">🔢</div>
+                        <div class="hub-card-title">Матрица Судьбы и Код Души</div>
+                        <div class="hub-card-desc">Расчёт 22 энергий по дате рождения: талант, деньги, отношения и карма</div>
+                    </div>
+                    <div class="hub-card" data-hub="transits">
+                        <div class="hub-card-icon">🌌</div>
+                        <div class="hub-card-title">Живые Транзиты Неба (Сейчас)</div>
+                        <div class="hub-card-desc">Реальное положение всех планет в эту секунду и персональный резонанс</div>
+                    </div>
+                    <div class="hub-card" data-hub="lunar">
+                        <div class="hub-card-icon">🌙</div>
+                        <div class="hub-card-title">Лунный Календарь & Бьюти-Оракул</div>
+                        <div class="hub-card-desc">Фаза Луны, лунные сутки, календарь стрижек, финансов и энергии</div>
+                    </div>
+                </div>
+
+                <div id="hub-Tool-Viewport"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- МОДАЛЬНОЕ ОКНО: СОЗДАНИЕ / РАСЧЁТ ЧЕЛОВЕКА ПО ДАТЕ -->
     <div id="person-modal" class="modal">
         <h3 id="person-modal-title" style="margin-top:0; margin-bottom:12px; color:var(--accent);">
             🧑 Натальная карта по дате рождения
         </h3>
-
         <div class="form-row">
             <div>
-                <label class="form-label">Имя</label>
-                <input type="text" id="person-name" placeholder="Например, Владислав" autocomplete="off">
+                <label class="form-label">Полное имя (без обрезки)</label>
+                <input type="text" id="person-name" placeholder="Например, Владислав Зырянов" autocomplete="off">
             </div>
             <div>
                 <label class="form-label">Пол</label>
-                <div class="radio-group" style="margin-bottom:10px;">
+                <div class="radio-group">
                     <label class="radio-label"><input type="radio" name="person-gender" value="male" checked> 👨 Муж</label>
                     <label class="radio-label"><input type="radio" name="person-gender" value="female"> 👩 Жен</label>
                 </div>
@@ -363,36 +685,35 @@
                 </div>
                 <div>
                     <label class="form-label">Время рождения</label>
-                    <input type="time" id="birth-time" value="12:00">
+                    <input type="time" id="birth-time" value="23:00">
                 </div>
             </div>
 
-            <label style="display:flex; align-items:center; gap:7px; font-size:0.78rem; color:var(--text-muted); margin-bottom:10px; cursor:pointer;">
+            <label style="display:flex; align-items:center; gap:7px; font-size:0.77rem; color:var(--text-muted); margin-bottom:10px; cursor:pointer;">
                 <input type="checkbox" id="birth-time-unknown">
                 Время неизвестно (строить Космограмму и дома от Солнца)
             </label>
 
             <div class="form-row">
                 <div>
-                    <label class="form-label">Город рождения (координаты)</label>
+                    <label class="form-label">Город рождения</label>
                     <select id="birth-city">
-                        <option value="55.7558,37.6173,3" selected>Москва (55.75°N, 37.61°E)</option>
+                        <option value="55.7558,37.6173,3">Москва (55.75°N, 37.61°E)</option>
+                        <option value="41.2995,69.2401,5" selected>Ташкент (41.29°N, 69.24°E)</option>
                         <option value="59.9343,30.3351,3">Санкт-Петербург (59.93°N, 30.33°E)</option>
                         <option value="56.8389,60.6057,5">Екатеринбург (56.83°N, 60.60°E)</option>
                         <option value="55.0084,82.9357,7">Новосибирск (55.00°N, 82.93°E)</option>
                         <option value="55.7887,49.1221,3">Казань (55.78°N, 49.12°E)</option>
                         <option value="45.0355,38.9753,3">Краснодар (45.03°N, 38.97°E)</option>
-                        <option value="43.1155,131.8855,10">Владивосток (43.11°N, 131.88°E)</option>
                         <option value="53.9006,27.5590,3">Минск (53.90°N, 27.55°E)</option>
                         <option value="43.2220,76.8512,5">Алматы (43.22°N, 76.85°E)</option>
-                        <option value="50.4501,30.5234,2">Киев (50.45°N, 30.52°E)</option>
                         <option value="51.5074,-0.1278,0">Лондон (51.50°N, 0.12°W)</option>
                         <option value="40.7128,-74.0060,-5">Нью-Йорк (40.71°N, 74.00°W)</option>
                     </select>
                 </div>
                 <div>
-                    <label class="form-label">Часовой пояс (UTC)</label>
-                    <input type="number" id="birth-tz" value="3" min="-12" max="14" step="1">
+                    <label class="form-label">Часовой пояс (GMT/UTC)</label>
+                    <input type="number" id="birth-tz" value="5" min="-12" max="14" step="1">
                 </div>
             </div>
 
@@ -412,15 +733,15 @@
         </div>
     </div>
 
-    <!-- Модальное окно: Алхимическая Кузница и Пресеты -->
+    <!-- МОДАЛЬНОЕ ОКНО: КУЗНИЦА И ПРЕСЕТЫ -->
     <div id="forge-modal" class="modal">
         <h3 style="margin-top:0; color:#d8b4fe;">⚡ Кузница и Быстрые Пресеты</h3>
-        <div class="section-header" style="margin-top:4px;">Собрать полную формулу в 1 клик</div>
+        <div class="section-header" style="margin-top:4px;">Собрать любую связку (или полную формулу)</div>
         <select id="forge-planet"></select>
         <select id="forge-sign"></select>
         <select id="forge-house"></select>
         <button id="forge-spawn-btn" class="action-btn purple" style="width:100%; padding:10px; margin-bottom:14px;">
-            ✨ Выковать формулу на доску
+            ✨ Выковать комбинацию на доску
         </button>
 
         <div class="section-header">Готовые архетипы и пары (1 клик)</div>
@@ -431,68 +752,14 @@
         </button>
     </div>
 
-    <div id="menu-toggle">☰</div>
-    <div id="save-indicator">💾 Сохранено</div>
-
-    <div id="sidebar">
-        <div class="sidebar-header">
-            <span>✨ АСТРО-АЛХИМИЯ PRO</span>
-            <button id="close-menu">✖</button>
-        </div>
-        <div class="sidebar-actions">
-            <button id="add-person-btn" class="action-btn">📅 🧑 Карта по дате</button>
-            <button id="open-forge-btn" class="action-btn purple">⚡ Кузница / Пресеты</button>
-        </div>
-        <div class="search-wrap">
-            <input type="text" id="element-search" placeholder="🔍 Поиск (Овен, Козерог, Луна, 8 Дом...)">
-        </div>
-        <div class="columns-container">
-            <div class="column">
-                <div class="column-title">ЗНАКИ</div>
-                <div class="column-list" id="list-signs"></div>
-            </div>
-            <div class="column">
-                <div class="column-title">ПЛАНЕТЫ</div>
-                <div class="column-list" id="list-planets"></div>
-            </div>
-            <div class="column">
-                <div class="column-title">ДОМА</div>
-                <div class="column-list" id="list-houses"></div>
-            </div>
-        </div>
-        <div class="sidebar-footer">
-            <button id="export-btn" class="action-btn" style="flex:1;" title="Скачать JSON-файл доски">📤 Экспорт</button>
-            <button id="import-btn" class="action-btn" style="flex:1;" title="Загрузить JSON-файл доски">📥 Импорт</button>
-            <input type="file" id="import-file" accept=".json" style="display:none;">
-            <button id="reset-board-btn" class="action-btn" style="color:#f87171; border-color:rgba(248,113,113,0.4); background:rgba(239,68,68,0.08);" title="Очистить всё">
-                🗑️
-            </button>
-        </div>
-    </div>
-
-    <div id="board">
-        <div class="instruction">
-            • Нажми <b>«📅 Карта по дате»</b>, введи дату рождения — и система сама рассчитает все планеты, знаки и дома!<br>
-            • Также можно собирать формулы вручную (<b>Планета + Знак + Дом</b>) или через <b>⚡ Кузницу</b>.<br>
-            • Соединяй двух людей в <b>Синастрию (💞)</b> для двойного колеса и индекса совместимости.
-        </div>
-        <div id="trash-can" title="Перетащите сюда для удаления">🗑️</div>
-    </div>
-
-    <div id="description-panel">
-        <div class="desc-header">
-            <h3 id="desc-title">Символ</h3>
-            <button id="desc-close">Закрыть ✖</button>
-        </div>
-        <div id="desc-text"></div>
-    </div>
-
     <script type="module">
-    import { ElementsRepository, DescriptionsRepository } from './astro-database.js';
+    import { ElementsRepository, DescriptionsRepository, PLANET_ORDER } from './astro-database.js';
     import { StorageService } from './storage-service.js';
-    import { AstroModel } from './astro-model.js';
+    import * as AstroModelModule from './astro-model.js';
 
     'use strict';
+
+    const AstroModel = AstroModelModule.AstroModel;
 
     const SafeDOM = {
         el(tag, className, text) {
@@ -506,6 +773,118 @@
         }
     };
 
+    /**
+     * =========================================================================
+     * УНИВЕРСАЛЬНЫЙ ГЕНЕРАТОР СВЯЗОК (100% ПОКРЫТИЕ БЕЗ ПУСТЫХ БЛОКОВ)
+     * Гарантирует глубокий профессиональный текст для любой комбинации
+     * Планета+Знак, Планета+Дом, Знак+Дом, Планета+Знак+Дом и Синастрии.
+     * =========================================================================
+     */
+    class UniversalAstroGenerator {
+        static PLANET_ARCHETYPES = {
+            sun:     { role: 'Ядро личности, сознательная воля и творческий дух', verb: 'излучает жизненную силу и строит авторитет', gift: 'яркая харизма и способность вести за собой' },
+            moon:    { role: 'Глубинная душа, подсознание, эмоции и базовая безопасность', verb: 'адаптируется, чувствует и создаёт эмоциональный уют', gift: 'тонкая эмпатия, интуиция и душевная теплота' },
+            mercury: { role: 'Интеллект, логика, речь и нейронные связи', verb: 'анализирует, коммуницирует и обрабатывает информацию', gift: 'быстрота мышления, эрудиция и мастерство слова' },
+            venus:   { role: 'Принцип любви, эстетики, удовольствия и притяжения ресурсов', verb: 'гармонизирует пространство, любит и выбирает ценности', gift: 'утончённый вкус, дипломатия и финансовый магнетизм' },
+            mars:    { role: 'Волевой импульс, действие, страсть и пробивная энергия', verb: 'завоёвывает, защищает границы и запускает проекты', gift: 'бесстрашие, решительность и высокий тонус' },
+            jupiter: { role: 'Большое благо, экспансия, мировоззрение и социальный масштаб', verb: 'расширяет горизонты, вдохновляет и масштабирует успех', gift: 'щедрость, авторитет наставника и стратегический оптимизм' },
+            saturn:  { role: 'Кармический стержень, дисциплина, структура и время', verb: 'систематизирует, укрепляет фундамент и проверяет на прочность', gift: 'несгибаемая выдержка, профессионализм и долговечный результат' },
+            uranus:  { role: 'Высший разум, свобода, инсайты и революционное обновление', verb: 'ломает устаревшие рамки и внедряет инновации', gift: 'оригинальность, визионерство и независимость духа' },
+            neptune: { role: 'Океан бессознательного, вдохновение, музыка и мистика', verb: 'одухотворяет реальность, тонко сопереживает и творит образы', gift: 'глубокая образность, артистизм и психологическое чутьё' },
+            pluto:   { role: 'Сверхмощная трансформация, власть, кризис-менеджмент и регенерация', verb: 'перерождает из пепла, концентрирует волю и управляет глубинными потоками', gift: 'колоссальная пробивная мощь и гипнотическое влияние' },
+            node_n:  { role: 'Вектор эволюции души (Раху) и главная кармическая задача', verb: 'требует идти в новый опыт и расти над собой', gift: 'мощный квантовый скачок судьбы при раскрытии потенциала' },
+            node_s:  { role: 'Фундамент прошлого опыта (Кету) и врождённый талант', verb: 'даёт готовую внутреннюю опору и инстинктивное мастерство', gift: 'глубинная мудрость, которую важно использовать как трамплин' },
+            lilith:  { role: 'Чёрная Луна (Лилит) — точка максимального искушения и скрытого магнетизма', verb: 'вскрывает теневые желания, страхи и проверяет на осознанность', gift: 'при проработке — гениальное чутьё и завораживающая харизма' },
+            chiron:  { role: 'Хирон — ключ к парадоксальной мудрости и исцелению', verb: 'соединяет противоположности и находит нестандартные выходы', gift: 'дар дипломата, медиатора и тонкого проводника' },
+            asc:     { role: 'Асцендент — социальный портал, имидж и первое впечатление', verb: 'транслирует личность во внешний мир и задаёт стиль старта', gift: 'естественная самопрезентация и узнаваемый почерк' }
+        };
+
+        static SIGN_STYLES = {
+            aries:       { adj: 'огненно-импульсивном, прямом и первопроходческом', motive: 'быть первым, действовать смело и без промедлений', el: 'Огня 🔥' },
+            taurus:      { adj: 'устойчивом, чувственном и созидательно-практичном', motive: 'накапливать ресурс, создавать красоту и надёжный фундамент', el: 'Земли 🌿' },
+            gemini:      { adj: 'подвижном, интеллектуальном и коммуникабельном', motive: 'обмениваться идеями, связывать людей и учиться на лету', el: 'Воздуха 💨' },
+            cancer:      { adj: 'глубоком, эмоционально-чутком и оберегающем', motive: 'защищать близких, слушать интуицию и создавать душевный дом', el: 'Воды 💧' },
+            leo:         { adj: 'царственном, ярком, творческом и великодушном', motive: 'сиять, творить с размахом и вдохновлять окружающих', el: 'Огня 🔥' },
+            virgo:       { adj: 'аналитичном, точном, системном и ответственном', motive: 'доводить каждую деталь до совершенства и приносить реальную пользу', el: 'Земли 🌿' },
+            libra:       { adj: 'эстетичном, дипломатичном и гармонизирующем', motive: 'выстраивать равноправный диалог, красоту и баланс интересов', el: 'Воздуха 💨' },
+            scorpio:     { adj: 'интенсивном, магнетическом и бесстрашно-глубинном', motive: 'зрить в корень, трансформировать кризисы в силу и владеть сутью', el: 'Воды 💧' },
+            sagittarius: { adj: 'масштабном, философском и целеустремлённо-свободном', motive: 'расширять горизонты, вести за большой идеей и открывать мир', el: 'Огня 🔥' },
+            capricorn:   { adj: 'стратегическом, дисциплинированном и статусно-выдержанном', motive: 'покорять вершины шаг за шагом и строить долговечную систему', el: 'Земли 🌿' },
+            aquarius:    { adj: 'независимом, футуристичном и интеллектуально-свободном', motive: 'создавать будущее, объединять единомышленников и выходить за шаблоны', el: 'Воздуха 💨' },
+            pisces:      { adj: 'интуитивном, поэтичном, мистическом и всепонимающем', motive: 'чувствовать тонкие смыслы, исцелять искусством и верить в высший поток', el: 'Воды 💧' }
+        };
+
+        static synthesizePlanetSign(pObj, sObj, dbRepo) {
+            const dbKey = `${pObj.id}_${sObj.id}`;
+            const fromDb = dbRepo?.find(dbKey);
+            if (fromDb) return fromDb;
+
+            const pa = UniversalAstroGenerator.PLANET_ARCHETYPES[pObj.id] || { role: pObj.label, verb: 'проявляется', gift: 'уникальный потенциал' };
+            const sa = UniversalAstroGenerator.SIGN_STYLES[sObj.id] || { adj: sObj.label, motive: 'развиваться', el: '' };
+            return `${pObj.label} в знаке ${sObj.label}: ${pa.role} раскрывается в ${sa.adj} ключе стихии ${sa.el}. Здесь человек ${pa.verb} через стремление ${sa.motive}. В плюсе это даёт ${pa.gift}.`;
+        }
+
+        static synthesizePlanetHouse(pObj, hObj, dbRepo) {
+            const dbKey = `${pObj.id}_${hObj.id}`;
+            const fromDb = dbRepo?.find(dbKey);
+            if (fromDb) return fromDb;
+
+            const pa = UniversalAstroGenerator.PLANET_ARCHETYPES[pObj.id] || { role: pObj.label, verb: 'фокусируется', gift: 'рост' };
+            return `${pObj.label} в ${hObj.label}: ${pa.role} направляет максимум энергии в сферу ${hObj.sphere}. Человек активно ${pa.verb} именно на этой жизненной арене, превращая её в источник личной силы (${pa.gift}).`;
+        }
+
+        static synthesizeSignHouse(sObj, hObj) {
+            const sa = UniversalAstroGenerator.SIGN_STYLES[sObj.id] || { adj: sObj.label, motive: 'развиваться', el: '' };
+            return `Знак ${sObj.label} (${sObj.name}) в ${hObj.label}: сфера ${hObj.sphere} окрашена стихией ${sa.el} и развивается в ${sa.adj} стиле. Ключевой вектор в делах этого дома — ${sa.motive}.`;
+        }
+
+        static synthesizeTriple(pObj, sObj, hObj, dbRepo) {
+            const exact = dbRepo?.find(`${pObj.id}_${sObj.id}_${hObj.id}`);
+            if (exact) return exact;
+
+            const pa = UniversalAstroGenerator.PLANET_ARCHETYPES[pObj.id] || { role: pObj.label, verb: 'действует', gift: 'талант' };
+            const sa = UniversalAstroGenerator.SIGN_STYLES[sObj.id] || { adj: sObj.label, motive: 'действовать', el: '' };
+            const rulerBonus = sObj.ruler === pObj.id ? ' Планета находится в знаке своей обители, поэтому её потенциал выражен максимально мощно и автономно.' : '';
+
+            return `Формула «${pObj.label} в ${sObj.label} в ${hObj.label}»: ${pa.role} действует в ${sa.adj} стиле (стихия ${sa.el}) и реализуется через сферу ${hObj.sphere}.${rulerBonus} Главный мотив — ${sa.motive}, что при осознанном подходе раскрывает ${pa.gift} в темах ${hObj.label}.`;
+        }
+
+        static synthesizeSynastryPlanets(p1Obj, p2Obj, s1Obj, s2Obj, n1, n2, asp, dbRepo) {
+            if (asp) {
+                const aspText = dbRepo?.find(`syn_${p1Obj.id}_${p2Obj.id}_${asp.code}`) || dbRepo?.find(`syn_${p2Obj.id}_${p1Obj.id}_${asp.code}`);
+                if (aspText) return aspText;
+            }
+            const baseSyn = dbRepo?.find(`syn_${p1Obj.id}_${p2Obj.id}`) || dbRepo?.find(`syn_${p2Obj.id}_${p1Obj.id}`);
+            if (baseSyn) return baseSyn;
+
+            const pa1 = UniversalAstroGenerator.PLANET_ARCHETYPES[p1Obj.id] || { role: p1Obj.label, gift: 'энергию' };
+            const pa2 = UniversalAstroGenerator.PLANET_ARCHETYPES[p2Obj.id] || { role: p2Obj.label, gift: 'отклик' };
+            const aspNote = asp ? `Геометрический аспект «${asp.name}» (${asp.symbol}) создаёт между ними активный энергообмен.` : 'Планеты образуют тонкий психологический резонанс.';
+            return `Связка «${p1Obj.label} (${n1}, ${s1Obj?.label || ''}) ↔ ${p2Obj.label} (${n2}, ${s2Obj?.label || ''})»: ${pa1.role} первого партнёра напрямую взаимодействует с принципом «${pa2.role.toLowerCase()}» второго. ${aspNote} Вместе они объединяют ${pa1.gift} и ${pa2.gift}.`;
+        }
+
+        static synthesizeSynastrySignCompatibility(s1Obj, s2Obj, dist, dbRepo) {
+            const fromDb = dbRepo?.find(`comp_${s1Obj.id}_${s2Obj.id}`) || dbRepo?.find(`comp_${s2Obj.id}_${s1Obj.id}`);
+            if (fromDb) return fromDb;
+
+            const sa1 = UniversalAstroGenerator.SIGN_STYLES[s1Obj.id];
+            const sa2 = UniversalAstroGenerator.SIGN_STYLES[s2Obj.id];
+            const modeMap = {
+                0: 'Одноимённый резонанс (0°): партнёры дышат на одной частоте и мгновенно понимают мотивы друг друга.',
+                1: 'Полусекстиль соседних знаков (30°): разный темперамент, который учит передавать эстафету и видеть шире.',
+                2: 'Гармоничный секстиль родственных стихий (60°): лёгкий диалог, взаимное вдохновение и командная синергия.',
+                3: 'Динамическая квадратура (90°): страстное притяжение и высокий темп развития через преодоление разницы характеров.',
+                4: 'Благодатный тригон одной стихии (120°): естественная совместимость, ощущение «своего человека» и поддержка без слов.',
+                5: 'Кармический квиконс (150°): загадочное притяжение двух совершенно непохожих миров, требующее гибкости и тонкой настройки.',
+                6: 'Магнетическая ось оппозиции (180°): две половинки одного целого, идеально дополняющие качества друг друга.'
+            };
+            return `${s1Obj.label} (${sa1?.el}) и ${s2Obj.label} (${sa2?.el}) — ${modeMap[dist] || 'сочетание архетипов.'} Первый вносит стремление ${sa1?.motive}, а второй дополняет союз умением ${sa2?.motive}.`;
+        }
+    }
+
+    /**
+     * Генератор интерактивного SVG-Колеса (Натал и Двойное Кольцо Синастрии)
+     */
     class NatalWheelSVG {
         static #SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -524,10 +903,7 @@
 
         #polarToCartesian(cx, cy, r, angleDeg) {
             const rad = ((angleDeg - 90) * Math.PI) / 180;
-            return {
-                x: cx + r * Math.cos(rad),
-                y: cy + r * Math.sin(rad)
-            };
+            return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
         }
 
         #describeSector(cx, cy, rOuter, rInner, startAngle, endAngle) {
@@ -536,37 +912,28 @@
             const startInner = this.#polarToCartesian(cx, cy, rInner, endAngle);
             const endInner = this.#polarToCartesian(cx, cy, rInner, startAngle);
             const largeArc = endAngle - startAngle <= 180 ? '0' : '1';
-
             return [
                 'M', startOuter.x, startOuter.y,
                 'A', rOuter, rOuter, 0, largeArc, 0, endOuter.x, endOuter.y,
                 'L', endInner.x, endInner.y,
-                'A', rInner, rInner, 0, largeArc, 1, startInner.x, startInner.y,
-                'Z'
+                'A', rInner, rInner, 0, largeArc, 1, startInner.x, startInner.y, 'Z'
             ].join(' ');
         }
 
         renderSingleWheel(inventory) {
-            const size = 290;
-            const cx = size / 2;
-            const cy = size / 2;
-            const rOuter = 134;
-            const rSignsInner = 104;
-            const rPlanets = 82;
-            const rAspectRing = 62;
+            const size = 280;
+            const cx = size / 2, cy = size / 2;
+            const rOuter = 130, rSignsInner = 102, rPlanets = 80, rAspectRing = 60;
 
             const svg = this.#svgEl('svg', { width: size, height: size, viewBox: `0 0 ${size} ${size}` });
             this.#drawZodiacRing(svg, cx, cy, rOuter, rSignsInner);
 
             svg.appendChild(this.#svgEl('circle', {
                 cx, cy, r: rAspectRing,
-                fill: 'rgba(9, 11, 22, 0.85)',
-                stroke: 'rgba(129, 140, 248, 0.25)',
-                'stroke-width': 1
+                fill: 'rgba(9, 11, 22, 0.88)', stroke: 'rgba(129, 140, 248, 0.28)', 'stroke-width': 1
             }));
 
             const coordsMap = this.#computePlanetPositions(inventory, cx, cy, rPlanets, rAspectRing);
-
             const aspects = this.model.calculateNatalAspects(inventory, null);
             for (const asp of aspects) {
                 const p1 = coordsMap.get(asp.f1.planetId);
@@ -577,39 +944,28 @@
                     stroke: asp.color || '#818cf8',
                     'stroke-width': asp.code === 'quinc' ? 1.3 : 1.7,
                     'stroke-dasharray': asp.code === 'quinc' ? '4,3' : 'none',
-                    opacity: 0.8
+                    opacity: 0.82
                 }));
             }
-
-            this.#drawPlanetNodes(svg, coordsMap, '#93c5fd');
+            this.#drawPlanetNodes(svg, coordsMap, '#38bdf8');
             return svg;
         }
 
         renderSynastryWheel(inv1 = [], inv2 = []) {
-            const size = 310;
-            const cx = size / 2;
-            const cy = size / 2;
-            const rOuter = 144;
-            const rSignsInner = 116;
-            const rPlanetsOuter = 98;
-            const rPlanetsInner = 74;
-            const rAspectRing = 54;
+            const size = 300;
+            const cx = size / 2, cy = size / 2;
+            const rOuter = 140, rSignsInner = 114, rPlanetsOuter = 96, rPlanetsInner = 72, rAspectRing = 52;
 
             const svg = this.#svgEl('svg', { width: size, height: size, viewBox: `0 0 ${size} ${size}` });
             this.#drawZodiacRing(svg, cx, cy, rOuter, rSignsInner);
 
             svg.appendChild(this.#svgEl('circle', {
                 cx, cy, r: (rPlanetsOuter + rPlanetsInner) / 2,
-                fill: 'none',
-                stroke: 'rgba(255, 255, 255, 0.1)',
-                'stroke-dasharray': '3,3'
+                fill: 'none', stroke: 'rgba(255, 255, 255, 0.12)', 'stroke-dasharray': '3,3'
             }));
-
             svg.appendChild(this.#svgEl('circle', {
                 cx, cy, r: rAspectRing,
-                fill: 'rgba(9, 11, 22, 0.9)',
-                stroke: 'rgba(236, 72, 153, 0.35)',
-                'stroke-width': 1
+                fill: 'rgba(9, 11, 22, 0.92)', stroke: 'rgba(244, 114, 182, 0.35)', 'stroke-width': 1
             }));
 
             const map1 = this.#computePlanetPositions(inv1, cx, cy, rPlanetsInner, rAspectRing);
@@ -627,15 +983,12 @@
 
                     svg.appendChild(this.#svgEl('line', {
                         x1: c1.ax, y1: c1.ay, x2: c2.ax, y2: c2.ay,
-                        stroke: asp.color,
-                        'stroke-width': 1.4,
-                        opacity: 0.72
+                        stroke: asp.color, 'stroke-width': 1.4, opacity: 0.75
                     }));
                 }
             }
-
-            this.#drawPlanetNodes(svg, map1, '#93c5fd');
-            this.#drawPlanetNodes(svg, map2, '#f9a8d4');
+            this.#drawPlanetNodes(svg, map1, '#38bdf8');
+            this.#drawPlanetNodes(svg, map2, '#f472b6');
             return svg;
         }
 
@@ -647,27 +1000,17 @@
                 air: 'rgba(56, 189, 248, 0.22)',
                 water: 'rgba(168, 85, 247, 0.22)'
             };
-
             signs.forEach((s, i) => {
-                const startAngle = i * 30;
-                const endAngle = (i + 1) * 30;
-                const pathData = this.#describeSector(cx, cy, rOuter, rInner, startAngle, endAngle);
+                const startAngle = i * 30, endAngle = (i + 1) * 30;
                 svg.appendChild(this.#svgEl('path', {
-                    d: pathData,
+                    d: this.#describeSector(cx, cy, rOuter, rInner, startAngle, endAngle),
                     fill: elColors[s.element] || 'rgba(255,255,255,0.05)',
-                    stroke: 'rgba(129, 140, 248, 0.3)',
-                    'stroke-width': 1
+                    stroke: 'rgba(129, 140, 248, 0.3)', 'stroke-width': 1
                 }));
-
-                const midAngle = startAngle + 15;
-                const labelPos = this.#polarToCartesian(cx, cy, (rOuter + rInner) / 2, midAngle);
+                const labelPos = this.#polarToCartesian(cx, cy, (rOuter + rInner) / 2, startAngle + 15);
                 const text = this.#svgEl('text', {
-                    x: labelPos.x,
-                    y: labelPos.y,
-                    fill: '#e2e8f0',
-                    'font-size': '13px',
-                    'text-anchor': 'middle',
-                    'dominant-baseline': 'central'
+                    x: labelPos.x, y: labelPos.y, fill: '#e2e8f0',
+                    'font-size': '13px', 'text-anchor': 'middle', 'dominant-baseline': 'central'
                 });
                 text.textContent = s.name;
                 svg.appendChild(text);
@@ -675,34 +1018,25 @@
         }
 
         #computePlanetPositions(inventory, cx, cy, rPlanet, rAspect) {
-            const bySign = new Map();
-            const result = new Map();
-
+            const bySign = new Map(), result = new Map();
             inventory.forEach((f) => {
                 if (!f.planetId || !f.signId) return;
                 const list = bySign.get(f.signId) || [];
                 list.push(f);
                 bySign.set(f.signId, list);
             });
-
             bySign.forEach((list, signId) => {
                 const sign = this.elementsRepo.get(signId);
                 if (!sign) return;
                 const baseAngle = sign.index * 30;
                 const step = 30 / (list.length + 1);
-
                 list.forEach((f, idx) => {
                     const angle = baseAngle + step * (idx + 1);
                     const pPos = this.#polarToCartesian(cx, cy, rPlanet, angle);
                     const aPos = this.#polarToCartesian(cx, cy, rAspect, angle);
-                    result.set(f.planetId, {
-                        px: pPos.x, py: pPos.y,
-                        ax: aPos.x, ay: aPos.y,
-                        formula: f
-                    });
+                    result.set(f.planetId, { px: pPos.x, py: pPos.y, ax: aPos.x, ay: aPos.y, formula: f });
                 });
             });
-
             return result;
         }
 
@@ -710,21 +1044,12 @@
             coordsMap.forEach((pos, planetId) => {
                 const pObj = this.elementsRepo.get(planetId);
                 if (!pObj) return;
-
                 svg.appendChild(this.#svgEl('circle', {
-                    cx: pos.px, cy: pos.py, r: 9,
-                    fill: '#0f1326',
-                    stroke: color,
-                    'stroke-width': 1.4
+                    cx: pos.px, cy: pos.py, r: 9, fill: '#0f1326', stroke: color, 'stroke-width': 1.5
                 }));
-
                 const txt = this.#svgEl('text', {
-                    x: pos.px, y: pos.py,
-                    fill: color,
-                    'font-size': '11px',
-                    'font-weight': 'bold',
-                    'text-anchor': 'middle',
-                    'dominant-baseline': 'central'
+                    x: pos.px, y: pos.py, fill: color, 'font-size': '11px',
+                    'font-weight': 'bold', 'text-anchor': 'middle', 'dominant-baseline': 'central'
                 });
                 txt.textContent = pObj.name;
                 svg.appendChild(txt);
@@ -762,97 +1087,67 @@
             header.appendChild(SafeDOM.el('span', '', `${f.text} — ${titleText}`));
 
             if (onSplitCallback) {
-                const splitBtn = SafeDOM.el('button', 'split-btn', '⚡ Разобрать');
+                const splitBtn = SafeDOM.el('button', 'split-btn', '⚡ Разобрать на части');
                 splitBtn.addEventListener('click', onSplitCallback);
                 header.appendChild(splitBtn);
             }
             wrapper.appendChild(header);
 
-            const parts = [f.planetId, f.signId, f.houseId].filter(Boolean);
+            const pObj = f.planetId ? this.elementsRepo.get(f.planetId) : null;
+            const sObj = f.signId ? this.elementsRepo.get(f.signId) : null;
+            const hObj = f.houseId ? this.elementsRepo.get(f.houseId) : null;
+            const partsCount = [pObj, sObj, hObj].filter(Boolean).length;
 
-            if (parts.length > 1) {
-                const exactKey = parts.join('_');
-                const exactBlock = this.createInfoBlock(exactKey, '✨ Полный синтез формулы', 'synthesis');
-                if (exactBlock) wrapper.appendChild(exactBlock);
-
-                if (f.planetId && f.signId && f.houseId && !exactBlock) {
-                    const synthText = this.#buildTripleSynthesis(f.planetId, f.signId, f.houseId);
-                    wrapper.appendChild(this.createCustomBlock('⚗️ Алхимический синтез (Планета + Знак + Дом)', synthText, 'synthesis'));
+            if (partsCount > 1) {
+                if (pObj && sObj && hObj) {
+                    const tripleText = UniversalAstroGenerator.synthesizeTriple(pObj, sObj, hObj, this.descriptionsRepo);
+                    wrapper.appendChild(this.createCustomBlock('⚗️ Полный алхимический синтез (Планета + Знак + Дом)', tripleText, 'synthesis'));
                 }
-
-                if (f.planetId && f.signId) {
-                    const psKey = `${f.planetId}_${f.signId}`;
-                    const p = this.elementsRepo.get(f.planetId);
-                    const s = this.elementsRepo.get(f.signId);
-                    const block = this.createInfoBlock(psKey, `🪐 ${p.label} в знаке ${s.label}`);
-                    if (block) wrapper.appendChild(block);
+                if (pObj && sObj) {
+                    const psText = UniversalAstroGenerator.synthesizePlanetSign(pObj, sObj, this.descriptionsRepo);
+                    wrapper.appendChild(this.createCustomBlock(`🪐 ${pObj.label} в знаке ${sObj.label}`, psText));
                 }
-
-                if (f.planetId && f.houseId) {
-                    const phKey = `${f.planetId}_${f.houseId}`;
-                    const p = this.elementsRepo.get(f.planetId);
-                    const h = this.elementsRepo.get(f.houseId);
-                    const block = this.createInfoBlock(phKey, `🏠 ${p.label} в ${h.label}`);
-                    if (block) wrapper.appendChild(block);
+                if (pObj && hObj) {
+                    const phText = UniversalAstroGenerator.synthesizePlanetHouse(pObj, hObj, this.descriptionsRepo);
+                    wrapper.appendChild(this.createCustomBlock(`🏠 ${pObj.label} в ${hObj.label}`, phText));
                 }
-
-                if (!f.planetId && f.signId && f.houseId) {
-                    const s = this.elementsRepo.get(f.signId);
-                    const h = this.elementsRepo.get(f.houseId);
-                    const shText = `Энергия ${h.label} окрашена качествами знака ${s.label} (${s.name}): сфера ${h.sphere} развивается по сценарию этого зодиакального архетипа.`;
-                    wrapper.appendChild(this.createCustomBlock(`🌌 ${s.label} в ${h.label}`, shText, 'synthesis'));
+                if (sObj && hObj) {
+                    const shText = UniversalAstroGenerator.synthesizeSignHouse(sObj, hObj);
+                    wrapper.appendChild(this.createCustomBlock(`🌌 ${sObj.label} в ${hObj.label}`, shText, partsCount === 2 ? 'synthesis' : ''));
                 }
             } else {
-                if (f.planetId) {
-                    const p = this.elementsRepo.get(f.planetId);
-                    const b = this.createInfoBlock(f.planetId, `🪐 ${p.label} (Планета / Точка)`);
-                    if (b) wrapper.appendChild(b);
+                if (pObj) {
+                    const text = this.descriptionsRepo.find(pObj.id) || UniversalAstroGenerator.PLANET_ARCHETYPES[pObj.id]?.role;
+                    wrapper.appendChild(this.createCustomBlock(`🪐 ${pObj.label} (Планета / Архетип)`, text));
                 }
-                if (f.signId) {
-                    const s = this.elementsRepo.get(f.signId);
-                    const b = this.createInfoBlock(f.signId, `🌌 ${s.label} (Знак Зодиака)`);
-                    if (b) wrapper.appendChild(b);
+                if (sObj) {
+                    const text = this.descriptionsRepo.find(sObj.id) || sObj.label;
+                    wrapper.appendChild(this.createCustomBlock(`🌌 ${sObj.label} (Знак Зодиака)`, text));
                 }
-                if (f.houseId) {
-                    const h = this.elementsRepo.get(f.houseId);
-                    const b = this.createInfoBlock(f.houseId, `🏠 ${h.label} (Сфера жизни)`);
-                    if (b) wrapper.appendChild(b);
+                if (hObj) {
+                    const text = this.descriptionsRepo.find(hObj.id) || hObj.sphere;
+                    wrapper.appendChild(this.createCustomBlock(`🏠 ${hObj.label} (Сфера жизни)`, text));
                 }
             }
-
             container.appendChild(wrapper);
         }
 
         #buildReadableFormulaTitle(f) {
             const names = [];
-            if (f.planetId) names.push(this.elementsRepo.get(f.planetId).label);
-            if (f.signId) names.push(this.elementsRepo.get(f.signId).label);
-            if (f.houseId) names.push(this.elementsRepo.get(f.houseId).label);
-            return names.join(' • ');
-        }
-
-        #buildTripleSynthesis(planetId, signId, houseId) {
-            const p = this.elementsRepo.get(planetId);
-            const s = this.elementsRepo.get(signId);
-            const h = this.elementsRepo.get(houseId);
-
-            const elNames = { fire: 'Огня 🔥', earth: 'Земли 🌿', air: 'Воздуха 💨', water: 'Воды 💧' };
-            const elName = elNames[s.element] || '';
-            const rulerNote = s.ruler === planetId
-                ? ' Планета находится в своей обители, поэтому действует в полную силу и максимально автономно.'
-                : '';
-
-            return `Принцип «${p.label}» проявляется через стихию ${elName} (знак ${s.label}) и напрямую фокусируется в сфере ${h.sphere} (${h.label}).${rulerNote} Качества знака ${s.label} задают характер и стиль действия, а ${h.label} указывает главную арену реализации.`;
+            if (f.planetId) names.push(this.elementsRepo.get(f.planetId)?.label);
+            if (f.signId) names.push(this.elementsRepo.get(f.signId)?.label);
+            if (f.houseId) names.push(this.elementsRepo.get(f.houseId)?.label);
+            return names.filter(Boolean).join(' • ');
         }
 
         renderElementalBalance(inventory, container) {
             const bal = this.model.calculateElementalBalance(inventory);
             const wrap = SafeDOM.el('div', 'element-bars');
             const items = [
-                { key: 'fire', label: '🔥 Огонь', val: bal.fire, color: 'var(--fire)' },
-                { key: 'earth', label: '🌿 Земля', val: bal.earth, color: 'var(--earth)' },
-                { key: 'air', label: '💨 Воздух', val: bal.air, color: 'var(--air)' },
-                { key: 'water', label: '💧 Вода', val: bal.water, color: 'var(--water)' }
+                { label: '🔥 Огонь', val: bal.fire, color: 'var(--fire)' },
+                { label: '🌿 Земля', val: bal.earth, color: 'var(--earth)' },
+                { label: '💨 Воздух', val: bal.air, color: 'var(--air)' },
+                { label: '💧 Вода', val: bal.water, color: 'var(--water)' }
             ];
             items.forEach((it) => {
                 const col = SafeDOM.el('div', 'el-bar-item');
@@ -872,6 +1167,9 @@
         }
     }
 
+    /**
+     * КОНТРОЛЛЕР АЛХИМИЧЕСКОЙ ДОСКИ (Исправлены имена и iOS-рендеринг)
+     */
     class BoardController {
         #zIndexCounter = 100;
         #dragState = null;
@@ -910,8 +1208,8 @@
                 x = pos.x; y = pos.y;
             }
 
-            el.style.left = x + 'px';
-            el.style.top = y + 'px';
+            el.style.left = Math.round(x) + 'px';
+            el.style.top = Math.round(y) + 'px';
             el.style.zIndex = this.#zIndexCounter++;
             el.addEventListener('pointerdown', (e) => this.#handleDragStart(e));
 
@@ -923,15 +1221,10 @@
 
         #computeSpawnPosition() {
             const boardRect = this.boardEl.getBoundingClientRect();
-            const x = (boardRect.width / 2) - 45 + (Math.random() * 90 - 45);
-            const descPanel = document.getElementById('description-panel');
-            let y;
-            if (descPanel.style.display === 'flex') {
-                const descRect = descPanel.getBoundingClientRect();
-                y = (descRect.top - boardRect.top) - 80 + (Math.random() * 30 - 15);
-            } else {
-                y = (boardRect.height * 0.32) - 30 + (Math.random() * 60 - 30);
-            }
+            const w = boardRect.width || 600;
+            const h = boardRect.height || 500;
+            const x = (w / 2) - 65 + (Math.random() * 110 - 55);
+            const y = (h * 0.30) - 30 + (Math.random() * 70 - 35);
             return { x: Math.max(20, x), y: Math.max(20, y) };
         }
 
@@ -939,41 +1232,36 @@
             SafeDOM.clear(el);
             el.classList.toggle('complete-astro', itemData.type === 'astro' && this.model.allComplete(itemData.formulas));
 
+            // ИСПРАВЛЕНИЕ 1: Полное отображение любых имён без обрезки многоточием
             if (itemData.type === 'person') {
                 const count = itemData.inventory.length;
                 const icon = itemData.gender === 'female' ? '👩' : (itemData.gender === 'male' ? '👨' : '🧑');
                 const nameText = itemData.name || 'Человек';
 
-                const nameEl = SafeDOM.el('div', '', `${icon} ${nameText}`);
-                nameEl.style.maxWidth = '145px';
-                nameEl.style.overflow = 'hidden';
-                nameEl.style.textOverflow = 'ellipsis';
+                const nameEl = SafeDOM.el('div', 'item-full-name', `${icon} ${nameText}`);
                 el.appendChild(nameEl);
 
                 if (count > 0) {
                     const symbols = itemData.inventory
-                        .slice(0, 5)
+                        .slice(0, 6)
                         .map((f) => this.elementsRepo.get(f.planetId)?.name || '')
                         .join(' ');
-                    const span = SafeDOM.el('span', '', `${symbols}${count > 5 ? '…' : ''} (${count})`);
+                    const span = SafeDOM.el('span', '', `${symbols}${count > 6 ? '…' : ''} (${count})`);
                     span.style.fontSize = '0.72rem';
-                    span.style.color = '#cbd5e1';
+                    span.style.color = '#93c5fd';
                     span.style.marginTop = '4px';
                     el.appendChild(span);
                 }
                 return;
             }
             if (itemData.type === 'couple') {
-                const p1Name = itemData.person1.name || 'П1';
-                const p2Name = itemData.person2.name || 'П2';
+                const p1Name = itemData.person1.name || 'Партнёр 1';
+                const p2Name = itemData.person2.name || 'Партнёр 2';
 
                 el.appendChild(SafeDOM.el('div', '', '💞'));
-                const textEl = SafeDOM.el('span', '', `${p1Name} + ${p2Name}`);
-                textEl.style.fontSize = '0.7rem';
+                const textEl = SafeDOM.el('div', 'item-full-name', `${p1Name} + ${p2Name}`);
+                textEl.style.fontSize = '0.82rem';
                 textEl.style.marginTop = '4px';
-                textEl.style.maxWidth = '155px';
-                textEl.style.overflow = 'hidden';
-                textEl.style.textOverflow = 'ellipsis';
                 el.appendChild(textEl);
                 return;
             }
@@ -1022,12 +1310,12 @@
             const baseX = coupleEl ? parseFloat(coupleEl.style.left) : 140;
             const baseY = coupleEl ? parseFloat(coupleEl.style.top) : 140;
 
-            this.createNode('person', null, Math.max(20, baseX - 80), baseY, {
+            this.createNode('person', null, Math.max(20, baseX - 90), baseY, {
                 inventory: couple.person1.inventory || [],
                 name: couple.person1.name,
                 gender: couple.person1.gender
             });
-            this.createNode('person', null, baseX + 80, baseY, {
+            this.createNode('person', null, baseX + 90, baseY, {
                 inventory: couple.person2.inventory || [],
                 name: couple.person2.name,
                 gender: couple.person2.gender
@@ -1063,8 +1351,8 @@
 
         updatePersonDOM(el, personData) {
             this.renderItemContent(el, personData);
-            el.style.transform = 'scale(1.25)';
-            setTimeout(() => { if (el) el.style.transform = ''; }, 200);
+            el.style.transform = 'translate3d(0,0,0) scale(1.14)';
+            setTimeout(() => { if (el) el.style.transform = 'translate3d(0,0,0)'; }, 180);
         }
 
         removeNode(uid) {
@@ -1086,6 +1374,7 @@
             if (e.target.tagName === 'BUTTON') return;
             const el = e.currentTarget;
             el.style.zIndex = this.#zIndexCounter++;
+            el.style.transition = 'none'; // Мгновенный отклик без шлейфа на iOS
             const rect = el.getBoundingClientRect();
 
             this.#dragState = {
@@ -1109,8 +1398,10 @@
             const ds = this.#dragState;
             if (!ds) return;
             const boardRect = this.boardEl.getBoundingClientRect();
-            ds.el.style.left = (e.clientX - boardRect.left - ds.offsetX) + 'px';
-            ds.el.style.top = (e.clientY - boardRect.top - ds.offsetY) + 'px';
+            const nx = Math.round(e.clientX - boardRect.left - ds.offsetX);
+            const ny = Math.round(e.clientY - boardRect.top - ds.offsetY);
+            ds.el.style.left = nx + 'px';
+            ds.el.style.top = ny + 'px';
 
             if (this.#isPointerOverTrash(e.clientX, e.clientY)) {
                 this.trashEl.classList.add('hovered');
@@ -1123,6 +1414,7 @@
         #handleDragEnd(e) {
             const ds = this.#dragState;
             if (!ds) return;
+            ds.el.style.transition = '';
             const dist = Math.hypot(e.clientX - ds.startMouseX, e.clientY - ds.startMouseY);
 
             if (this.#isPointerOverTrash(e.clientX, e.clientY)) {
@@ -1315,6 +1607,9 @@
         }
     }
 
+    /**
+     * КОНТРОЛЛЕР ПАНЕЛИ ОПИСАНИЯ (С чётким разделением партнёров в Синастрии)
+     */
     class UIController {
         constructor({ boardController, interpretationRenderer, model, dom, onOpenRecalcModal }) {
             this.boardController = boardController;
@@ -1335,13 +1630,12 @@
             } else if (item.type === 'couple') {
                 this.#renderCouple(uid, item, descTitle, descText);
             } else {
-                descTitle.textContent = '✨ Разбор астрологической формулы';
+                descTitle.textContent = '✨ Разбор астрологической связки';
                 item.formulas.forEach((f, idx) => {
                     const partsCount = [f.planetId, f.signId, f.houseId].filter(Boolean).length;
                     const canSplit = item.formulas.length > 1 || partsCount > 1;
                     this.interpretationRenderer.appendFormulaInterpretation(
-                        f,
-                        descText,
+                        f, descText,
                         canSplit ? () => this.boardController.disassembleAstroNode(uid, idx) : null
                     );
                 });
@@ -1356,7 +1650,7 @@
             const tabsBar = SafeDOM.el('div', 'tabs-bar');
             const tabNatalBtn = SafeDOM.el('button', 'tab-btn active', '🪐 Натальная карта и Колесо');
             const tabSolarBtn = SafeDOM.el('button', 'tab-btn', '🌟 Соляр (Прогноз на год)');
-            const recalcBtn = SafeDOM.el('button', 'split-btn', '📅 Рассчитать по дате рождения');
+            const recalcBtn = SafeDOM.el('button', 'split-btn', '📅 Пересчитать по дате');
             recalcBtn.style.marginLeft = 'auto';
             recalcBtn.addEventListener('click', () => {
                 if (this.onOpenRecalcModal) this.onOpenRecalcModal(uid, item);
@@ -1371,7 +1665,7 @@
                 descText.appendChild(
                     this.interpretationRenderer.createCustomBlock(
                         'Карта пока пуста',
-                        'Нажмите кнопку «📅 Рассчитать по дате рождения» выше для мгновенного расчёта всех планет, либо перетащите сюда формулы с доски.'
+                        'Нажмите «📅 Пересчитать по дате» выше для мгновенного расчёта всех планет, либо перетащите сюда полные формулы с доски.'
                     )
                 );
                 return;
@@ -1382,7 +1676,6 @@
 
             const renderNatalTab = () => {
                 SafeDOM.clear(contentArea);
-
                 const wheelWrap = SafeDOM.el('div', 'wheel-container');
                 wheelWrap.appendChild(this.interpretationRenderer.wheelSvg.renderSingleWheel(item.inventory));
                 contentArea.appendChild(wheelWrap);
@@ -1405,26 +1698,18 @@
                 });
                 contentArea.appendChild(editSection);
 
-                const natalAspects = this.model.calculateNatalAspects(
-                    item.inventory,
-                    this.interpretationRenderer.descriptionsRepo
-                );
+                const natalAspects = this.model.calculateNatalAspects(item.inventory, this.interpretationRenderer.descriptionsRepo);
                 if (natalAspects.length > 0) {
                     const aspHeader = SafeDOM.el('div', 'section-header', `⚡ Аспекты и геометрия карты (${natalAspects.length})`);
                     aspHeader.style.color = '#fde047';
                     contentArea.appendChild(aspHeader);
-
                     natalAspects.forEach((asp) => {
-                        contentArea.appendChild(
-                            this.interpretationRenderer.createCustomBlock(asp.title, asp.text, asp.harmony)
-                        );
+                        contentArea.appendChild(this.interpretationRenderer.createCustomBlock(asp.title, asp.text, asp.harmony));
                     });
                 }
 
                 const analysisSection = SafeDOM.el('div');
-                const header = SafeDOM.el('div', 'section-header', 'Детальный разбор формул');
-                header.style.marginTop = '20px';
-                analysisSection.appendChild(header);
+                analysisSection.appendChild(SafeDOM.el('div', 'section-header', 'Детальный разбор формул'));
                 item.inventory.forEach((f) => this.interpretationRenderer.appendFormulaInterpretation(f, analysisSection));
                 contentArea.appendChild(analysisSection);
             };
@@ -1434,71 +1719,36 @@
                 contentArea.appendChild(
                     this.interpretationRenderer.createCustomBlock(
                         '🌟 Годовой Солярный Прогноз',
-                        'Трактовка включения домов натальной карты солярными планетами на предстоящий личный год.',
+                        'Активация сфер жизни (домов) на предстоящий личный год.',
                         'synthesis'
                     )
                 );
-                const solarItems = this.model.calculateSolarForecast(
-                    item.inventory,
-                    this.interpretationRenderer.descriptionsRepo
-                );
+                const solarItems = this.model.calculateSolarForecast(item.inventory, this.interpretationRenderer.descriptionsRepo);
                 solarItems.forEach((sItem) => {
-                    contentArea.appendChild(
-                        this.interpretationRenderer.createCustomBlock(
-                            sItem.title,
-                            sItem.text,
-                            sItem.isExactDbMatch ? 'harmonic' : ''
-                        )
-                    );
+                    contentArea.appendChild(this.interpretationRenderer.createCustomBlock(sItem.title, sItem.text, sItem.isExactDbMatch ? 'harmonic' : ''));
                 });
             };
 
             tabNatalBtn.addEventListener('click', () => {
-                tabNatalBtn.classList.add('active');
-                tabSolarBtn.classList.remove('active');
-                renderNatalTab();
+                tabNatalBtn.classList.add('active'); tabSolarBtn.classList.remove('active'); renderNatalTab();
             });
             tabSolarBtn.addEventListener('click', () => {
-                tabSolarBtn.classList.add('active');
-                tabNatalBtn.classList.remove('active');
-                renderSolarTab();
+                tabSolarBtn.classList.add('active'); tabNatalBtn.classList.remove('active'); renderSolarTab();
             });
-
             renderNatalTab();
         }
 
+        // ИСПРАВЛЕНИЕ 3: Чёткое визуальное и техническое разделение партнёров в Синастрии
         #renderCouple(uid, item, descTitle, descText) {
             const p1 = item.person1, p2 = item.person2;
-            const n1 = p1.name || 'Партнер 1';
-            const n2 = p2.name || 'Партнер 2';
+            const n1 = p1.name || 'Партнёр 1';
+            const n2 = p2.name || 'Партнёр 2';
             const elementsRepo = this.interpretationRenderer.elementsRepo;
+            const descRepo = this.interpretationRenderer.descriptionsRepo;
 
-            descTitle.textContent = `💞 Синастрия: ${n1} и ${n2}`;
+            descTitle.textContent = `💞 Синастрия: ${n1}  ×  ${n2}`;
 
-            const topBar = SafeDOM.el('div');
-            topBar.style.display = 'flex';
-            topBar.style.justifyContent = 'flex-end';
-            topBar.style.marginBottom = '10px';
-            const splitCoupleBtn = SafeDOM.el('button', 'split-btn', '💔 Разъединить пару на 2 карты');
-            splitCoupleBtn.addEventListener('click', () => this.boardController.splitCouple(uid));
-            topBar.appendChild(splitCoupleBtn);
-            descText.appendChild(topBar);
-
-            if ((!p1.inventory || p1.inventory.length === 0) && (!p2.inventory || p2.inventory.length === 0)) {
-                descText.appendChild(
-                    this.interpretationRenderer.createCustomBlock(
-                        'Карты партнеров пусты',
-                        'Разъедините пару, рассчитайте карты партнеров по дате рождения и снова соедините их.'
-                    )
-                );
-                return;
-            }
-
-            const scoreData = this.model.calculateSynastryScore(
-                p1.inventory,
-                p2.inventory,
-                this.interpretationRenderer.descriptionsRepo
-            );
+            const scoreData = this.model.calculateSynastryScore(p1.inventory, p2.inventory, descRepo);
             const banner = SafeDOM.el('div', 'synastry-score-banner');
             const leftInfo = SafeDOM.el('div');
             leftInfo.appendChild(SafeDOM.el('div', 'info-block-title', scoreData.label));
@@ -1507,129 +1757,879 @@
             banner.appendChild(SafeDOM.el('div', 'score-badge', `${scoreData.score}%`));
             descText.appendChild(banner);
 
-            const wheelWrap = SafeDOM.el('div', 'wheel-container');
-            wheelWrap.appendChild(this.interpretationRenderer.wheelSvg.renderSynastryWheel(p1.inventory, p2.inventory));
-            const legend = SafeDOM.el('div', 'info-block-text', `🔵 Внутренний круг: ${n1}   •   🌸 Внешний круг: ${n2}`);
-            legend.style.marginTop = '6px';
-            legend.style.fontSize = '0.76rem';
-            wheelWrap.appendChild(legend);
-            descText.appendChild(wheelWrap);
+            // Навигационные вкладки для чёткого разделения данных
+            const tabsBar = SafeDOM.el('div', 'tabs-bar');
+            const btnOverview = SafeDOM.el('button', 'tab-btn active', '📊 Сравнение & Колесо');
+            const btnPlanetSyn = SafeDOM.el('button', 'tab-btn', '✨ Аспекты планет');
+            const btnP1toP2 = SafeDOM.el('button', 'tab-btn', `🔵 Влияние: ${n1} ➔ ${n2}`);
+            const btnP2toP1 = SafeDOM.el('button', 'tab-btn', `🌸 Влияние: ${n2} ➔ ${n1}`);
+            const splitCoupleBtn = SafeDOM.el('button', 'split-btn', '💔 Разъединить пару');
+            splitCoupleBtn.style.marginLeft = 'auto';
+            splitCoupleBtn.addEventListener('click', () => this.boardController.splitCouple(uid));
 
-            const synastrySection = SafeDOM.el('div');
-            const synHeader = SafeDOM.el('div', 'section-header', '🔥 Межкарточный резонанс и связки');
-            synHeader.style.color = '#f9a8d4';
-            synastrySection.appendChild(synHeader);
+            [btnOverview, btnPlanetSyn, btnP1toP2, btnP2toP1, splitCoupleBtn].forEach((b) => tabsBar.appendChild(b));
+            descText.appendChild(tabsBar);
 
-            if (p1.inventory && p2.inventory) {
+            const viewContainer = SafeDOM.el('div');
+            descText.appendChild(viewContainer);
+
+            const setActiveTab = (activeBtn) => {
+                [btnOverview, btnPlanetSyn, btnP1toP2, btnP2toP1].forEach((b) => b.classList.toggle('active', b === activeBtn));
+                SafeDOM.clear(viewContainer);
+            };
+
+            const renderOverview = () => {
+                setActiveTab(btnOverview);
+                // Side-by-side Split Grid двух партнёров
+                const splitGrid = SafeDOM.el('div', 'synastry-split-grid');
+
+                const box1 = SafeDOM.el('div', 'partner-box p1');
+                const h1 = SafeDOM.el('div', 'partner-box-header');
+                h1.style.color = '#38bdf8';
+                h1.appendChild(SafeDOM.el('span', '', `🔵 Партнёр 1: ${n1}`));
+                h1.appendChild(SafeDOM.el('span', '', `${p1.inventory.length} поз.`));
+                box1.appendChild(h1);
+                this.interpretationRenderer.renderElementalBalance(p1.inventory, box1);
+                p1.inventory.forEach((f) => {
+                    const row = SafeDOM.el('div', 'inventory-item');
+                    row.appendChild(SafeDOM.el('span', '', `${f.text} (${elementsRepo.get(f.planetId)?.label} в ${elementsRepo.get(f.signId)?.label})`));
+                    box1.appendChild(row);
+                });
+
+                const box2 = SafeDOM.el('div', 'partner-box p2');
+                const h2 = SafeDOM.el('div', 'partner-box-header');
+                h2.style.color = '#f472b6';
+                h2.appendChild(SafeDOM.el('span', '', `🌸 Партнёр 2: ${n2}`));
+                h2.appendChild(SafeDOM.el('span', '', `${p2.inventory.length} поз.`));
+                box2.appendChild(h2);
+                this.interpretationRenderer.renderElementalBalance(p2.inventory, box2);
+                p2.inventory.forEach((f) => {
+                    const row = SafeDOM.el('div', 'inventory-item');
+                    row.appendChild(SafeDOM.el('span', '', `${f.text} (${elementsRepo.get(f.planetId)?.label} в ${elementsRepo.get(f.signId)?.label})`));
+                    box2.appendChild(row);
+                });
+
+                splitGrid.appendChild(box1);
+                splitGrid.appendChild(box2);
+                viewContainer.appendChild(splitGrid);
+
+                const wheelWrap = SafeDOM.el('div', 'wheel-container');
+                wheelWrap.appendChild(this.interpretationRenderer.wheelSvg.renderSynastryWheel(p1.inventory, p2.inventory));
+                const legend = SafeDOM.el('div', 'info-block-text', `🔵 Внутреннее кольцо: ${n1}   |   🌸 Внешнее кольцо: ${n2}`);
+                legend.style.marginTop = '6px';
+                wheelWrap.appendChild(legend);
+                viewContainer.appendChild(wheelWrap);
+            };
+
+            const renderPlanetSynastry = () => {
+                setActiveTab(btnPlanetSyn);
+                viewContainer.appendChild(SafeDOM.el('div', 'section-header', `Межкарточные аспекты и оси знаков (${n1} ↔ ${n2})`));
                 p1.inventory.forEach((f1) => {
                     p2.inventory.forEach((f2) => {
-                        const wrapper = SafeDOM.el('div');
-                        wrapper.style.marginBottom = '14px';
+                        const p1Obj = elementsRepo.get(f1.planetId), p2Obj = elementsRepo.get(f2.planetId);
+                        const s1Obj = elementsRepo.get(f1.signId), s2Obj = elementsRepo.get(f2.signId);
+                        if (!p1Obj || !p2Obj || !s1Obj || !s2Obj) return;
 
-                        const p1Obj = elementsRepo.get(f1.planetId);
-                        const p2Obj = elementsRepo.get(f2.planetId);
-                        const s1Obj = elementsRepo.get(f1.signId);
-                        const s2Obj = elementsRepo.get(f2.signId);
-                        const h1Obj = elementsRepo.get(f1.houseId);
-                        const h2Obj = elementsRepo.get(f2.houseId);
+                        const dist = this.model.getSignDistance(f1.signId, f2.signId);
+                        const asp = this.model.getAspectMeta(dist);
 
-                        const header = SafeDOM.el('div', 'section-header', `${n1} (${f1.text}) ↔ ${n2} (${f2.text})`);
-                        header.style.color = '#c7d2fe';
-                        wrapper.appendChild(header);
+                        const cardWrap = SafeDOM.el('div');
+                        cardWrap.style.marginBottom = '12px';
+                        const hdr = SafeDOM.el('div', 'section-header', `🔵 ${n1}: ${f1.text}  ↔  🌸 ${n2}: ${f2.text}`);
+                        hdr.style.color = '#e2e8f0';
+                        cardWrap.appendChild(hdr);
 
-                        if (f1.signId && f2.signId) {
-                            const compBlock =
-                                this.interpretationRenderer.createInfoBlock(`comp_${f1.signId}_${f2.signId}`, `🌌 Ось знаков: ${s1Obj.label} + ${s2Obj.label}`, 'synthesis') ||
-                                this.interpretationRenderer.createInfoBlock(`comp_${f2.signId}_${f1.signId}`, `🌌 Ось знаков: ${s1Obj.label} + ${s2Obj.label}`, 'synthesis');
-                            if (compBlock) wrapper.appendChild(compBlock);
-                        }
+                        const signText = UniversalAstroGenerator.synthesizeSynastrySignCompatibility(s1Obj, s2Obj, dist, descRepo);
+                        cardWrap.appendChild(this.interpretationRenderer.createCustomBlock(`🌌 Ось знаков: ${s1Obj.label} + ${s2Obj.label}`, signText, 'synthesis'));
 
-                        if (f1.planetId && f2.planetId) {
-                            const dist = this.model.getSignDistance(f1.signId, f2.signId);
-                            const asp = this.model.getAspectMeta(dist);
-
-                            if (asp) {
-                                const aspSynBlock =
-                                    this.interpretationRenderer.createInfoBlock(`syn_${f1.planetId}_${f2.planetId}_${asp.code}`, `${asp.symbol} ${asp.name}: ${p1Obj.label} (${n1}) — ${p2Obj.label} (${n2})`, asp.harmony) ||
-                                    this.interpretationRenderer.createInfoBlock(`syn_${f2.planetId}_${f1.planetId}_${asp.code}`, `${asp.symbol} ${asp.name}: ${p1Obj.label} (${n1}) — ${p2Obj.label} (${n2})`, asp.harmony);
-                                if (aspSynBlock) wrapper.appendChild(aspSynBlock);
-                            }
-
-                            const directKey = `syn_${f1.planetId}_${f2.planetId}`;
-                            const reverseKey = `syn_${f2.planetId}_${f1.planetId}`;
-                            const title = `✨ ${p1Obj.label} (${n1}) + ${p2Obj.label} (${n2})`;
-                            const planetSynBlock =
-                                this.interpretationRenderer.createInfoBlock(directKey, title, 'harmonic') ||
-                                this.interpretationRenderer.createInfoBlock(reverseKey, title, 'harmonic');
-
-                            if (planetSynBlock) {
-                                wrapper.appendChild(planetSynBlock);
-                            } else if (asp) {
-                                wrapper.appendChild(
-                                    this.interpretationRenderer.createCustomBlock(
-                                        `${asp.symbol} ${p1Obj.label} (${n1}) в аспекте «${asp.name}» к ${p2Obj.label} (${n2})`,
-                                        `Взаимодействие принципов «${p1Obj.label} в ${s1Obj.label}» и «${p2Obj.label} в ${s2Obj.label}» формирует активный резонанс между партнерами.`,
-                                        asp.harmony
-                                    )
-                                );
-                            }
-                        }
-
-                        if (f1.planetId && f2.houseId) {
-                            const hKey12 = `syn_${f1.planetId}_${f2.houseId}`;
-                            const title12 = `🏠 ${p1Obj.label} (${n1}) в ${h2Obj.label} (${n2})`;
-                            const block12 = this.interpretationRenderer.createInfoBlock(hKey12, title12) ||
-                                this.interpretationRenderer.createCustomBlock(
-                                    title12,
-                                    `${n1} своей планетой (${p1Obj.label}) включает сферу ${h2Obj.sphere} в карте партнера (${n2}).`
-                                );
-                            wrapper.appendChild(block12);
-                        }
-
-                        if (f2.planetId && f1.houseId) {
-                            const hKey21 = `syn_${f2.planetId}_${f1.houseId}`;
-                            const title21 = `🏠 ${p2Obj.label} (${n2}) в ${h1Obj.label} (${n1})`;
-                            const block21 = this.interpretationRenderer.createInfoBlock(hKey21, title21) ||
-                                this.interpretationRenderer.createCustomBlock(
-                                    title21,
-                                    `${n2} своей планетой (${p2Obj.label}) включает сферу ${h1Obj.sphere} в карте партнера (${n1}).`
-                                );
-                            wrapper.appendChild(block21);
-                        }
-
-                        synastrySection.appendChild(wrapper);
+                        const planetText = UniversalAstroGenerator.synthesizeSynastryPlanets(p1Obj, p2Obj, s1Obj, s2Obj, n1, n2, asp, descRepo);
+                        cardWrap.appendChild(this.interpretationRenderer.createCustomBlock(
+                            `${asp ? asp.symbol + ' ' + asp.name : '✨ Резонанс'}: ${p1Obj.label} (${n1}) + ${p2Obj.label} (${n2})`,
+                            planetText,
+                            asp ? asp.harmony : 'harmonic'
+                        ));
+                        viewContainer.appendChild(cardWrap);
                     });
                 });
-            }
+            };
 
-            descText.appendChild(synastrySection);
-            this.#renderPersonCard(p1, `🧑 Карта: ${n1}`, '#93c5fd', descText);
-            this.#renderPersonCard(p2, `🧑 Карта: ${n2}`, '#f9a8d4', descText);
-        }
+            const renderDirectionalHouses = (sourcePerson, targetPerson, badgeColor, icon) => {
+                const sName = sourcePerson.name || 'Партнёр 1';
+                const tName = targetPerson.name || 'Партнёр 2';
+                const hdr = SafeDOM.el('div', 'section-header', `${icon} Как планеты «${sName}» включают дома и сферы жизни «${tName}»`);
+                hdr.style.color = badgeColor;
+                viewContainer.appendChild(hdr);
 
-        #renderPersonCard(person, title, color, container) {
-            const section = SafeDOM.el('div');
-            section.style.marginTop = '22px';
-            const header = SafeDOM.el('div', 'section-header', title);
-            header.style.color = color;
-            header.style.fontSize = '0.88rem';
-            header.style.borderBottom = '1px solid rgba(255,255,255,0.1)';
-            header.style.paddingBottom = '5px';
-            section.appendChild(header);
+                sourcePerson.inventory.forEach((fSource) => {
+                    targetPerson.inventory.forEach((fTarget) => {
+                        if (!fSource.planetId || !fTarget.houseId) return;
+                        const pObj = elementsRepo.get(fSource.planetId);
+                        const hObj = elementsRepo.get(fTarget.houseId);
+                        const key = `syn_${fSource.planetId}_${fTarget.houseId}`;
+                        const text = descRepo.find(key) ||
+                            `Планета «${pObj.label}» партнёра (${sName}) попадает в ${hObj.label} партнёра (${tName}), напрямую активируя и заряжая его сферу ${hObj.sphere}.`;
+                        viewContainer.appendChild(
+                            this.interpretationRenderer.createCustomBlock(
+                                `🏠 ${pObj.label} (${sName}) ➔ в ${hObj.label} (${tName})`,
+                                text
+                            )
+                        );
+                    });
+                });
+            };
 
-            if (person.inventory && person.inventory.length > 0) {
-                this.interpretationRenderer.renderElementalBalance(person.inventory, section);
-                person.inventory.forEach((f) => this.interpretationRenderer.appendFormulaInterpretation(f, section));
-            } else {
-                section.appendChild(this.interpretationRenderer.createCustomBlock('Карта пуста', 'Нет добавленных планет.'));
-            }
-            container.appendChild(section);
+            btnOverview.addEventListener('click', renderOverview);
+            btnPlanetSyn.addEventListener('click', renderPlanetSynastry);
+            btnP1toP2.addEventListener('click', () => {
+                setActiveTab(btnP1toP2);
+                renderDirectionalHouses(p1, p2, '#38bdf8', '🔵');
+            });
+            btnP2toP1.addEventListener('click', () => {
+                setActiveTab(btnP2toP1);
+                renderDirectionalHouses(p2, p1, '#f472b6', '🌸');
+            });
+
+            renderOverview();
         }
     }
 
+    /**
+     * =========================================================================
+     * РАЗДЕЛ 2: КОНТРОЛЛЕР ИНТЕРАКТИВНОГО ДРЕВА И РОДОВОЙ АНАЛИТИКИ
+     * =========================================================================
+     */
+    class TreeController {
+        static #STORAGE_KEY = 'astro-alchemy-tree-v2';
+        static #SVG_NS = 'http://www.w3.org/2000/svg';
+
+        constructor({ model, elementsRepo, descriptionsRepo, interpretationRenderer, onFlashSave }) {
+            this.model = model;
+            this.elementsRepo = elementsRepo;
+            this.descriptionsRepo = descriptionsRepo;
+            this.interpretationRenderer = interpretationRenderer;
+            this.onFlashSave = onFlashSave;
+
+            this.state = this.#loadState() || { members: [], links: [] };
+            this.selectedNodeId = null;
+            this.selectedLinkId = null;
+
+            this.dom = {
+                membersList: document.getElementById('tree-members-list'),
+                linksList: document.getElementById('tree-links-list'),
+                selectFrom: document.getElementById('tree-link-from'),
+                selectTo: document.getElementById('tree-link-to'),
+                selectType: document.getElementById('tree-link-type'),
+                addLinkBtn: document.getElementById('tree-add-link-btn'),
+                svg: document.getElementById('tree-svg'),
+                analytics: document.getElementById('tree-analytics-content')
+            };
+
+            this.#bindEvents();
+        }
+
+        #loadState() {
+            try {
+                const raw = localStorage.getItem(TreeController.#STORAGE_KEY);
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) { return null; }
+        }
+
+        saveState() {
+            try {
+                localStorage.setItem(TreeController.#STORAGE_KEY, JSON.stringify(this.state));
+                if (this.onFlashSave) this.onFlashSave();
+            } catch (e) {}
+        }
+
+        addOrUpdateMember(name, gender, inventory = []) {
+            const existing = this.state.members.find((m) => m.name.toLowerCase() === name.toLowerCase());
+            if (existing) {
+                existing.gender = gender;
+                if (inventory.length > 0) existing.inventory = JSON.parse(JSON.stringify(inventory));
+            } else {
+                const idx = this.state.members.length;
+                const angle = (idx * 2.4);
+                const x = Math.round(450 + Math.cos(angle) * (150 + idx * 18));
+                const y = Math.round(320 + Math.sin(angle) * (130 + idx * 15));
+                this.state.members.push({
+                    id: 'tm_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+                    name,
+                    gender,
+                    inventory: JSON.parse(JSON.stringify(inventory)),
+                    x: Math.max(80, Math.min(820, x)),
+                    y: Math.max(70, Math.min(580, y))
+                });
+            }
+            this.saveState();
+            this.renderAll();
+        }
+
+        importFromBoard(boardActiveElements) {
+            let added = 0;
+            boardActiveElements.forEach((item) => {
+                if (item.type === 'person') {
+                    this.addOrUpdateMember(item.name || 'Человек', item.gender, item.inventory);
+                    added++;
+                } else if (item.type === 'couple') {
+                    this.addOrUpdateMember(item.person1.name || 'Партнёр 1', item.person1.gender, item.person1.inventory);
+                    this.addOrUpdateMember(item.person2.name || 'Партнёр 2', item.person2.gender, item.person2.inventory);
+                    const m1 = this.state.members.find((m) => m.name === item.person1.name);
+                    const m2 = this.state.members.find((m) => m.name === item.person2.name);
+                    if (m1 && m2) this.addLink(m1.id, m2.id, 'partner');
+                    added += 2;
+                }
+            });
+            return added;
+        }
+
+        addLink(fromId, toId, type) {
+            if (!fromId || !toId || fromId === toId) return;
+            const exists = this.state.links.some(
+                (l) => (l.from === fromId && l.to === toId && l.type === type) ||
+                       (l.from === toId && l.to === fromId && l.type === type)
+            );
+            if (exists) return;
+            this.state.links.push({
+                id: 'tl_' + Date.now() + '_' + Math.random().toString(36).slice(2, 5),
+                from: fromId,
+                to: toId,
+                type
+            });
+            this.saveState();
+            this.renderAll();
+        }
+
+        removeMember(id) {
+            this.state.members = this.state.members.filter((m) => m.id !== id);
+            this.state.links = this.state.links.filter((l) => l.from !== id && l.to !== id);
+            if (this.selectedNodeId === id) this.selectedNodeId = null;
+            this.saveState();
+            this.renderAll();
+        }
+
+        removeLink(id) {
+            this.state.links = this.state.links.filter((l) => l.id !== id);
+            if (this.selectedLinkId === id) this.selectedLinkId = null;
+            this.saveState();
+            this.renderAll();
+        }
+
+        #bindEvents() {
+            this.dom.addLinkBtn.addEventListener('click', () => {
+                this.addLink(this.dom.selectFrom.value, this.dom.selectTo.value, this.dom.selectType.value);
+            });
+        }
+
+        renderAll() {
+            this.#renderControls();
+            this.#renderGraphSVG();
+            this.#renderDeepTreeAnalytics();
+        }
+
+        #renderControls() {
+            SafeDOM.clear(this.dom.membersList);
+            SafeDOM.clear(this.dom.selectFrom);
+            SafeDOM.clear(this.dom.selectTo);
+            SafeDOM.clear(this.dom.linksList);
+
+            this.state.members.forEach((m) => {
+                const icon = m.gender === 'female' ? '👩' : '👨';
+                this.dom.selectFrom.appendChild(new Option(`${icon} ${m.name}`, m.id));
+                this.dom.selectTo.appendChild(new Option(`${icon} ${m.name}`, m.id));
+
+                const card = SafeDOM.el('div', 'tree-member-card');
+                const left = SafeDOM.el('div');
+                left.style.cursor = 'pointer';
+                left.addEventListener('click', () => {
+                    this.selectedNodeId = m.id;
+                    this.selectedLinkId = null;
+                    this.renderAll();
+                });
+
+                const sunF = m.inventory.find((f) => f.planetId === 'sun');
+                const moonF = m.inventory.find((f) => f.planetId === 'moon');
+                const sunSign = sunF ? this.elementsRepo.get(sunF.signId)?.name : '';
+                const moonSign = moonF ? this.elementsRepo.get(moonF.signId)?.name : '';
+
+                left.appendChild(SafeDOM.el('div', 'tree-member-name', `${icon} ${m.name}`));
+                left.appendChild(SafeDOM.el('span', 'tree-badge', `Планет: ${m.inventory.length} ${sunSign ? '• ☉' + sunSign : ''} ${moonSign ? '• ☽' + moonSign : ''}`));
+
+                const delBtn = SafeDOM.el('button', 'remove-btn', '✖');
+                delBtn.addEventListener('click', () => this.removeMember(m.id));
+                card.appendChild(left);
+                card.appendChild(delBtn);
+                this.dom.membersList.appendChild(card);
+            });
+
+            if (this.state.members.length > 1) {
+                this.dom.selectTo.selectedIndex = 1;
+            }
+
+            const typeMeta = {
+                parent:  { label: '🧬 Род (Родитель ➔ Ребёнок)', color: '#10b981' },
+                partner: { label: '💞 Партнёрский союз',         color: '#f472b6' },
+                sibling: { label: '🤝 Родственная ветвь',        color: '#38bdf8' },
+                friend:  { label: '🌟 Дружба / Альянс',          color: '#a855f7' },
+                karma:   { label: '⚡ Кармический узел',         color: '#eab308' }
+            };
+
+            this.state.links.forEach((l) => {
+                const m1 = this.state.members.find((m) => m.id === l.from);
+                const m2 = this.state.members.find((m) => m.id === l.to);
+                if (!m1 || !m2) return;
+                const row = SafeDOM.el('div', 'inventory-item');
+                row.style.cursor = 'pointer';
+                const info = SafeDOM.el('div');
+                info.appendChild(SafeDOM.el('div', '', `${m1.name} ↔ ${m2.name}`));
+                const badge = SafeDOM.el('span', 'tree-badge', typeMeta[l.type]?.label || l.type);
+                badge.style.color = typeMeta[l.type]?.color || '#fff';
+                info.appendChild(badge);
+                info.addEventListener('click', () => {
+                    this.selectedLinkId = l.id;
+                    this.selectedNodeId = null;
+                    this.renderAll();
+                });
+
+                const btn = SafeDOM.el('button', 'remove-btn', '✖');
+                btn.addEventListener('click', () => this.removeLink(l.id));
+                row.appendChild(info);
+                row.appendChild(btn);
+                this.dom.linksList.appendChild(row);
+            });
+        }
+
+        #svgEl(tag, attrs = {}) {
+            const el = document.createElementNS(TreeController.#SVG_NS, tag);
+            for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, String(v));
+            return el;
+        }
+
+        #renderGraphSVG() {
+            const svg = this.dom.svg;
+            SafeDOM.clear(svg);
+
+            const linkColors = {
+                parent: '#10b981', partner: '#f472b6', sibling: '#38bdf8', friend: '#a855f7', karma: '#eab308'
+            };
+
+            // Линии связей
+            this.state.links.forEach((l) => {
+                const m1 = this.state.members.find((m) => m.id === l.from);
+                const m2 = this.state.members.find((m) => m.id === l.to);
+                if (!m1 || !m2) return;
+
+                const isSelected = this.selectedLinkId === l.id;
+                const line = this.#svgEl('line', {
+                    x1: m1.x, y1: m1.y, x2: m2.x, y2: m2.y,
+                    stroke: linkColors[l.type] || '#818cf8',
+                    'stroke-width': isSelected ? 4 : 2.4,
+                    'stroke-dasharray': l.type === 'karma' ? '6,4' : 'none',
+                    cursor: 'pointer'
+                });
+                line.addEventListener('click', () => {
+                    this.selectedLinkId = l.id;
+                    this.selectedNodeId = null;
+                    this.renderAll();
+                });
+                svg.appendChild(line);
+
+                // Подпись совместимости прямо на линии
+                const midX = (m1.x + m2.x) / 2;
+                const midY = (m1.y + m2.y) / 2;
+                const syn = this.model.calculateSynastryScore(m1.inventory, m2.inventory, this.descriptionsRepo);
+                const pill = this.#svgEl('rect', {
+                    x: midX - 24, y: midY - 11, width: 48, height: 22, rx: 6,
+                    fill: '#0e1120', stroke: linkColors[l.type] || '#818cf8', 'stroke-width': 1.2, cursor: 'pointer'
+                });
+                const txt = this.#svgEl('text', {
+                    x: midX, y: midY, fill: '#f8fafc', 'font-size': '10px', 'font-weight': 'bold',
+                    'text-anchor': 'middle', 'dominant-baseline': 'central', cursor: 'pointer'
+                });
+                txt.textContent = syn.score ? `${syn.score}%` : '🔗';
+                const selectLink = () => { this.selectedLinkId = l.id; this.selectedNodeId = null; this.renderAll(); };
+                pill.addEventListener('click', selectLink);
+                txt.addEventListener('click', selectLink);
+                svg.appendChild(pill);
+                svg.appendChild(txt);
+            });
+
+            // Узлы людей (с полным отображением имени)
+            const elColorMap = { fire: '#f97316', earth: '#10b981', air: '#38bdf8', water: '#a855f7' };
+
+            this.state.members.forEach((m) => {
+                const g = this.#svgEl('g', { cursor: 'grab' });
+                const bal = this.model.calculateElementalBalance(m.inventory);
+                const ringColor = elColorMap[bal.dominant] || '#818cf8';
+                const isSelected = this.selectedNodeId === m.id;
+
+                g.appendChild(this.#svgEl('circle', {
+                    cx: m.x, cy: m.y, r: isSelected ? 34 : 29,
+                    fill: '#13172b', stroke: ringColor, 'stroke-width': isSelected ? 3.5 : 2.2
+                }));
+
+                const iconTxt = this.#svgEl('text', {
+                    x: m.x, y: m.y - 4, 'font-size': '18px', 'text-anchor': 'middle', 'dominant-baseline': 'central'
+                });
+                iconTxt.textContent = m.gender === 'female' ? '👩' : '👨';
+                g.appendChild(iconTxt);
+
+                const sunF = m.inventory.find((f) => f.planetId === 'sun');
+                const sunSym = sunF ? (this.elementsRepo.get(sunF.signId)?.name || '') : '';
+                const subTxt = this.#svgEl('text', {
+                    x: m.x, y: m.y + 14, fill: '#93c5fd', 'font-size': '10px', 'font-weight': 'bold', 'text-anchor': 'middle'
+                });
+                subTxt.textContent = sunSym ? `☉${sunSym}` : `${m.inventory.length}`;
+                g.appendChild(subTxt);
+
+                // Полное имя под узлом
+                const labelBg = this.#svgEl('rect', {
+                    x: m.x - Math.max(48, m.name.length * 4.2),
+                    y: m.y + 34,
+                    width: Math.max(96, m.name.length * 8.4),
+                    height: 22, rx: 6,
+                    fill: 'rgba(10, 12, 24, 0.9)', stroke: 'rgba(255,255,255,0.15)', 'stroke-width': 1
+                });
+                g.appendChild(labelBg);
+
+                const nameTxt = this.#svgEl('text', {
+                    x: m.x, y: m.y + 45, fill: '#f8fafc', 'font-size': '11px', 'font-weight': '600',
+                    'text-anchor': 'middle', 'dominant-baseline': 'central'
+                });
+                nameTxt.textContent = m.name;
+                g.appendChild(nameTxt);
+
+                // Перетаскивание узлов внутри SVG
+                g.addEventListener('pointerdown', (e) => {
+                    e.stopPropagation();
+                    const pt = svg.createSVGPoint();
+                    const startX = e.clientX, startY = e.clientY;
+                    const move = (ev) => {
+                        pt.x = ev.clientX; pt.y = ev.clientY;
+                        const cursorPt = pt.matrixTransform(svg.getScreenCTM().inverse());
+                        m.x = Math.round(Math.max(55, Math.min(845, cursorPt.x)));
+                        m.y = Math.round(Math.max(45, Math.min(595, cursorPt.y)));
+                        this.#renderGraphSVG();
+                    };
+                    const up = (ev) => {
+                        document.removeEventListener('pointermove', move);
+                        document.removeEventListener('pointerup', up);
+                        if (Math.hypot(ev.clientX - startX, ev.clientY - startY) < 5) {
+                            this.selectedNodeId = m.id;
+                            this.selectedLinkId = null;
+                            this.renderAll();
+                        } else {
+                            this.saveState();
+                        }
+                    };
+                    document.addEventListener('pointermove', move);
+                    document.addEventListener('pointerup', up);
+                });
+
+                svg.appendChild(g);
+            });
+        }
+
+        /**
+         * ГЛУБОКАЯ АНАЛИТИКА ДРЕВА: Коллективный баланс стихий, передача по роду и разбор связей
+         */
+        #renderDeepTreeAnalytics() {
+            const box = this.dom.analytics;
+            SafeDOM.clear(box);
+
+            if (this.state.members.length === 0) {
+                box.appendChild(
+                    this.interpretationRenderer.createCustomBlock(
+                        'Древо пока пусто',
+                        'Нажмите «📥 Импорт с Доски» или «➕ По дате» слева, чтобы добавить людей и увидеть коллективный баланс стихий, родовые сценарии и синергию линий.'
+                    )
+                );
+                return;
+            }
+
+            // 1. Суммарный баланс стихий всего Древа
+            const allFormulas = this.state.members.flatMap((m) => m.inventory || []);
+            box.appendChild(SafeDOM.el('div', 'section-header', `Суммарный баланс стихий Древа (${this.state.members.length} чел.)`));
+            this.interpretationRenderer.renderElementalBalance(allFormulas, box);
+
+            // 2. Выявление родовых и партнёрских закономерностей (наследование знаков/стихий)
+            if (this.state.links.length > 0) {
+                box.appendChild(SafeDOM.el('div', 'section-header', '🧬 Передача аспектов и синергия по линиям'));
+                this.state.links.forEach((l) => {
+                    const m1 = this.state.members.find((m) => m.id === l.from);
+                    const m2 = this.state.members.find((m) => m.id === l.to);
+                    if (!m1 || !m2) return;
+
+                    const sharedSigns = [];
+                    const exactAspects = [];
+                    m1.inventory.forEach((f1) => {
+                        m2.inventory.forEach((f2) => {
+                            if (f1.signId && f1.signId === f2.signId) {
+                                const s = this.elementsRepo.get(f1.signId);
+                                const p1 = this.elementsRepo.get(f1.planetId);
+                                const p2 = this.elementsRepo.get(f2.planetId);
+                                sharedSigns.push(`${s.label} (${p1.label} ↔ ${p2.label})`);
+                            } else if (f1.signId && f2.signId && ['sun', 'moon', 'venus', 'mars', 'node_n'].includes(f1.planetId) && ['sun', 'moon', 'venus', 'mars', 'node_n'].includes(f2.planetId)) {
+                                const dist = this.model.getSignDistance(f1.signId, f2.signId);
+                                const asp = this.model.getAspectMeta(dist);
+                                if (asp && (asp.code === 'tr' || asp.code === 'opp' || asp.code === 'sq' || asp.code === 'quinc')) {
+                                    exactAspects.push(`${asp.symbol} ${this.elementsRepo.get(f1.planetId).label}–${this.elementsRepo.get(f2.planetId).label}`);
+                                }
+                            }
+                        });
+                    });
+
+                    const syn = this.model.calculateSynastryScore(m1.inventory, m2.inventory, this.descriptionsRepo);
+                    const lineNames = {
+                        parent: 'Родовая передача',
+                        partner: 'Партнёрская синергия',
+                        sibling: 'Родственный резонанс',
+                        friend: 'Дружеский альянс',
+                        karma: 'Кармическая ось'
+                    };
+
+                    let report = `Индекс резонанса: ${syn.score}% (${syn.label}).\n`;
+                    if (sharedSigns.length > 0) {
+                        report += `• Прямое наследование / резонанс знаков: ${sharedSigns.slice(0, 4).join(', ')}.\n`;
+                    }
+                    if (exactAspects.length > 0) {
+                        report += `• Ключевые аспекты линии: ${exactAspects.slice(0, 4).join(', ')}.`;
+                    }
+                    if (sharedSigns.length === 0 && exactAspects.length === 0) {
+                        report += `• Взаимодополняющий обмен опытом разных стихий.`;
+                    }
+
+                    box.appendChild(
+                        this.interpretationRenderer.createCustomBlock(
+                            `${lineNames[l.type] || 'Связь'}: ${m1.name} ↔ ${m2.name}`,
+                            report,
+                            l.type === 'partner' ? 'synthesis' : 'harmonic'
+                        )
+                    );
+                });
+            }
+
+            // 3. Детальный фокус выбранного узла или связи
+            if (this.selectedNodeId) {
+                const m = this.state.members.find((x) => x.id === this.selectedNodeId);
+                if (m) {
+                    box.appendChild(SafeDOM.el('div', 'section-header', `Фокус профиля: ${m.name}`));
+                    this.interpretationRenderer.renderElementalBalance(m.inventory, box);
+                    m.inventory.slice(0, 6).forEach((f) => {
+                        this.interpretationRenderer.appendFormulaInterpretation(f, box);
+                    });
+                }
+            }
+        }
+    }
+
+    /**
+     * =========================================================================
+     * РАЗДЕЛ 3: КОНТРОЛЛЕР МАСШТАБНОГО КОСМО-ХАБА (ТАРО, МАТРИЦА, ТРАНЗИТЫ, ЛУНА)
+     * =========================================================================
+     */
+    class EsotericHubController {
+        static MAJOR_ARCANA = [
+            { num: 0,  name: '0. Шут (Дурак)',         astro: 'Уран ♅ / Воздух',     meaning: 'Чистый потенциал, квантовый прыжок в новое, свобода от рамок и доверие Вселенной.', advice: 'Отпустите страх показаться нелогичным — смело открывайте новую страницу.' },
+            { num: 1,  name: 'I. Маг',                 astro: 'Меркурий ☿',          meaning: 'Мастерство воли, сила слова, управление стихиями и запуск авторского проекта.', advice: 'У вас уже есть все инструменты. Действуйте первым и заявляйте о себе.' },
+            { num: 2,  name: 'II. Верховная Жрица',    astro: 'Луна ☽',              meaning: 'Тайное знание, безошибочная интуиция, считывание скрытых мотивов и глубина подсознания.', advice: 'Не спешите раскрывать карты — прислушайтесь к внутреннему голосу и знакам.' },
+            { num: 3,  name: 'III. Императрица',       astro: 'Венера ♀',            meaning: 'Созидание, изобилие, расцвет творчества, красота, чувственность и материальный рост.', advice: 'Творите из состояния удовольствия и окружите себя эстетикой.' },
+            { num: 4,  name: 'IV. Император',          astro: 'Овен ♈ / Марс ♂',     meaning: 'Власть, структура, стратегический порядок, защита границ и несокрушимый авторитет.', advice: 'Опирайтесь на дисциплину, систему и твёрдые решения.' },
+            { num: 5,  name: 'V. Иерофант (Жрец)',     astro: 'Телец ♉ / Юпитер ♃',  meaning: 'Традиция, наставничество, передача глубоких знаний, духовный союз и моральный ориентир.', advice: 'Обратитесь к фундаментальным знаниям или выступите в роли эксперта.' },
+            { num: 6,  name: 'VI. Влюблённые',         astro: 'Близнецы ♊ / Венера', meaning: 'Выбор сердца, магнетический союз душ, гармония противоположностей и искренний диалог.', advice: 'Выбирайте то, от чего поёт сердце, не соглашаясь на полумеры.' },
+            { num: 7,  name: 'VII. Колесница',         astro: 'Рак ♋ / Марс',        meaning: 'Стремительный прорыв, триумф воли, управление противоположными импульсами и победа.', advice: 'Держите фокус на цели и набирайте максимальную скорость.' },
+            { num: 8,  name: 'VIII. Сила',             astro: 'Лев ♌ / Солнце ☉',    meaning: 'Мягкая, но неодолимая мощь духа, укрощение страстей любовью и бесстрашная харизма.', advice: 'Побеждайте не давлением, а внутренним благородством и страстью.' },
+            { num: 9,  name: 'IX. Отшельник',          astro: 'Дева ♍ / Сатурн',     meaning: 'Глубинная мудрость, поиск собственной истины, автономность и кристальная ясность ума.', advice: 'Возьмите паузу от внешнего шума, чтобы услышать свой собственный ответ.' },
+            { num: 10, name: 'X. Колесо Фортуны',      astro: 'Юпитер ♃',            meaning: 'Поворот судьбы, счастливый шанс, синхронистичность и выход на новый виток спирали.', advice: 'Ловите попутный ветер перемен и доверьтесь ритмам времени.' },
+            { num: 11, name: 'XI. Справедливость',     astro: 'Весы ♎ / Сатурн ♄',   meaning: 'Закон кармического равновесия, честный расчёт, ясность договоров и объективная истина.', advice: 'Взвесьте все аргументы хладнокровно — честность принесёт победу.' },
+            { num: 12, name: 'XII. Повешенный',        astro: 'Нептун ♆ / Вода',     meaning: 'Смена точки сборки, парадоксальный взгляд на мир, инсайт через паузу и трансформация.', advice: 'Посмотрите на задачу под совершенно нестандартным углом.' },
+            { num: 13, name: 'XIII. Смерть (Трансформация)', astro: 'Скорпион ♏ / Плутон ♇', meaning: 'Очищение от отжившего, глубокое перерождение и рассвет новой жизни.', advice: 'Без сожалений закройте старую дверь — за ней уже ждёт мощное обновление.' },
+            { num: 14, name: 'XIV. Умеренность',       astro: 'Стрелец ♐ / Хирон ⚷', meaning: 'Алхимический синтез стихий, исцеление, золотая середина и внутренняя гармония.', advice: 'Соединяйте несочетаемое спокойно и бережно — время работает на вас.' },
+            { num: 15, name: 'XV. Дьявол',             astro: 'Козерог ♑ / Лилит ⚸', meaning: 'Огромный ресурс страсти, амбиций, магнетизма, больших денег и проверка на свободу воли.', advice: 'Осознайте свои теневые желания и превратите их в чистое топливо для успеха.' },
+            { num: 16, name: 'XVI. Башня',             astro: 'Марс ♂ / Уран ♅',     meaning: 'Молниеносное крушение иллюзий и фальшивых стен, освобождение мощной энергии правды.', advice: 'Не держитесь за хрупкие конструкции — расчистите место под монолит.' },
+            { num: 17, name: 'XVII. Звезда',           astro: 'Водолей ♒ / Уран ♅',  meaning: 'Высокое вдохновение, путеводная мечта, чистота замысла, талант и исцеление надеждой.', advice: 'Смело транслируйте своё уникальное творчество миру.' },
+            { num: 18, name: 'XVIII. Луна',            astro: 'Рыбы ♓ / Нептун ♆',   meaning: 'Глубина подсознания, вещие сны, мистика, прохождение сквозь сумерки сомнений к рассвету.', advice: 'Идите сквозь туман, опираясь на интуицию и творческое воображение.' },
+            { num: 19, name: 'XIX. Солнце',            astro: 'Солнце ☉ / Лев ♌',    meaning: 'Триумф, ясность, признание, радость бытия, щедрость и безусловный успех.', advice: 'Позвольте себе сиять в полную силу и праздновать жизнь.' },
+            { num: 20, name: 'XX. Страшный Суд',       astro: 'Плутон ♇ / Огонь',    meaning: 'Пробуждение истинного призвания, родовая поддержка и переход на новый уровень духа.', advice: 'Откликнитесь на зов своего предназначения.' },
+            { num: 21, name: 'XXI. Мир',               astro: 'Сатурн ♄ / Юпитер ♃', meaning: 'Гармоничное завершение цикла, глобальный масштаб, целостность и выход за границы.', advice: 'Мыслите в масштабе всего мира — вы готовы к большой высоте.' }
+        ];
+
+        constructor({ model, elementsRepo, interpretationRenderer }) {
+            this.model = model;
+            this.elementsRepo = elementsRepo;
+            this.interpretationRenderer = interpretationRenderer;
+            this.viewport = document.getElementById('hub-Tool-Viewport');
+            this.#bindHubNavigation();
+            this.renderTarotTool();
+        }
+
+        #bindHubNavigation() {
+            document.querySelectorAll('.hub-card').forEach((card) => {
+                card.addEventListener('click', () => {
+                    document.querySelectorAll('.hub-card').forEach((c) => c.classList.remove('active'));
+                    card.classList.add('active');
+                    const tool = card.dataset.hub;
+                    if (tool === 'tarot') this.renderTarotTool();
+                    else if (tool === 'matrix') this.renderMatrixTool();
+                    else if (tool === 'transits') this.renderTransitsTool();
+                    else if (tool === 'lunar') this.renderLunarTool();
+                });
+            });
+        }
+
+        static reduceToArcana(n) {
+            let val = Math.abs(Number(n) || 0);
+            while (val > 22) {
+                val = String(val).split('').reduce((acc, d) => acc + Number(d), 0);
+            }
+            return val === 0 ? 22 : val;
+        }
+
+        // 1. 3D ТАРО-ОРАКУЛ
+        renderTarotTool() {
+            SafeDOM.clear(this.viewport);
+            const controls = SafeDOM.el('div', 'tabs-bar');
+            const btn1 = SafeDOM.el('button', 'action-btn purple', '🃏 Карта Дня (1 Аркан)');
+            const btn3 = SafeDOM.el('button', 'action-btn', '⏳ Триплет: Прошлое • Настоящее • Будущее');
+            const btnLove = SafeDOM.el('button', 'action-btn', '💞 Расклад: Я • Партнёр • Итог Союза');
+            controls.appendChild(btn1);
+            controls.appendChild(btn3);
+            controls.appendChild(btnLove);
+            this.viewport.appendChild(controls);
+
+            const stage = SafeDOM.el('div', 'tarot-stage');
+            const details = SafeDOM.el('div');
+            this.viewport.appendChild(stage);
+            this.viewport.appendChild(details);
+
+            const drawSpread = (positions) => {
+                SafeDOM.clear(stage);
+                SafeDOM.clear(details);
+                const pool = [...EsotericHubController.MAJOR_ARCANA];
+
+                positions.forEach((posLabel) => {
+                    const randIdx = Math.floor(Math.random() * pool.length);
+                    const arcana = pool.splice(randIdx, 1)[0];
+
+                    const card3d = SafeDOM.el('div', 'tarot-card-3d');
+                    const inner = SafeDOM.el('div', 'tarot-card-inner');
+
+                    const back = SafeDOM.el('div', 'tarot-face tarot-back');
+                    back.appendChild(SafeDOM.el('div', '', '🌌'));
+                    back.firstChild.style.fontSize = '3rem';
+                    back.appendChild(SafeDOM.el('div', 'hub-card-title', posLabel));
+                    back.appendChild(SafeDOM.el('div', 'hub-card-desc', 'Нажмите, чтобы открыть Аркан'));
+
+                    const front = SafeDOM.el('div', 'tarot-face tarot-front');
+                    const topBadge = SafeDOM.el('span', 'tree-badge', `${posLabel} • ${arcana.astro}`);
+                    const title = SafeDOM.el('div', 'hub-card-title', arcana.name);
+                    title.style.fontSize = '1rem';
+                    title.style.color = '#f472b6';
+                    const body = SafeDOM.el('div', 'hub-card-desc', arcana.meaning);
+                    body.style.color = '#e2e8f0';
+                    const adv = SafeDOM.el('div', 'hub-card-desc', `💡 Ключ: ${arcana.advice}`);
+                    adv.style.color = '#93c5fd';
+
+                    front.appendChild(topBadge);
+                    front.appendChild(title);
+                    front.appendChild(body);
+                    front.appendChild(adv);
+
+                    inner.appendChild(back);
+                    inner.appendChild(front);
+                    card3d.appendChild(inner);
+
+                    card3d.addEventListener('click', () => {
+                        if (!card3d.classList.contains('flipped')) {
+                            card3d.classList.add('flipped');
+                            details.appendChild(
+                                this.interpretationRenderer.createCustomBlock(
+                                    `${posLabel}: ${arcana.name} (${arcana.astro})`,
+                                    `${arcana.meaning}\n✨ Совет Оракула: ${arcana.advice}`,
+                                    'synthesis'
+                                )
+                            );
+                        }
+                    });
+                    stage.appendChild(card3d);
+                });
+            };
+
+            btn1.addEventListener('click', () => drawSpread(['Энергия и вектор дня']));
+            btn3.addEventListener('click', () => drawSpread(['1. Корни (Прошлое)', '2. Фокус (Настоящее)', '3. Вектор (Будущее)']));
+            btnLove.addEventListener('click', () => drawSpread(['1. Ваша позиция', '2. Энергия партнёра', '3. Алхимия союза']));
+            drawSpread(['1. Корни (Прошлое)', '2. Фокус (Настоящее)', '3. Вектор (Будущее)']);
+        }
+
+        // 2. МАТРИЦА СУДЬБЫ И КОД ДУШИ (22 АРКАНА)
+        renderMatrixTool() {
+            SafeDOM.clear(this.viewport);
+            const bar = SafeDOM.el('div', 'tabs-bar');
+            const dateInp = SafeDOM.el('input');
+            dateInp.type = 'date';
+            dateInp.value = '2003-04-18';
+            dateInp.style.maxWidth = '200px';
+            dateInp.style.padding = '8px 12px';
+            dateInp.style.borderRadius = '8px';
+            dateInp.style.background = '#121526';
+            dateInp.style.color = '#fff';
+            dateInp.style.border = '1px solid var(--accent)';
+
+            const calcBtn = SafeDOM.el('button', 'action-btn purple', '🔢 Рассчитать Матрицу Судьбы');
+            bar.appendChild(dateInp);
+            bar.appendChild(calcBtn);
+            this.viewport.appendChild(bar);
+
+            const resBox = SafeDOM.el('div');
+            this.viewport.appendChild(resBox);
+
+            const runMatrix = () => {
+                SafeDOM.clear(resBox);
+                const [y, m, d] = (dateInp.value || '2003-04-18').split('-').map(Number);
+                const a1 = EsotericHubController.reduceToArcana(d); // Личность / Визитка
+                const a2 = EsotericHubController.reduceToArcana(m); // Высшая связь / Талант
+                const a3 = EsotericHubController.reduceToArcana(String(y).split('').reduce((s, x) => s + Number(x), 0)); // Материя / Карма года
+                const a4 = EsotericHubController.reduceToArcana(a1 + a2 + a3); // Кармический узел
+                const center = EsotericHubController.reduceToArcana(a1 + a2 + a3 + a4); // Зона комфорта души
+                const money = EsotericHubController.reduceToArcana(a2 + a3); // Финансовый поток
+                const love = EsotericHubController.reduceToArcana(a3 + a4); // Канал отношений
+
+                const nodes = [
+                    { title: 'Портрет Личности (День)', num: a1 },
+                    { title: 'Поток Вдохновения (Месяц)', num: a2 },
+                    { title: 'Материальная Реализация (Год)', num: a3 },
+                    { title: 'Ядро Силы (Центр Матрицы)', num: center },
+                    { title: 'Канал Финансов и Профессии', num: money },
+                    { title: 'Канал Любви и Партнёрства', num: love }
+                ];
+
+                const grid = SafeDOM.el('div', 'matrix-grid');
+                nodes.forEach((n) => {
+                    const arc = EsotericHubController.MAJOR_ARCANA[n.num % 22];
+                    const card = SafeDOM.el('div', 'matrix-node');
+                    card.appendChild(SafeDOM.el('div', 'matrix-num', `${n.num} Аркан`));
+                    card.appendChild(SafeDOM.el('div', 'hub-card-title', n.title));
+                    card.appendChild(SafeDOM.el('div', 'hub-card-desc', `${arc.name} (${arc.astro})`));
+                    grid.appendChild(card);
+                });
+                resBox.appendChild(grid);
+
+                nodes.forEach((n) => {
+                    const arc = EsotericHubController.MAJOR_ARCANA[n.num % 22];
+                    resBox.appendChild(
+                        this.interpretationRenderer.createCustomBlock(
+                            `${n.title} — ${n.num} Энергия (${arc.name})`,
+                            `${arc.meaning}\n💡 Ключ реализации: ${arc.advice}`,
+                            'synthesis'
+                        )
+                    );
+                });
+            };
+
+            calcBtn.addEventListener('click', runMatrix);
+            dateInp.addEventListener('change', runMatrix);
+            runMatrix();
+        }
+
+        // 3. ЖИВЫЕ ТРАНЗИТЫ НЕБА (ПРЯМО СЕЙЧАС)
+        renderTransitsTool() {
+            SafeDOM.clear(this.viewport);
+            const now = new Date();
+            const dateStr = now.toISOString().slice(0, 10);
+            const timeStr = now.toTimeString().slice(0, 5);
+
+            const formulas = this.model.calculateNatalChartFromBirthData({
+                dateStr, timeStr, tzOffset: 3, lat: 55.7558, lon: 37.6173, scope: 'full'
+            });
+
+            this.viewport.appendChild(
+                this.interpretationRenderer.createCustomBlock(
+                    `🌌 Астрономическая сводка неба: ${dateStr} (${timeStr} МСК)`,
+                    'Ниже представлены актуальные эклиптические координаты всех 15 небесных точек в реальном времени и их влияние на общий энергетический фон.',
+                    'synthesis'
+                )
+            );
+
+            const wheelWrap = SafeDOM.el('div', 'wheel-container');
+            wheelWrap.appendChild(this.interpretationRenderer.wheelSvg.renderSingleWheel(formulas));
+            this.viewport.appendChild(wheelWrap);
+
+            this.interpretationRenderer.renderElementalBalance(formulas, this.viewport);
+            formulas.forEach((f) => this.interpretationRenderer.appendFormulaInterpretation(f, this.viewport));
+        }
+
+        // 4. ЛУННЫЙ КАЛЕНДАРЬ И БЬЮТИ/ЭНЕРГО-ОРАКУЛ
+        renderLunarTool() {
+            SafeDOM.clear(this.viewport);
+            const bar = SafeDOM.el('div', 'tabs-bar');
+            const dateInp = SafeDOM.el('input');
+            dateInp.type = 'date';
+            dateInp.value = new Date().toISOString().slice(0, 10);
+            dateInp.style.maxWidth = '200px';
+            dateInp.style.padding = '8px 12px';
+            dateInp.style.borderRadius = '8px';
+            dateInp.style.background = '#121526';
+            dateInp.style.color = '#fff';
+            dateInp.style.border = '1px solid var(--accent)';
+
+            const btn = SafeDOM.el('button', 'action-btn purple', '🌙 Рассчитать лунный ритм');
+            bar.appendChild(dateInp);
+            bar.appendChild(btn);
+            this.viewport.appendChild(bar);
+
+            const out = SafeDOM.el('div');
+            this.viewport.appendChild(out);
+
+            const calcLunar = () => {
+                SafeDOM.clear(out);
+                const dStr = dateInp.value || new Date().toISOString().slice(0, 10);
+                const chart = this.model.calculateNatalChartFromBirthData({
+                    dateStr: dStr, timeStr: '12:00', tzOffset: 3, timeUnknown: true
+                });
+                const sunF = chart.find((f) => f.planetId === 'sun');
+                const moonF = chart.find((f) => f.planetId === 'moon');
+                const moonSign = this.elementsRepo.get(moonF.signId);
+                const sunSign = this.elementsRepo.get(sunF.signId);
+
+                const [y, m, d] = dStr.split('-').map(Number);
+                const jd = AstroModelModule.EphemerisEngine.toJulianDay(y, m, d, 12);
+                const synodicAge = (((jd - 2451550.1) % 29.530588853) + 29.530588853) % 29.530588853;
+                const lunarDay = Math.floor(synodicAge) + 1;
+                const isWaxing = synodicAge < 14.765;
+
+                const phaseName = synodicAge < 1.8 ? '🌑 Новолуние (Закладка намерений)'
+                    : (synodicAge < 13.8 ? '🌒 Растущая Луна (Набор энергии и рост)'
+                    : (synodicAge < 15.8 ? '🌕 Полнолуние (Пик энергии и кульминация)'
+                    : '🌘 Убывающая Луна (Очищение и завершение дел)'));
+
+                const hairGoodSigns = ['taurus', 'leo', 'virgo', 'libra', 'capricorn'];
+                const hairVerdict = hairGoodSigns.includes(moonSign.id)
+                    ? `✅ Благоприятный день для стрижки и смены имиджа (Луна в знаке ${moonSign.label}): волосы сохранят форму, густоту и блеск. ${isWaxing ? 'На растущей Луне стрижка ускорит рост волос.' : 'На убывающей Луне стрижка укрепит корни и дольше сохранит контур.'}`
+                    : `⚠️ Нейтральный или деликатный день для радикальной стрижки (Луна в знаке ${moonSign.label}): лучше отдать предпочтение уходовым процедурам, питанию и лёгкому стайлингу.`;
+
+                out.appendChild(
+                    this.interpretationRenderer.createCustomBlock(
+                        `${phaseName} • ${lunarDay}-й Лунный День`,
+                        `Луна проходит знак ${moonSign.label} (${moonSign.name}), Солнце в знаке ${sunSign.label} (${sunSign.name}).`,
+                        'synthesis'
+                    )
+                );
+                out.appendChild(this.interpretationRenderer.createCustomBlock('💇 Оракул стрижки, стиля и ухода', hairVerdict, hairGoodSigns.includes(moonSign.id) ? 'harmonic' : 'karmic'));
+                this.interpretationRenderer.appendFormulaInterpretation(moonF, out);
+            };
+
+            btn.addEventListener('click', calcLunar);
+            dateInp.addEventListener('change', calcLunar);
+            calcLunar();
+        }
+    }
+
+    /**
+     * ГЛАВНОЕ ПРИЛОЖЕНИЕ (Координатор всех 3 вкладок)
+     */
     class App {
         #autosaveTimer = null;
         #editingPersonUid = null;
+        #modalTarget = 'board'; // 'board' | 'tree'
 
         constructor() {
             this.elementsRepo = new ElementsRepository();
@@ -1688,7 +2688,21 @@
                 interpretationRenderer: this.interpretationRenderer,
                 model: this.model,
                 dom: this.dom,
-                onOpenRecalcModal: (uid, personItem) => this.#openPersonModal(uid, personItem)
+                onOpenRecalcModal: (uid, personItem) => this.#openPersonModal(uid, personItem, 'board')
+            });
+
+            this.treeController = new TreeController({
+                model: this.model,
+                elementsRepo: this.elementsRepo,
+                descriptionsRepo: this.descriptionsRepo,
+                interpretationRenderer: this.interpretationRenderer,
+                onFlashSave: () => this.#flashSaveIndicator()
+            });
+
+            this.hubController = new EsotericHubController({
+                model: this.model,
+                elementsRepo: this.elementsRepo,
+                interpretationRenderer: this.interpretationRenderer
             });
         }
 
@@ -1740,11 +2754,11 @@
                 mode,
                 scope: mode === 'classic' ? 'classic' : 'full',
                 dateStr: this.dom.birthDateInput.value || '2003-04-18',
-                timeStr: this.dom.birthTimeInput.value || '12:00',
+                timeStr: this.dom.birthTimeInput.value || '23:00',
                 timeUnknown: this.dom.birthTimeUnknown.checked,
-                lat: parseFloat(latStr) || 55.7558,
-                lon: parseFloat(lonStr) || 37.6173,
-                tzOffset: parseFloat(this.dom.birthTzInput.value) || 0
+                lat: parseFloat(latStr) || 41.2995,
+                lon: parseFloat(lonStr) || 69.2401,
+                tzOffset: parseFloat(this.dom.birthTzInput.value) || 5
             };
         }
 
@@ -1769,18 +2783,19 @@
             });
         }
 
-        #openPersonModal(editUid = null, existingItem = null) {
+        #openPersonModal(editUid = null, existingItem = null, target = 'board') {
             this.#editingPersonUid = editUid;
+            this.#modalTarget = target;
             this.dom.personModalTitle.textContent = editUid
                 ? `📅 Пересчёт карты: ${existingItem.name || 'Человек'}`
-                : '🧑 Натальная карта по дате рождения';
+                : (target === 'tree' ? '🌳 Добавить человека в Древо' : '🧑 Натальная карта по дате рождения');
 
             this.dom.personNameInput.value = existingItem ? (existingItem.name || '') : '';
             if (existingItem && existingItem.gender) {
                 const radio = document.querySelector(`input[name="person-gender"][value="${existingItem.gender}"]`);
                 if (radio) radio.checked = true;
             }
-            if (editUid && this.dom.personCalcMode.value === 'empty') {
+            if ((editUid || target === 'tree') && this.dom.personCalcMode.value === 'empty') {
                 this.dom.personCalcMode.value = 'full';
             }
 
@@ -1848,10 +2863,10 @@
                 },
                 {
                     title: '💞 Готовая Синастрия: Овен ↔ Козерог',
-                    sub: 'Двойное колесо, квиконсы, ось Овен-Козерог и индекс совместимости',
+                    sub: 'Раздельный разбор двух партнёров, двойное колесо и индекс совместимости',
                     action: () => {
                         const p1 = {
-                            type: 'person', name: 'Солнечный Воин', gender: 'male',
+                            type: 'person', name: 'Солнечный Воин (Овен)', gender: 'male',
                             inventory: [
                                 this.model.createCompleteFormula('sun', 'aries', 'h1'),
                                 this.model.createCompleteFormula('moon', 'scorpio', 'h8'),
@@ -1860,7 +2875,7 @@
                             ]
                         };
                         const p2 = {
-                            type: 'person', name: 'Моя Луна', gender: 'female',
+                            type: 'person', name: 'Моя Луна (Козерог)', gender: 'female',
                             inventory: [
                                 this.model.createCompleteFormula('sun', 'capricorn', 'h7'),
                                 this.model.createCompleteFormula('moon', 'taurus', 'h4'),
@@ -1905,11 +2920,25 @@
         }
 
         #bindGlobalUI() {
-            document.getElementById('menu-toggle').addEventListener('click', () => {
-                this.dom.sidebar.classList.add('open');
-                this.dom.overlay.classList.add('active');
+            // Переключение между 3 глобальными вкладками
+            document.querySelectorAll('.nav-tab-btn').forEach((btn) => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.nav-tab-btn').forEach((b) => b.classList.remove('active'));
+                    document.querySelectorAll('.view-section').forEach((s) => s.classList.remove('active'));
+                    btn.classList.add('active');
+                    const targetView = document.getElementById(btn.dataset.view);
+                    if (targetView) targetView.classList.add('active');
+                    if (btn.dataset.view === 'view-tree') {
+                        this.treeController.renderAll();
+                    }
+                });
             });
-            document.getElementById('close-menu').addEventListener('click', () => this.#closeMenu());
+
+            document.getElementById('menu-toggle').addEventListener('click', () => {
+                this.dom.sidebar.classList.toggle('open');
+                this.dom.overlay.classList.toggle('active');
+            });
+
             this.dom.descClose.addEventListener('click', () => {
                 this.dom.descPanel.style.display = 'none';
             });
@@ -1923,15 +2952,30 @@
             });
 
             document.getElementById('add-person-btn').addEventListener('click', () => {
-                this.#openPersonModal(null, null);
+                this.#openPersonModal(null, null, 'board');
             });
+
+            document.getElementById('tree-add-person-btn').addEventListener('click', () => {
+                this.#openPersonModal(null, null, 'tree');
+            });
+
+            const syncBoardToTree = () => {
+                const count = this.treeController.importFromBoard(this.boardController.getActiveElements());
+                this.#flashSaveIndicator();
+                if (count > 0) {
+                    document.querySelector('.nav-tab-btn[data-view="view-tree"]').click();
+                } else {
+                    alert('На доске пока нет людей для отправки в Древо. Сначала создайте человека.');
+                }
+            };
+            document.getElementById('sync-to-tree-btn').addEventListener('click', syncBoardToTree);
+            document.getElementById('tree-import-board-btn').addEventListener('click', syncBoardToTree);
 
             document.getElementById('open-forge-btn').addEventListener('click', () => {
                 this.dom.forgeModal.classList.add('active');
                 this.dom.overlay.classList.add('active');
             });
 
-            // Слушатели изменений даты/времени/города для живого превью
             this.dom.personCalcMode.addEventListener('change', () => this.#updateBirthLivePreview());
             this.dom.birthDateInput.addEventListener('input', () => this.#updateBirthLivePreview());
             this.dom.birthTimeInput.addEventListener('input', () => this.#updateBirthLivePreview());
@@ -1939,9 +2983,7 @@
             this.dom.birthTzInput.addEventListener('input', () => this.#updateBirthLivePreview());
             this.dom.birthCitySelect.addEventListener('change', () => {
                 const parts = this.dom.birthCitySelect.value.split(',');
-                if (parts[2] !== undefined) {
-                    this.dom.birthTzInput.value = parts[2];
-                }
+                if (parts[2] !== undefined) this.dom.birthTzInput.value = parts[2];
                 this.#updateBirthLivePreview();
             });
 
@@ -1958,13 +3000,13 @@
                     ? []
                     : this.model.calculateNatalChartFromBirthData(cfg);
 
-                if (this.#editingPersonUid) {
+                if (this.#modalTarget === 'tree') {
+                    this.treeController.addOrUpdateMember(name, gender, inventory);
+                } else if (this.#editingPersonUid) {
                     this.boardController.updateExistingPerson(this.#editingPersonUid, name, gender, inventory);
                 } else {
                     const newEl = this.boardController.spawnPerson(name, gender, inventory);
-                    if (inventory.length > 0) {
-                        this.uiController.showDescription(newEl.dataset.uid);
-                    }
+                    if (inventory.length > 0) this.uiController.showDescription(newEl.dataset.uid);
                 }
                 this.#closeModals();
                 if (window.innerWidth <= 768) this.#closeMenu();
@@ -2040,7 +3082,7 @@
             const resize = () => {
                 canvas.width = window.innerWidth;
                 canvas.height = window.innerHeight;
-                stars = Array.from({ length: 95 }, () => ({
+                stars = Array.from({ length: 90 }, () => ({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
                     r: Math.random() * 1.4 + 0.3,
@@ -2074,6 +3116,7 @@
             this.#bindGlobalUI();
             this.#initStarfield();
             this.#restorePreviousSession();
+            this.treeController.renderAll();
         }
     }
 
