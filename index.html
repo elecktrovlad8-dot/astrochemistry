@@ -45,23 +45,45 @@
         .modal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
             background: var(--panel-bg); border: 1px solid var(--accent); border-radius: 14px;
-            padding: 22px; z-index: 2500; width: 92%; max-width: 420px;
+            padding: 20px; z-index: 2500; width: 94%; max-width: 460px;
             box-shadow: 0 15px 45px rgba(0,0,0,0.88), 0 0 25px rgba(129, 140, 248, 0.2);
-            backdrop-filter: blur(16px); max-height: 88vh; overflow-y: auto;
+            backdrop-filter: blur(16px); max-height: 90vh; overflow-y: auto;
         }
         .modal.active { display: block; }
-        .modal input[type="text"], .modal select {
-            width: 100%; padding: 10px 12px; background: rgba(0,0,0,0.45);
+        .modal input[type="text"],
+        .modal input[type="date"],
+        .modal input[type="time"],
+        .modal input[type="number"],
+        .modal select {
+            width: 100%; padding: 9px 11px; background: rgba(0,0,0,0.45);
             border: 1px solid var(--border-color); color: var(--text-main);
-            border-radius: 8px; font-family: inherit; font-size: 0.9rem; margin-bottom: 12px;
+            border-radius: 8px; font-family: inherit; font-size: 0.86rem; margin-bottom: 10px;
+            color-scheme: dark;
         }
         .modal select option { background: #121526; color: #fff; }
-        .modal input[type="text"]:focus, .modal select:focus { outline: none; border-color: var(--accent); }
-        .radio-group { display: flex; gap: 10px; margin-bottom: 16px; }
+        .modal input:focus, .modal select:focus { outline: none; border-color: var(--accent); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .form-label { font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px; display: block; font-weight: 600; }
+
+        .radio-group { display: flex; gap: 8px; margin-bottom: 12px; }
         .radio-label {
             flex: 1; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            gap: 6px; font-size: 0.88rem; padding: 8px; border-radius: 8px;
+            gap: 6px; font-size: 0.84rem; padding: 8px; border-radius: 8px;
             background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .birth-preview-box {
+            background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(129, 140, 248, 0.25);
+            border-radius: 9px; padding: 9px 11px; margin: 8px 0 14px 0;
+            max-height: 135px; overflow-y: auto;
+        }
+        .birth-preview-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px;
+        }
+        .preview-chip {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px; padding: 4px 6px; font-size: 0.73rem; text-align: center;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
         .preset-card {
@@ -171,7 +193,7 @@
         #desc-text { color: var(--text-main); font-size: 0.9rem; line-height: 1.48; margin: 0; overflow-y: auto; padding-right: 6px; }
 
         .tabs-bar {
-            display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap;
+            display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; align-items: center;
         }
         .tab-btn {
             background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
@@ -297,6 +319,7 @@
             .instruction { display: none; }
             #description-panel { bottom: 88px; width: 95%; max-height: 62vh; }
             .element-bars { grid-template-columns: repeat(2, 1fr); }
+            .birth-preview-grid { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
@@ -305,17 +328,87 @@
     <canvas id="starfield"></canvas>
     <div id="overlay"></div>
 
-    <!-- Модальное окно создания человека -->
+    <!-- Модальное окно создания человека с авто-расчётом по дате рождения -->
     <div id="person-modal" class="modal">
-        <h3 style="margin-top:0; color:var(--accent);">Новый человек</h3>
-        <input type="text" id="person-name" placeholder="Имя (например, Владислав)" autocomplete="off">
-        <div class="radio-group">
-            <label class="radio-label"><input type="radio" name="person-gender" value="male" checked> 👨 Муж</label>
-            <label class="radio-label"><input type="radio" name="person-gender" value="female"> 👩 Жен</label>
+        <h3 id="person-modal-title" style="margin-top:0; margin-bottom:12px; color:var(--accent);">
+            🧑 Натальная карта по дате рождения
+        </h3>
+
+        <div class="form-row">
+            <div>
+                <label class="form-label">Имя</label>
+                <input type="text" id="person-name" placeholder="Например, Владислав" autocomplete="off">
+            </div>
+            <div>
+                <label class="form-label">Пол</label>
+                <div class="radio-group" style="margin-bottom:10px;">
+                    <label class="radio-label"><input type="radio" name="person-gender" value="male" checked> 👨 Муж</label>
+                    <label class="radio-label"><input type="radio" name="person-gender" value="female"> 👩 Жен</label>
+                </div>
+            </div>
         </div>
+
+        <label class="form-label">Режим создания карты</label>
+        <select id="person-calc-mode">
+            <option value="full">✨ Авто-расчёт по дате: Полная карта (15 точек + Узлы, Лилит, Хирон)</option>
+            <option value="classic">🪐 Авто-расчёт по дате: Классика (10 планет + Асцендент)</option>
+            <option value="empty">🖐️ Пустая карта (собирать вручную на доске)</option>
+        </select>
+
+        <div id="birth-fields-container">
+            <div class="form-row">
+                <div>
+                    <label class="form-label">Дата рождения</label>
+                    <input type="date" id="birth-date" value="2003-04-18">
+                </div>
+                <div>
+                    <label class="form-label">Время рождения</label>
+                    <input type="time" id="birth-time" value="12:00">
+                </div>
+            </div>
+
+            <label style="display:flex; align-items:center; gap:7px; font-size:0.78rem; color:var(--text-muted); margin-bottom:10px; cursor:pointer;">
+                <input type="checkbox" id="birth-time-unknown">
+                Время неизвестно (строить Космограмму и дома от Солнца)
+            </label>
+
+            <div class="form-row">
+                <div>
+                    <label class="form-label">Город рождения (координаты)</label>
+                    <select id="birth-city">
+                        <option value="55.7558,37.6173,3" selected>Москва (55.75°N, 37.61°E)</option>
+                        <option value="59.9343,30.3351,3">Санкт-Петербург (59.93°N, 30.33°E)</option>
+                        <option value="56.8389,60.6057,5">Екатеринбург (56.83°N, 60.60°E)</option>
+                        <option value="55.0084,82.9357,7">Новосибирск (55.00°N, 82.93°E)</option>
+                        <option value="55.7887,49.1221,3">Казань (55.78°N, 49.12°E)</option>
+                        <option value="45.0355,38.9753,3">Краснодар (45.03°N, 38.97°E)</option>
+                        <option value="43.1155,131.8855,10">Владивосток (43.11°N, 131.88°E)</option>
+                        <option value="53.9006,27.5590,3">Минск (53.90°N, 27.55°E)</option>
+                        <option value="43.2220,76.8512,5">Алматы (43.22°N, 76.85°E)</option>
+                        <option value="50.4501,30.5234,2">Киев (50.45°N, 30.52°E)</option>
+                        <option value="51.5074,-0.1278,0">Лондон (51.50°N, 0.12°W)</option>
+                        <option value="40.7128,-74.0060,-5">Нью-Йорк (40.71°N, 74.00°W)</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="form-label">Часовой пояс (UTC)</label>
+                    <input type="number" id="birth-tz" value="3" min="-12" max="14" step="1">
+                </div>
+            </div>
+
+            <div class="form-label">Живой предпросмотр эфемерид:</div>
+            <div class="birth-preview-box">
+                <div id="birth-live-preview" class="birth-preview-grid"></div>
+            </div>
+        </div>
+
         <div style="display:flex; gap:10px;">
-            <button id="person-save" class="action-btn" style="flex:1; background:var(--accent); color:#fff; border:none;">Создать</button>
-            <button id="person-cancel" class="action-btn" style="flex:1; background:transparent; color:var(--text-muted); border-color:var(--border-color);">Отмена</button>
+            <button id="person-save" class="action-btn" style="flex:1; background:var(--accent); color:#fff; border:none; padding:10px;">
+                ✨ Рассчитать и создать
+            </button>
+            <button id="person-cancel" class="action-btn" style="flex:1; background:transparent; color:var(--text-muted); border-color:var(--border-color); padding:10px;">
+                Отмена
+            </button>
         </div>
     </div>
 
@@ -347,7 +440,7 @@
             <button id="close-menu">✖</button>
         </div>
         <div class="sidebar-actions">
-            <button id="add-person-btn" class="action-btn">➕ 🧑 Человек</button>
+            <button id="add-person-btn" class="action-btn">📅 🧑 Карта по дате</button>
             <button id="open-forge-btn" class="action-btn purple">⚡ Кузница / Пресеты</button>
         </div>
         <div class="search-wrap">
@@ -379,10 +472,9 @@
 
     <div id="board">
         <div class="instruction">
-            • Соединяй <b>Планету + Знак + Дом</b> или используй <b>⚡ Кузницу</b>.<br>
-            • Перетаскивай формулы в <b>Человека</b> (откроются SVG-Колесо, Аспекты и 🌟 Соляр).<br>
-            • Соединяй двух людей в <b>Синастрию (💞)</b> для двойного колеса и индекса пары.<br>
-            • Кликни на любой элемент доски для глубокого синтеза.
+            • Нажми <b>«📅 Карта по дате»</b>, введи дату рождения — и система сама рассчитает все планеты, знаки и дома!<br>
+            • Также можно собирать формулы вручную (<b>Планета + Знак + Дом</b>) или через <b>⚡ Кузницу</b>.<br>
+            • Соединяй двух людей в <b>Синастрию (💞)</b> для двойного колеса и индекса совместимости.
         </div>
         <div id="trash-can" title="Перетащите сюда для удаления">🗑️</div>
     </div>
@@ -414,9 +506,6 @@
         }
     };
 
-    /**
-     * Генератор интерактивного SVG-Колеса (Натал и Двойное Кольцо Синастрии)
-     */
     class NatalWheelSVG {
         static #SVG_NS = 'http://www.w3.org/2000/svg';
 
@@ -478,7 +567,6 @@
 
             const coordsMap = this.#computePlanetPositions(inventory, cx, cy, rPlanets, rAspectRing);
 
-            // Линии натальных аспектов
             const aspects = this.model.calculateNatalAspects(inventory, null);
             for (const asp of aspects) {
                 const p1 = coordsMap.get(asp.f1.planetId);
@@ -493,7 +581,6 @@
                 }));
             }
 
-            // Глифы планет
             this.#drawPlanetNodes(svg, coordsMap, '#93c5fd');
             return svg;
         }
@@ -504,8 +591,8 @@
             const cy = size / 2;
             const rOuter = 144;
             const rSignsInner = 116;
-            const rPlanetsOuter = 98; // Партнер 2
-            const rPlanetsInner = 74; // Партнер 1
+            const rPlanetsOuter = 98;
+            const rPlanetsInner = 74;
             const rAspectRing = 54;
 
             const svg = this.#svgEl('svg', { width: size, height: size, viewBox: `0 0 ${size} ${size}` });
@@ -528,7 +615,6 @@
             const map1 = this.#computePlanetPositions(inv1, cx, cy, rPlanetsInner, rAspectRing);
             const map2 = this.#computePlanetPositions(inv2, cx, cy, rPlanetsOuter, rAspectRing);
 
-            // Межкарточные аспекты
             for (const f1 of inv1) {
                 for (const f2 of inv2) {
                     if (!f1.signId || !f2.signId) continue;
@@ -859,7 +945,7 @@
                 const nameText = itemData.name || 'Человек';
 
                 const nameEl = SafeDOM.el('div', '', `${icon} ${nameText}`);
-                nameEl.style.maxWidth = '135px';
+                nameEl.style.maxWidth = '145px';
                 nameEl.style.overflow = 'hidden';
                 nameEl.style.textOverflow = 'ellipsis';
                 el.appendChild(nameEl);
@@ -907,6 +993,19 @@
         spawnPerson(name = 'Человек', gender = 'male', inventory = []) {
             this.model.sortFormulas(inventory);
             return this.createNode('person', null, null, null, { inventory, name, gender });
+        }
+
+        updateExistingPerson(uid, name, gender, inventory) {
+            const person = this.#activeElements.get(uid);
+            if (!person || person.type !== 'person') return;
+            person.name = name;
+            person.gender = gender;
+            this.model.sortFormulas(inventory);
+            person.inventory = inventory;
+            const el = this.boardEl.querySelector(`[data-uid="${uid}"]`);
+            if (el) this.updatePersonDOM(el, person);
+            this.onStateChanged();
+            this.onShowDescription(uid);
         }
 
         spawnCouple(p1, p2, targetNode) {
@@ -1217,11 +1316,12 @@
     }
 
     class UIController {
-        constructor({ boardController, interpretationRenderer, model, dom }) {
+        constructor({ boardController, interpretationRenderer, model, dom, onOpenRecalcModal }) {
             this.boardController = boardController;
             this.interpretationRenderer = interpretationRenderer;
             this.model = model;
             this.dom = dom;
+            this.onOpenRecalcModal = onOpenRecalcModal;
         }
 
         showDescription(uid) {
@@ -1253,23 +1353,29 @@
             const icon = item.gender === 'female' ? '👩' : (item.gender === 'male' ? '👨' : '🧑');
             descTitle.textContent = `${icon} Натальная карта: ${item.name || 'Человек'}`;
 
+            const tabsBar = SafeDOM.el('div', 'tabs-bar');
+            const tabNatalBtn = SafeDOM.el('button', 'tab-btn active', '🪐 Натальная карта и Колесо');
+            const tabSolarBtn = SafeDOM.el('button', 'tab-btn', '🌟 Соляр (Прогноз на год)');
+            const recalcBtn = SafeDOM.el('button', 'split-btn', '📅 Рассчитать по дате рождения');
+            recalcBtn.style.marginLeft = 'auto';
+            recalcBtn.addEventListener('click', () => {
+                if (this.onOpenRecalcModal) this.onOpenRecalcModal(uid, item);
+            });
+
+            tabsBar.appendChild(tabNatalBtn);
+            tabsBar.appendChild(tabSolarBtn);
+            tabsBar.appendChild(recalcBtn);
+            descText.appendChild(tabsBar);
+
             if (item.inventory.length === 0) {
                 descText.appendChild(
                     this.interpretationRenderer.createCustomBlock(
                         'Карта пока пуста',
-                        'Соберите на доске полную комбинацию (Планета + Знак + Дом) или выберите пресет в «⚡ Кузнице» и перетащите на фигуру человека.'
+                        'Нажмите кнопку «📅 Рассчитать по дате рождения» выше для мгновенного расчёта всех планет, либо перетащите сюда формулы с доски.'
                     )
                 );
                 return;
             }
-
-            // Вкладки внутри карты человека
-            const tabsBar = SafeDOM.el('div', 'tabs-bar');
-            const tabNatalBtn = SafeDOM.el('button', 'tab-btn active', '🪐 Натальная карта и Колесо');
-            const tabSolarBtn = SafeDOM.el('button', 'tab-btn', '🌟 Соляр (Прогноз на год)');
-            tabsBar.appendChild(tabNatalBtn);
-            tabsBar.appendChild(tabSolarBtn);
-            descText.appendChild(tabsBar);
 
             const contentArea = SafeDOM.el('div');
             descText.appendChild(contentArea);
@@ -1277,16 +1383,13 @@
             const renderNatalTab = () => {
                 SafeDOM.clear(contentArea);
 
-                // 1. SVG Космограмма
                 const wheelWrap = SafeDOM.el('div', 'wheel-container');
                 wheelWrap.appendChild(this.interpretationRenderer.wheelSvg.renderSingleWheel(item.inventory));
                 contentArea.appendChild(wheelWrap);
 
-                // 2. Баланс стихий
                 contentArea.appendChild(SafeDOM.el('div', 'section-header', 'Баланс стихий карты'));
                 this.interpretationRenderer.renderElementalBalance(item.inventory, contentArea);
 
-                // 3. Инвентарь
                 const editSection = SafeDOM.el('div');
                 editSection.appendChild(SafeDOM.el('div', 'section-header', `Планеты в карте (${item.inventory.length})`));
                 item.inventory.forEach((f, index) => {
@@ -1302,7 +1405,6 @@
                 });
                 contentArea.appendChild(editSection);
 
-                // 4. Внутренние аспекты
                 const natalAspects = this.model.calculateNatalAspects(
                     item.inventory,
                     this.interpretationRenderer.descriptionsRepo
@@ -1319,7 +1421,6 @@
                     });
                 }
 
-                // 5. Детальный разбор позиций
                 const analysisSection = SafeDOM.el('div');
                 const header = SafeDOM.el('div', 'section-header', 'Детальный разбор формул');
                 header.style.marginTop = '20px';
@@ -1333,7 +1434,7 @@
                 contentArea.appendChild(
                     this.interpretationRenderer.createCustomBlock(
                         '🌟 Годовой Солярный Прогноз',
-                        'Трактовка включения домов натальной карты солярными планетами на предстоящий личный год (раздел 17 базы данных).',
+                        'Трактовка включения домов натальной карты солярными планетами на предстоящий личный год.',
                         'synthesis'
                     )
                 );
@@ -1387,13 +1488,12 @@
                 descText.appendChild(
                     this.interpretationRenderer.createCustomBlock(
                         'Карты партнеров пусты',
-                        'Разъедините пару, наполните карты обоих партнеров комбинациями и снова соедините их.'
+                        'Разъедините пару, рассчитайте карты партнеров по дате рождения и снова соедините их.'
                     )
                 );
                 return;
             }
 
-            // Индекс совместимости
             const scoreData = this.model.calculateSynastryScore(
                 p1.inventory,
                 p2.inventory,
@@ -1407,7 +1507,6 @@
             banner.appendChild(SafeDOM.el('div', 'score-badge', `${scoreData.score}%`));
             descText.appendChild(banner);
 
-            // Двойное SVG-Колесо синастрии
             const wheelWrap = SafeDOM.el('div', 'wheel-container');
             wheelWrap.appendChild(this.interpretationRenderer.wheelSvg.renderSynastryWheel(p1.inventory, p2.inventory));
             const legend = SafeDOM.el('div', 'info-block-text', `🔵 Внутренний круг: ${n1}   •   🌸 Внешний круг: ${n2}`);
@@ -1421,11 +1520,9 @@
             synHeader.style.color = '#f9a8d4';
             synastrySection.appendChild(synHeader);
 
-            let hasInteractions = false;
             if (p1.inventory && p2.inventory) {
                 p1.inventory.forEach((f1) => {
                     p2.inventory.forEach((f2) => {
-                        hasInteractions = true;
                         const wrapper = SafeDOM.el('div');
                         wrapper.style.marginBottom = '14px';
 
@@ -1532,6 +1629,7 @@
 
     class App {
         #autosaveTimer = null;
+        #editingPersonUid = null;
 
         constructor() {
             this.elementsRepo = new ElementsRepository();
@@ -1551,7 +1649,16 @@
                 overlay: document.getElementById('overlay'),
                 saveIndicator: document.getElementById('save-indicator'),
                 personModal: document.getElementById('person-modal'),
+                personModalTitle: document.getElementById('person-modal-title'),
                 personNameInput: document.getElementById('person-name'),
+                personCalcMode: document.getElementById('person-calc-mode'),
+                birthFieldsContainer: document.getElementById('birth-fields-container'),
+                birthDateInput: document.getElementById('birth-date'),
+                birthTimeInput: document.getElementById('birth-time'),
+                birthTimeUnknown: document.getElementById('birth-time-unknown'),
+                birthCitySelect: document.getElementById('birth-city'),
+                birthTzInput: document.getElementById('birth-tz'),
+                birthLivePreview: document.getElementById('birth-live-preview'),
                 personSaveBtn: document.getElementById('person-save'),
                 personCancelBtn: document.getElementById('person-cancel'),
                 forgeModal: document.getElementById('forge-modal'),
@@ -1580,7 +1687,8 @@
                 boardController: this.boardController,
                 interpretationRenderer: this.interpretationRenderer,
                 model: this.model,
-                dom: this.dom
+                dom: this.dom,
+                onOpenRecalcModal: (uid, personItem) => this.#openPersonModal(uid, personItem)
             });
         }
 
@@ -1623,6 +1731,63 @@
                 });
                 container.appendChild(btn);
             });
+        }
+
+        #getBirthConfigFromForm() {
+            const mode = this.dom.personCalcMode.value;
+            const [latStr, lonStr] = this.dom.birthCitySelect.value.split(',');
+            return {
+                mode,
+                scope: mode === 'classic' ? 'classic' : 'full',
+                dateStr: this.dom.birthDateInput.value || '2003-04-18',
+                timeStr: this.dom.birthTimeInput.value || '12:00',
+                timeUnknown: this.dom.birthTimeUnknown.checked,
+                lat: parseFloat(latStr) || 55.7558,
+                lon: parseFloat(lonStr) || 37.6173,
+                tzOffset: parseFloat(this.dom.birthTzInput.value) || 0
+            };
+        }
+
+        #updateBirthLivePreview() {
+            const cfg = this.#getBirthConfigFromForm();
+            this.dom.birthFieldsContainer.style.display = cfg.mode === 'empty' ? 'none' : 'block';
+            this.dom.birthTimeInput.disabled = cfg.timeUnknown;
+            this.dom.personSaveBtn.textContent = cfg.mode === 'empty'
+                ? 'Создать пустую карту'
+                : (this.#editingPersonUid ? '✨ Обновить и пересчитать' : '✨ Рассчитать и создать');
+
+            if (cfg.mode === 'empty') return;
+
+            const formulas = this.model.calculateNatalChartFromBirthData(cfg);
+            SafeDOM.clear(this.dom.birthLivePreview);
+            formulas.forEach((f) => {
+                const p = this.elementsRepo.get(f.planetId);
+                const s = this.elementsRepo.get(f.signId);
+                const chip = SafeDOM.el('div', 'preview-chip', `${f.text}`);
+                chip.title = `${p?.label} в знаке ${s?.label}`;
+                this.dom.birthLivePreview.appendChild(chip);
+            });
+        }
+
+        #openPersonModal(editUid = null, existingItem = null) {
+            this.#editingPersonUid = editUid;
+            this.dom.personModalTitle.textContent = editUid
+                ? `📅 Пересчёт карты: ${existingItem.name || 'Человек'}`
+                : '🧑 Натальная карта по дате рождения';
+
+            this.dom.personNameInput.value = existingItem ? (existingItem.name || '') : '';
+            if (existingItem && existingItem.gender) {
+                const radio = document.querySelector(`input[name="person-gender"][value="${existingItem.gender}"]`);
+                if (radio) radio.checked = true;
+            }
+            if (editUid && this.dom.personCalcMode.value === 'empty') {
+                this.dom.personCalcMode.value = 'full';
+            }
+
+            this.#updateBirthLivePreview();
+            this.dom.personModal.classList.add('active');
+            this.dom.overlay.classList.add('active');
+            this.dom.personNameInput.focus();
         }
 
         #initForgeAndPresets() {
@@ -1733,6 +1898,7 @@
         #closeModals() {
             this.dom.personModal.classList.remove('active');
             this.dom.forgeModal.classList.remove('active');
+            this.#editingPersonUid = null;
             if (!this.dom.sidebar.classList.contains('open')) {
                 this.dom.overlay.classList.remove('active');
             }
@@ -1757,10 +1923,7 @@
             });
 
             document.getElementById('add-person-btn').addEventListener('click', () => {
-                this.dom.personModal.classList.add('active');
-                this.dom.overlay.classList.add('active');
-                this.dom.personNameInput.value = '';
-                this.dom.personNameInput.focus();
+                this.#openPersonModal(null, null);
             });
 
             document.getElementById('open-forge-btn').addEventListener('click', () => {
@@ -1768,21 +1931,48 @@
                 this.dom.overlay.classList.add('active');
             });
 
+            // Слушатели изменений даты/времени/города для живого превью
+            this.dom.personCalcMode.addEventListener('change', () => this.#updateBirthLivePreview());
+            this.dom.birthDateInput.addEventListener('input', () => this.#updateBirthLivePreview());
+            this.dom.birthTimeInput.addEventListener('input', () => this.#updateBirthLivePreview());
+            this.dom.birthTimeUnknown.addEventListener('change', () => this.#updateBirthLivePreview());
+            this.dom.birthTzInput.addEventListener('input', () => this.#updateBirthLivePreview());
+            this.dom.birthCitySelect.addEventListener('change', () => {
+                const parts = this.dom.birthCitySelect.value.split(',');
+                if (parts[2] !== undefined) {
+                    this.dom.birthTzInput.value = parts[2];
+                }
+                this.#updateBirthLivePreview();
+            });
+
             this.dom.personCancelBtn.addEventListener('click', () => this.#closeModals());
             this.dom.forgeCloseBtn.addEventListener('click', () => this.#closeModals());
 
-            const createPersonAction = () => {
+            const createOrUpdatePersonAction = () => {
                 const name = this.dom.personNameInput.value.trim() || 'Неизвестный';
                 const genderNode = document.querySelector('input[name="person-gender"]:checked');
                 const gender = genderNode ? genderNode.value : 'male';
-                this.boardController.spawnPerson(name, gender);
+                const cfg = this.#getBirthConfigFromForm();
+
+                const inventory = cfg.mode === 'empty'
+                    ? []
+                    : this.model.calculateNatalChartFromBirthData(cfg);
+
+                if (this.#editingPersonUid) {
+                    this.boardController.updateExistingPerson(this.#editingPersonUid, name, gender, inventory);
+                } else {
+                    const newEl = this.boardController.spawnPerson(name, gender, inventory);
+                    if (inventory.length > 0) {
+                        this.uiController.showDescription(newEl.dataset.uid);
+                    }
+                }
                 this.#closeModals();
                 if (window.innerWidth <= 768) this.#closeMenu();
             };
 
-            this.dom.personSaveBtn.addEventListener('click', createPersonAction);
+            this.dom.personSaveBtn.addEventListener('click', createOrUpdatePersonAction);
             this.dom.personNameInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') createPersonAction();
+                if (e.key === 'Enter') createOrUpdatePersonAction();
             });
 
             this.dom.overlay.addEventListener('click', () => {
@@ -1790,7 +1980,6 @@
                 this.#closeModals();
             });
 
-            // Экспорт и Импорт JSON
             this.dom.exportBtn.addEventListener('click', () => {
                 const state = this.boardController.serializeState();
                 const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
